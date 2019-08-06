@@ -2,6 +2,9 @@ package pl.ncdc.billiard.service;
 
 import java.awt.Point;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class HitService {
 double diameter = 10;
 	
