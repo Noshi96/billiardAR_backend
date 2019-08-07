@@ -1,6 +1,6 @@
 package pl.ncdc.billiard.commands;
 
-import pl.ncdc.billiard.entity.Point;
+import java.awt.Point;
 
 public class HitCommand {
 
@@ -12,9 +12,8 @@ public class HitCommand {
 		Ball = ball;
 		Pocket = pocket;
 	}
-
+	
 	public HitCommand() {
-		super();
 	}
 
 	public Point getBall() {
@@ -33,5 +32,7 @@ public class HitCommand {
 		Pocket = pocket;
 	}
 
+	
 
+	
 }

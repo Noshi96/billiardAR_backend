@@ -6,23 +6,33 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class Hit {
-	
+
 	@Id
-	private Long id;
-	
+	private int id;
+
 	@OneToOne
 	private Ball selectedBall;
-	
+
 	@OneToOne
 	private Pocket selectedPocket;
-	
+
 	private float angle;
 
-	public Long getId() {
+	public Hit(int id, Ball selectedBall, Pocket selectedPocket, float angle) {
+		this.id = id;
+		this.selectedBall = selectedBall;
+		this.selectedPocket = selectedPocket;
+		this.angle = angle;
+	}
+
+	public Hit() {
+	}
+
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -49,14 +59,5 @@ public class Hit {
 	public void setAngle(float angle) {
 		this.angle = angle;
 	}
-
-	public Hit() {
-		super();
-	}
-	
-	
-	
-	
-	
 
 }

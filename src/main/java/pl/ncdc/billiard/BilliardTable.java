@@ -24,12 +24,12 @@ public class BilliardTable {
 
 	public BilliardTable() {
 		pockets = new ArrayList<>();
-		pockets.add(new Pocket(1L));
-		pockets.add(new Pocket(2L));
-		pockets.add(new Pocket(3L));
-		pockets.add(new Pocket(4L));
-		pockets.add(new Pocket(5L));
-		pockets.add(new Pocket(6L));
+		pockets.add(new Pocket(1));
+		pockets.add(new Pocket(2));
+		pockets.add(new Pocket(3));
+		pockets.add(new Pocket(4));
+		pockets.add(new Pocket(5));
+		pockets.add(new Pocket(6));
 	}
 
 	public List<Ball> getBalls() {

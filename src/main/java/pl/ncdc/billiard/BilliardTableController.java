@@ -1,4 +1,5 @@
 package pl.ncdc.billiard;
+import java.awt.Point;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.ncdc.billiard.commands.HitCommand;
-import pl.ncdc.billiard.entity.Point;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
 
@@ -44,17 +44,16 @@ public class BilliardTableController {
 	}
 	@PutMapping("/hit")
 	public Point findHittingPoint(@RequestBody HitCommand hitcommand) {
-
 		Point ball = hitcommand.getBall();
-		int ballX = ball.getPositionX();
-		int ballY = ball.getPositionY();
-
+		double ballX = ball.getX();
+		double ballY = ball.getY();
+		
 		Point pocket = hitcommand.getPocket();
-		int pocketX = pocket.getPositionX();
-		int pocketY = pocket.getPositionY();
+		double pocketX = pocket.getX();
+		double pocketY = pocket.getY();
+		
+		return hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
 
-		java.awt.Point point = hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
-		return new Point(1L, (int) (point.getX()), ((int)(point.getY())));
 	}
 
 }
