@@ -19,49 +19,20 @@ import pl.ncdc.billiard.response.PointResponse;
 @Service
 public class BilliardTableService {
 
-	@Autowired
-	BilliardTableRepository billiardTableRepository;
-	
-	//BillardTable table;
+	private BilliardTable table = new BilliardTable();
 
-	public BilliardTableResponse billiardTable() {
-		BilliardTableResponse billiardTableResponse = new BilliardTableResponse();
-		BilliardTable bt = billiardTableRepository.findAll().get(0);
-		billiardTableResponse.setId(bt.getId());
+	public BilliardTable getTable() {
+		return table;
+	}
 
-		List<BallResponse> ballsResponse = new ArrayList<>();
+	public void selectBall(Long ballId) {
+		for (Ball ball : table.getBalls()) {
+			table.setSelectedBall(null);
 
-		for (Ball ball : bt.getBalls()) {
-			BallResponse ballResponse = new BallResponse();
-			ballResponse.setId(ball.getId());
-			
-			
-			PointResponse pointResponse = new PointResponse();
-			Point point = new Point();
-			pointResponse.setPositionX(point.getPositionX());
-			pointResponse.setPositionY(point.getPositionY());
-			
-			ballResponse.setPoint(point);
-
-			ballResponse.setSelected(ball.isSelected());
-			ballResponse.setWhite(ball.isWhite());
-			ballsResponse.add(ballResponse);
+			if (ball.getId() == ballId) {
+				table.setSelectedBall(ball);
+			}
 		}
-
-		List<PocketResponse> pocketResponses = new ArrayList<>();
-
-		for (Pocket pocket : bt.getPockets()) {
-			PocketResponse pocketResponse = new PocketResponse();
-			pocketResponse.setId(pocket.getId());
-			pocketResponse.setSelected(pocket.isSelected());
-			pocketResponse.setBalls(new ArrayList<>());
-			pocketResponses.add(pocketResponse);
-		}
-
-		billiardTableResponse.setBalls(ballsResponse);
-		billiardTableResponse.setPockets(pocketResponses);
-
-		return billiardTableResponse;
 	}
 
 }

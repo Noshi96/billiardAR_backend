@@ -11,13 +11,19 @@ import pl.ncdc.billiard.service.BilliardTableService;
 @RestController
 @RequestMapping("/table")
 public class BilliardTableController {
-	
+
 	@Autowired
 	BilliardTableService bs;
-	
+
 	@GetMapping
 	public BilliardTableResponse billiardTable() {
-		return bs.billiardTable();
+		// return bs.billiardTable();
+		return bs.getTable();
+	}
+
+	@PutMapping("/{id}")
+	public void selectBall(@RequestBody Long ballId) {
+		tableService.selectBall(ballId);
 	}
 
 }
