@@ -11,6 +11,12 @@ public class Pocket {
 	
 	private boolean selected;
 	
+	public Pocket(Long id) {
+		this.id = id;
+	}
+	
+	public Pocket() {
+	}
 
 	public Long getId() {
 		return id;
