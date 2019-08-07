@@ -1,5 +1,7 @@
 package pl.ncdc.billiard.entity;
 
+import java.awt.Point;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -7,22 +9,28 @@ import javax.persistence.Id;
 public class Pocket {
 	
 	@Id
-	private Long id;
+	private int id;
 	
 	private boolean selected;
 	
-	public Pocket(Long id) {
-		this.id = id;
-	}
-	
+	private Point point;
+
 	public Pocket() {
 	}
+	
+	
 
-	public Long getId() {
+	public Pocket(int id) {
+		this.id = id;
+	}
+
+
+
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -33,4 +41,13 @@ public class Pocket {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+
+	public Point getPoint() {
+		return point;
+	}
+
+	public void setPoint(Point point) {
+		this.point = point;
+	}
+	
 }
