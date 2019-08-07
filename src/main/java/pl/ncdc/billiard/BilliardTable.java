@@ -1,10 +1,10 @@
-package pl.ncdc.billiard.entity;
+package pl.ncdc.billiard;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import pl.ncdc.billiard.entity.Ball;
+import pl.ncdc.billiard.entity.Pocket;
 
 public class BilliardTable {
 
