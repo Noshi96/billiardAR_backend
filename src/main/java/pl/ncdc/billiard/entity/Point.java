@@ -9,9 +9,9 @@ public class Point {
 	@Id
 	private Long id;
 
-	private float positionX;
+	private int positionX;
 
-	private float positionY;
+	private int positionY;
 
 
 	public Long getId() {
@@ -22,25 +22,32 @@ public class Point {
 		this.id = id;
 	}
 
-	public float getPositionX() {
+	public int getPositionX() {
 		return positionX;
 	}
 
-	public void setPositionX(float positionX) {
+	public void setPositionX(int positionX) {
 		this.positionX = positionX;
 	}
 
-	public float getPositionY() {
+	public int getPositionY() {
 		return positionY;
 	}
 
-	public void setPositionY(float positionY) {
+	public void setPositionY(int positionY) {
 		this.positionY = positionY;
 	}
 
 	public Point() {
-		super();
 	}
+
+	public Point(Long id, int positionX, int positionY) {
+		this.id = id;
+		this.positionX = positionX;
+		this.positionY = positionY;
+	}
+	
+	
 	
 
 }
