@@ -43,7 +43,6 @@ public class BilliardTableController {
 	public BilliardTable getTable() {
 		return tableService.getTable();
 	}
-	
 
 	@PutMapping("/ball/{ballId}")
 	public void selectBall(@PathVariable Long ballId) {
@@ -76,6 +75,18 @@ public class BilliardTableController {
 
 	@PutMapping("/hit")
 	public Point findHittingPoint() {
+		if (tableService.getTable().getSelectedBall() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
+		if (tableService.getTable().getWhiteBall() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
+		if (tableService.getTable().getSelectedPocket() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
 		Point ball = tableService.getTable().getSelectedBall().getPoint();
 		double ballX = ball.getX();
 		double ballY = ball.getY();

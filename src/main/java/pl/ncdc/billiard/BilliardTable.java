@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 
@@ -16,9 +14,9 @@ public class BilliardTable {
 
 	private int width;
 
-	private List<Ball> balls;
+	private List<Ball> balls = new ArrayList<>();
 
-	private List<Pocket> pockets;
+	private List<Pocket> pockets = new ArrayList<>();
 
 	private Ball whiteBall;
 
