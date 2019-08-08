@@ -1,8 +1,9 @@
 package pl.ncdc.billiard.service;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.entity.Ball;
@@ -11,8 +12,7 @@ import pl.ncdc.billiard.entity.Pocket;
 @Service
 public class HitService {
 
-double diameter = 2;
-
+	double diameter = 2;
 
 	public double findAngle(double xBallWhite, double yBallWhite, double xCenterPoint, double yCenterPoint,
 			double xPocket, double yPocket) {
@@ -35,8 +35,8 @@ double diameter = 2;
 
 	}
 
-	public Point findHittingPoint(double xBallWhite, double yBallWhite, double xBallSelected, double yBallSelected, double xPocket,
-			double yPocket) {
+	public Point findHittingPoint(double xBallWhite, double yBallWhite, double xBallSelected, double yBallSelected,
+			double xPocket, double yPocket) {
 
 		Point point = new Point();
 
@@ -58,13 +58,13 @@ double diameter = 2;
 
 	}
 
-	public boolean findCollision(Point pocketPoint, Point selectedBall, int index, ArrayList<Ball> listBall) {
+	public boolean findCollision(Point pocketPoint, Point selectedBall, int index, List<Ball> listBall) {
 
 		for (int x = 1; x < listBall.size(); x++) {
 			if (index != x) {
 				double angle = findAngleOfCollision(selectedBall.getX(), selectedBall.getY(),
-						listBall.get(x).getPoint().getX(), listBall.get(x).getPoint().getY(),
-						pocketPoint.getX(), pocketPoint.getY());
+						listBall.get(x).getPoint().getX(), listBall.get(x).getPoint().getY(), pocketPoint.getX(),
+						pocketPoint.getY());
 				angle *= 57;
 				if (angle < 190 && angle > 160) {
 					return false;
@@ -78,14 +78,14 @@ double diameter = 2;
 
 	}
 
-	public HashMap<Point, Point> allPossibleHits(ArrayList<Pocket> listPocket, ArrayList<Ball> listBall) {
+	public HashMap<Point, Point> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall) {
 		HashMap<Point, Point> points = new HashMap<Point, Point>();
 
 		for (int x = 1; x < listBall.size(); x++) { // pierwsza bila w liscie jest biala index 0
 			for (int y = 0; y < listPocket.size(); y++) {
 
 				Point targetPoint = findHittingPoint(listBall.get(0).getPoint().getX(),
-					listBall.get(0).getPoint().getY(), listBall.get(x).getPoint().getX(),
+						listBall.get(0).getPoint().getY(), listBall.get(x).getPoint().getX(),
 						listBall.get(x).getPoint().getY(), listPocket.get(y).getPoint().getX(),
 						listPocket.get(y).getPoint().getY());
 
@@ -107,6 +107,9 @@ double diameter = 2;
 
 		}
 
+		if (points == null) {
+			return null;
+		}
 		return points;
 
 	}
