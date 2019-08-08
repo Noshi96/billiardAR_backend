@@ -11,7 +11,7 @@ public class Ball {
 	@Id
 	private int id;
 
-	private float diameter;
+	private static  final float DIAMETER = 5.72F;
 
 	private boolean selected;
 
@@ -19,9 +19,8 @@ public class Ball {
 
 	boolean white;
 
-	public Ball(int id, float diameter, boolean selected, Point point, boolean white) {
+	public Ball(int id, boolean selected, Point point, boolean white) {
 		this.id = id;
-		this.diameter = diameter;
 		this.selected = selected;
 		this.point = point;
 		this.white = white;
@@ -36,14 +35,6 @@ public class Ball {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public float getDiameter() {
-		return diameter;
-	}
-
-	public void setDiameter(float diameter) {
-		this.diameter = diameter;
 	}
 
 	public boolean isSelected() {

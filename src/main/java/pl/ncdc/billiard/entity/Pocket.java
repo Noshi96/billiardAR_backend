@@ -22,8 +22,11 @@ public class Pocket {
 	public void setPoint(Point point) {
 		this.point = point;
 	}
+	
 
-
+	public Pocket(int id) {
+		this.id = id;
+	}
 
 	public int getId() {
 		return id;
@@ -41,12 +44,5 @@ public class Pocket {
 		this.selected = selected;
 	}
 
-	public Point getPoint() {
-		return point;
-	}
-
-	public void setPoint(Point point) {
-		this.point = point;
-	}
 	
 }
