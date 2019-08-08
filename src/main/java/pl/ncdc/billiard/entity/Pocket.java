@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Pocket {
 	
 	@Id
-	private Long id;
+	private int id;
 	
 	private boolean selected;
 	
@@ -23,11 +23,13 @@ public class Pocket {
 		this.point = point;
 	}
 
-	public Long getId() {
+
+
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -38,4 +40,13 @@ public class Pocket {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+
+	public Point getPoint() {
+		return point;
+	}
+
+	public void setPoint(Point point) {
+		this.point = point;
+	}
+	
 }

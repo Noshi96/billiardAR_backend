@@ -1,6 +1,6 @@
 package pl.ncdc.billiard.response;
 
-import pl.ncdc.billiard.entity.Point;
+import java.awt.Point;
 
 public class BallResponse {
 
@@ -10,10 +10,6 @@ public class BallResponse {
 
 	private boolean selected;
 
-//	private float positionX;
-//
-//	private float positionY;
-	
 	private Point point;
 
 	private boolean white;
@@ -61,6 +57,5 @@ public class BallResponse {
 	public void setPoint(Point point) {
 		this.point = point;
 	}
-	
 
 }
