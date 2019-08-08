@@ -15,13 +15,12 @@ public class Pocket {
 	
 	private Point point;
 
-	public Pocket() {
+	public Point getPoint() {
+		return point;
 	}
-	
-	
 
-	public Pocket(int id) {
-		this.id = id;
+	public void setPoint(Point point) {
+		this.point = point;
 	}
 
 
