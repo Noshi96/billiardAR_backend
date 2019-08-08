@@ -1,5 +1,7 @@
 package pl.ncdc.billiard.entity;
 
+import java.awt.Point;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
