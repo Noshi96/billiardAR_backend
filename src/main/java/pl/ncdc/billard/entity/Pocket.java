@@ -13,18 +13,27 @@ public class Pocket {
 	
 	private boolean selected;
 	
-	private Point point;
+	private Point point = new Point();
 
-	public Pocket() {
+	public Point getPoint() {
+		return point;
 	}
-	
+
+	public Pocket(int id, boolean selected, Point point) {
+		super();
+		this.id = id;
+		this.selected = selected;
+		this.point = point;
+	}
+
+	public void setPoint(Point point) {
+		this.point = point;
+	}
 	
 
 	public Pocket(int id) {
 		this.id = id;
 	}
-
-
 
 	public int getId() {
 		return id;
@@ -42,12 +51,5 @@ public class Pocket {
 		this.selected = selected;
 	}
 
-	public Point getPoint() {
-		return point;
-	}
-
-	public void setPoint(Point point) {
-		this.point = point;
-	}
 	
 }

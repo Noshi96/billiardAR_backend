@@ -1,19 +1,31 @@
 package pl.ncdc.billard;
-import java.awt.Point;
 
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.List;
+
+import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import pl.ncdc.billard.commands.HitCommand;
-import pl.ncdc.billard.service.BilliardTableService;
-import pl.ncdc.billard.service.HitService;
+import pl.ncdc.billiard.commands.HitCommand;
+import pl.ncdc.billiard.entity.Ball;
+import pl.ncdc.billiard.entity.Pocket;
+import pl.ncdc.billiard.service.BilliardTableService;
+import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
 @RequestMapping("/table")
+@CrossOrigin(value = "*")
 public class BilliardTableController {
 
 	@Autowired
@@ -22,38 +34,104 @@ public class BilliardTableController {
 	@Autowired
 	HitService hitService;
 
-	@GetMapping
+	@Autowired
+	SocketHandler socketHandler;
+
+	@Autowired
+	ModelService modelService;
+
+	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
 	}
 
-	@PutMapping("/{ballId}")
-	public void selectBall(@RequestBody Long ballId) {
+	@PutMapping("/ball/{ballId}")
+	public void selectBall(@PathVariable Long ballId) {
 		tableService.selectBall(ballId);
 	}
 
-	@PutMapping("/{pocketId}")
-	public void selectPocket(@RequestBody Long pocketId) {
+	@PutMapping("/pocket/{pocketId}")
+	public void selectPocket(@PathVariable Long pocketId) {
 		tableService.selectPocket(pocketId);
 	}
 
-	@PutMapping("/{updatedTable}")
+	@PutMapping
 	public BilliardTable update(@RequestBody BilliardTable tableToUpdate) {
 		return tableService.update(tableToUpdate);
 
 	}
+//	@PutMapping("/hit")
+//	public Point findHittingPoint(@RequestBody HitCommand hitcommand) {
+//		Point ball = hitcommand.getBall();
+//		double ballX = ball.getX();
+//		double ballY = ball.getY();
+//		
+//		Point pocket = hitcommand.getPocket();
+//		double pocketX = pocket.getX();
+//		double pocketY = pocket.getY();
+//		
+//		return hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
+//
+//	}
+
 	@PutMapping("/hit")
-	public Point findHittingPoint(@RequestBody HitCommand hitcommand) {
-		Point ball = hitcommand.getBall();
+	public Point findHittingPoint() {
+		if (tableService.getTable().getSelectedBall() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
+		if (tableService.getTable().getWhiteBall() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
+		if (tableService.getTable().getSelectedPocket() == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+
+		Point ball = tableService.getTable().getSelectedBall().getPoint();
 		double ballX = ball.getX();
 		double ballY = ball.getY();
-		
-		Point pocket = hitcommand.getPocket();
+
+		Point whiteBall = tableService.getTable().getWhiteBall().getPoint();
+		double whiteBallX = whiteBall.getX();
+		double whiteBallY = whiteBall.getY();
+
+		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
 		double pocketX = pocket.getX();
 		double pocketY = pocket.getY();
-		
-		return hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
 
+		Point hittingPoint = hitService.findHittingPoint(whiteBallX, whiteBallY, ballX, ballY, pocketX, pocketY);
+
+		tableService.getTable().setHittingPoint(hittingPoint);
+		// socketHandler.sendToAll(tableService.getTable());
+
+		if (hittingPoint != null) {
+			return hittingPoint;
+		}
+
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
+
+	@PutMapping("/hints")
+	public HashMap<Point, Point> allPossibleHits() {
+		List<Pocket> listPocket = tableService.getTable().getPockets();
+		List<Ball> listBall = tableService.getTable().getBalls();
+
+		HashMap<Point, Point> points = hitService.allPossibleHits(listPocket, listBall);
+
+		tableService.getTable().setAllPossibleHits(points);
+		// socketHandler.sendToAll(tableService.getTable());
+
+		if (points != null) {
+			return points;
+		}
+
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
+
+	@GetMapping("/print")
+	public Mat print() {
+		return modelService.print();
 	}
 
 }

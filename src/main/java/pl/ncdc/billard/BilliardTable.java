@@ -1,26 +1,32 @@
 package pl.ncdc.billard;
 
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pl.ncdc.billard.entity.Ball;
 import pl.ncdc.billard.entity.Pocket;
 
 public class BilliardTable {
-
+	
 	private int height;
 
 	private int width;
 
-	private List<Ball> balls;
+	private List<Ball> balls = new ArrayList<>();
 
-	private List<Pocket> pockets;
+	private List<Pocket> pockets = new ArrayList<>();
 
 	private Ball whiteBall;
 
 	private Ball selectedBall;
 
 	private Pocket selectedPocket;
+	
+	private Point hittingPoint;
+	
+	private HashMap<Point, Point> allPossibleHits;
 
 	public BilliardTable() {
 		pockets = new ArrayList<>();
@@ -31,7 +37,7 @@ public class BilliardTable {
 		pockets.add(new Pocket(5));
 		pockets.add(new Pocket(6));
 	}
-
+	
 	public List<Ball> getBalls() {
 		return balls;
 	}
@@ -71,4 +77,22 @@ public class BilliardTable {
 	public void setSelectedPocket(Pocket selectedPocket) {
 		this.selectedPocket = selectedPocket;
 	}
+	
+	public void setHittingPoint(Point hittingPoint) {
+		this.hittingPoint = hittingPoint;
+	}
+	
+	public Point getHittingPoint() {
+		return hittingPoint;
+	}
+
+	public HashMap<Point, Point> getAllPossibleHits() {
+		return allPossibleHits;
+	}
+
+	public void setAllPossibleHits(HashMap<Point, Point> allPossibleHits) {
+		this.allPossibleHits = allPossibleHits;
+	}
+	
+	
 }
