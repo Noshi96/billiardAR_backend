@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 
 public class BilliardTable {
-
 	
 	private int height;
 
@@ -38,7 +39,7 @@ public class BilliardTable {
 		pockets.add(new Pocket(5));
 		pockets.add(new Pocket(6));
 	}
-
+	
 	public List<Ball> getBalls() {
 		return balls;
 	}

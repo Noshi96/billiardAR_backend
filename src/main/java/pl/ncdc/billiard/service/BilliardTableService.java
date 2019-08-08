@@ -14,7 +14,12 @@ public class BilliardTableService {
 //	@Autowired
 //	SocketHandler socketHandler;
 
-	private BilliardTable table = new BilliardTable();
+	private BilliardTable table;
+	
+	//@Autowired
+	public BilliardTableService() {
+	this.table = new BilliardTable();
+}
 
 	public BilliardTable getTable() {
 		return table;

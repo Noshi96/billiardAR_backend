@@ -4,9 +4,12 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
 
+import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,7 @@ import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
 @RequestMapping("/table")
+@CrossOrigin(value = "*")
 public class BilliardTableController {
 
 	@Autowired
@@ -32,18 +36,22 @@ public class BilliardTableController {
 	@Autowired
 	SocketHandler socketHandler;
 
-	@GetMapping
+	@Autowired
+	ModelService modelService;
+
+	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
 	}
+	
 
 	@PutMapping("/ball/{ballId}")
-	public void selectBall(@RequestBody Long ballId) {
+	public void selectBall(@PathVariable Long ballId) {
 		tableService.selectBall(ballId);
 	}
 
 	@PutMapping("/pocket/{pocketId}")
-	public void selectPocket(@RequestBody Long pocketId) {
+	public void selectPocket(@PathVariable Long pocketId) {
 		tableService.selectPocket(pocketId);
 	}
 
@@ -107,7 +115,11 @@ public class BilliardTableController {
 		}
 
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
 
+	@GetMapping("/print")
+	public Mat print() {
+		return modelService.print();
 	}
 
 }
