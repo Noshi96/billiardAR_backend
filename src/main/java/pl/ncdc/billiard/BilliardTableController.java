@@ -67,12 +67,16 @@ public class BilliardTableController {
 		Point ball = tableService.getTable().getSelectedBall().getPoint();
 		double ballX = ball.getX();
 		double ballY = ball.getY();
+		
+		Point whiteBall = tableService.getTable().getWhiteBall().getPoint();
+		double whiteBallX = whiteBall.getX();
+		double whiteBallY = whiteBall.getY();
 
 		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
 		double pocketX = pocket.getX();
 		double pocketY = pocket.getY();
 
-		Point hittingPoint = hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
+		Point hittingPoint = hitService.findHittingPoint(whiteBallX, whiteBallY, ballX, ballY, pocketX, pocketY);
 		
 		tableService.getTable().setHittingPoint(hittingPoint);
 		socketHandler.sendToAll(tableService.getTable());
