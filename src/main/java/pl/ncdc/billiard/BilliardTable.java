@@ -1,5 +1,6 @@
 package pl.ncdc.billiard;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import pl.ncdc.billiard.entity.Pocket;
 
 public class BilliardTable {
 
+	
 	private int height;
 
 	private int width;
@@ -21,6 +23,8 @@ public class BilliardTable {
 	private Ball selectedBall;
 
 	private Pocket selectedPocket;
+	
+	private Point hittingPoint;
 
 	public BilliardTable() {
 		pockets = new ArrayList<>();
@@ -70,5 +74,13 @@ public class BilliardTable {
 
 	public void setSelectedPocket(Pocket selectedPocket) {
 		this.selectedPocket = selectedPocket;
+	}
+	
+	public void setHittingPoint(Point hittingPoint) {
+		this.hittingPoint = hittingPoint;
+	}
+	
+	public Point getHittingPoint() {
+		return hittingPoint;
 	}
 }

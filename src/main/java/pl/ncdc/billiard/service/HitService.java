@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class HitService {
 double diameter = 10;
 	
-	public  Point findHittingPoint(double xBallSelected, double yBallSelected, double xPocket, double yPocket) {
+	public Point findHittingPoint(double xBallSelected, double yBallSelected, double xPocket, double yPocket) {
 		
 		Point point = new Point();		
 	

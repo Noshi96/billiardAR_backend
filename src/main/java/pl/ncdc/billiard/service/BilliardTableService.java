@@ -1,13 +1,18 @@
 package pl.ncdc.billiard.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.BilliardTable;
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
+import pl.ncdc.billiard.websocket.SocketHandler;
 
 @Service
 public class BilliardTableService {
+	
+//	@Autowired
+//	SocketHandler socketHandler;
 
 	private BilliardTable table = new BilliardTable();
 
@@ -16,6 +21,7 @@ public class BilliardTableService {
 	}
 
 	public void selectBall(Long ballId) {
+		
 		for (Ball ball : table.getBalls()) {
 			table.setSelectedBall(null);
 
@@ -23,6 +29,8 @@ public class BilliardTableService {
 				table.setSelectedBall(ball);
 			}
 		}
+		// socketHandler.sendToAll(getTable());
+
 	}
 
 	public void selectPocket(Long pocketId) {
@@ -33,6 +41,9 @@ public class BilliardTableService {
 				table.setSelectedPocket(pocket);
 			}
 		}
+		
+		// socketHandler.sendToAll(getTable());
+
 	}
 
 	public BilliardTable update(BilliardTable tableToUpdate) {
@@ -64,6 +75,8 @@ public class BilliardTableService {
 				}
 			}
 		}
+		
+		// socketHandler.sendToAll(getTable());
 
 		return table;
 	}
