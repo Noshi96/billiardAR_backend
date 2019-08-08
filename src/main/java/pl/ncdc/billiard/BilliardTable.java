@@ -9,15 +9,14 @@ import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 
 public class BilliardTable {
-
 	
 	private int height;
 
 	private int width;
 
-	private List<Ball> balls;
+	private List<Ball> balls = new ArrayList<>();
 
-	private List<Pocket> pockets;
+	private List<Pocket> pockets = new ArrayList<>();
 
 	private Ball whiteBall;
 
@@ -38,7 +37,7 @@ public class BilliardTable {
 		pockets.add(new Pocket(5));
 		pockets.add(new Pocket(6));
 	}
-
+	
 	public List<Ball> getBalls() {
 		return balls;
 	}
