@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import pl.ncdc.billiard.commands.HitCommand;
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;

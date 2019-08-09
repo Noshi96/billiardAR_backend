@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.BilliardTable;
+import pl.ncdc.billiard.Kinect;
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 import pl.ncdc.billiard.websocket.SocketHandler;
@@ -14,14 +15,19 @@ public class BilliardTableService {
 //	@Autowired
 //	SocketHandler socketHandler;
 
-	private BilliardTable table;
 	
-	//@Autowired
-	public BilliardTableService() {
-	this.table = new BilliardTable();
-}
+	private Kinect kinect;
+	
+	private BilliardTable table;
 
+	public BilliardTableService() {
+		this.kinect = new Kinect();
+		this.table = new BilliardTable();
+		kinect.start(Kinect.COLOR);
+	}
+	
 	public BilliardTable getTable() {
+		table = kinect.getTable();
 		return table;
 	}
 
