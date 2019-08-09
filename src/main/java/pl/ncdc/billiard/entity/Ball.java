@@ -11,7 +11,7 @@ public class Ball {
 	@Id
 	private int id;
 
-	private static  final float DIAMETER = 5.72F;
+	public static  final float DIAMETER = 5.72F;
 
 	private boolean selected;
 

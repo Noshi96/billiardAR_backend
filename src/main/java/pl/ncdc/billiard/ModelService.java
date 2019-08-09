@@ -1,9 +1,6 @@
 package pl.ncdc.billiard;
 
 import java.util.List;
-import java.awt.Point;
-import java.util.ArrayList;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -34,9 +31,10 @@ public class ModelService {
 		for (Ball ball : balls) {
 			double x = ball.getPoint().getX();
 			double y = ball.getPoint().getY();
+			
 			org.opencv.core.Point ballB = new org.opencv.core.Point(x, y);
 
-			Imgproc.circle(obraz, ballB, 10, new Scalar(0, 0, 255), 10);
+			Imgproc.circle(obraz, ballB, (int) (Ball.DIAMETER/2), new Scalar(0, 0, 255), 10);
 		}
 
 		return obraz;
