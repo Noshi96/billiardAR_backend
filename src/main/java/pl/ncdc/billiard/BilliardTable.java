@@ -1,12 +1,12 @@
-package pl.ncdc.billard;
+package pl.ncdc.billiard;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import pl.ncdc.billard.entity.Ball;
-import pl.ncdc.billard.entity.Pocket;
+import pl.ncdc.billiard.entity.Ball;
+import pl.ncdc.billiard.entity.Pocket;
 
 public class BilliardTable {
 	

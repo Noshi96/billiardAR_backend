@@ -1,7 +1,7 @@
-package pl.ncdc.billard.response;
+package pl.ncdc.billiard.response;
 
-import pl.ncdc.billard.entity.Ball;
-import pl.ncdc.billard.entity.Pocket;
+import pl.ncdc.billiard.entity.Ball;
+import pl.ncdc.billiard.entity.Pocket;
 
 public class HitResponse {
 

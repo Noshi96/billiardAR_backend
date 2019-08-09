@@ -1,4 +1,4 @@
-package pl.ncdc.billard;
+package pl.ncdc.billiard;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
 
 import edu.ufl.digitalworlds.j4k.J4KSDK;
-import pl.ncdc.billard.entity.Ball;
+import pl.ncdc.billiard.entity.Ball;
 
 public class Kinect extends J4KSDK {
 

@@ -1,4 +1,4 @@
-package pl.ncdc.billard;
+package pl.ncdc.billiard;
 
 import java.awt.Point;
 import java.util.HashMap;

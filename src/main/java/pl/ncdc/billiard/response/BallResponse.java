@@ -1,4 +1,4 @@
-package pl.ncdc.billard.response;
+package pl.ncdc.billiard.response;
 
 import java.awt.Point;
 

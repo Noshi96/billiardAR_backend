@@ -1,4 +1,4 @@
-package pl.ncdc.billard.commands;
+package pl.ncdc.billiard.commands;
 
 import java.awt.Point;
 

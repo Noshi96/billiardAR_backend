@@ -1,4 +1,4 @@
-package pl.ncdc.billard.entity;
+package pl.ncdc.billiard.entity;
 
 import java.awt.Point;
 
