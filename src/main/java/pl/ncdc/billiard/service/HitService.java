@@ -1,7 +1,8 @@
 package pl.ncdc.billiard.service;
 
-import java.awt.Point;
-import java.util.HashMap;
+import org.opencv.core.Point;
+import java.util.ArrayList;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -49,8 +50,10 @@ public class HitService {
 		double x = xPocket + ((diameter + length) * dx);
 		double y = yPocket + ((diameter + length) * dy);
 
-		point.setLocation(x, y);
-
+		
+		point.x = x;
+		point.y = y;
+//		point.
 		if (findAngle(xBallWhite, yBallWhite, x, y, xPocket, yPocket) < 1.57) {
 			return null;
 		}
@@ -62,9 +65,9 @@ public class HitService {
 
 		for (int x = 1; x < listBall.size(); x++) {
 			if (index != x) {
-				double angle = findAngleOfCollision(selectedBall.getX(), selectedBall.getY(),
-						listBall.get(x).getPoint().getX(), listBall.get(x).getPoint().getY(), pocketPoint.getX(),
-						pocketPoint.getY());
+				double angle = findAngleOfCollision(selectedBall.x, selectedBall.y,
+						listBall.get(x).getPoint().x, listBall.get(x).getPoint().y, pocketPoint.x,
+						pocketPoint.y);
 				angle *= 57;
 				if (angle < 190 && angle > 160) {
 					return false;
@@ -78,40 +81,44 @@ public class HitService {
 
 	}
 
-	public HashMap<Point, Point> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall) {
-		HashMap<Point, Point> points = new HashMap<Point, Point>();
+	public List<NewPoint> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall) {
 
+		List<NewPoint> list = new ArrayList<NewPoint>();
+		
 		for (int x = 1; x < listBall.size(); x++) { // pierwsza bila w liscie jest biala index 0
 			for (int y = 0; y < listPocket.size(); y++) {
 
-				Point targetPoint = findHittingPoint(listBall.get(0).getPoint().getX(),
-						listBall.get(0).getPoint().getY(), listBall.get(x).getPoint().getX(),
-						listBall.get(x).getPoint().getY(), listPocket.get(y).getPoint().getX(),
+				Point targetPoint = findHittingPoint(listBall.get(0).getPoint().x,
+					listBall.get(0).getPoint().y, listBall.get(x).getPoint().x,
+						listBall.get(x).getPoint().y, listPocket.get(y).getPoint().getX(),
 						listPocket.get(y).getPoint().getY());
 
 				Point pocketPoint = new Point();
-				pocketPoint.setLocation((double) listPocket.get(y).getPoint().getX(),
-						(double) listPocket.get(y).getPoint().getY());
+
+				pocketPoint.x = (double) listPocket.get(y).getPoint().getX();
+				pocketPoint.y = (double) listPocket.get(y).getPoint().getY();
+				
+				
 				Point selectedPoint = new Point();
-				selectedPoint.setLocation((double) listBall.get(x).getPoint().getX(),
-						(double) listBall.get(x).getPoint().getY());
+				
+				
+				selectedPoint.x = listBall.get(x).getPoint().x;
+				selectedPoint.y = listBall.get(x).getPoint().y;
 
 				boolean collisionFound = findCollision(pocketPoint, selectedPoint, x, listBall);
 				if (targetPoint != null && collisionFound) {
 
-					points.put(targetPoint, pocketPoint);
-
+					//points.put(targetPoint, pocketPoint);
+					list.add(new NewPoint(targetPoint.x, targetPoint.y, pocketPoint.x, pocketPoint.y));
 				}
 
 			}
 
 		}
 
-		if (points == null) {
-			return null;
-		}
-		return points;
+		return list;
 
 	}
+	
 
 }

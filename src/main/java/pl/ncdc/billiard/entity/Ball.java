@@ -1,6 +1,6 @@
 package pl.ncdc.billiard.entity;
 
-import java.awt.Point;
+import org.opencv.core.Point;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
