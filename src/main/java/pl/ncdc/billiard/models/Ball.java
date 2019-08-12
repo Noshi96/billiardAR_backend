@@ -5,10 +5,8 @@ import java.awt.Point;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 public class Ball {
 
-	@Id
 	private int id;
 
 	public static  final float DIAMETER = 5.72F;

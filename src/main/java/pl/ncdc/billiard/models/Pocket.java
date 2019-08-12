@@ -5,10 +5,8 @@ import java.awt.Point;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 public class Pocket {
 	
-	@Id
 	private int id;
 	
 	private Point point = new Point();
