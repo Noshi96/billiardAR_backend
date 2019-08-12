@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import pl.ncdc.billiard.entity.Ball;
-import pl.ncdc.billiard.entity.Pocket;
+import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.Pocket;
 
 @Service
 public class HitService {

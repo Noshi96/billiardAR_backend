@@ -1,12 +1,9 @@
-package pl.ncdc.billiard.entity;
+package pl.ncdc.billiard.models;
 
 import java.awt.Point;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 public class Pocket {
-	
+
 	private int id;
 	
 	private Point point = new Point();
