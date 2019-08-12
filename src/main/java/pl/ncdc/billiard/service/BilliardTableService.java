@@ -32,10 +32,10 @@ public class BilliardTableService {
 	}
 
 	public void selectBall(Long ballId) {
-		
-		for (Ball ball : table.getBalls()) {
-			table.setSelectedBall(null);
+		table.setSelectedBall(null);
 
+		for (Ball ball : table.getBalls()) {
+			
 			if (ball.getId() == ballId) {
 				table.setSelectedBall(ball);
 			}
@@ -45,11 +45,13 @@ public class BilliardTableService {
 	}
 
 	public void selectPocket(Long pocketId) {
+		table.setSelectedPocket(null);
 		for (Pocket pocket : table.getPockets()) {
-			table.setSelectedPocket(null);
+			
 
 			if (pocket.getId() == pocketId) {
 				table.setSelectedPocket(pocket);
+			
 			}
 		}
 		

@@ -12,7 +12,7 @@ import pl.ncdc.billiard.entity.Pocket;
 @Service
 public class HitService {
 
-	double diameter = 2;
+	double diameter = 20;
 
 	public double findAngle(double xBallWhite, double yBallWhite, double xCenterPoint, double yCenterPoint,
 			double xPocket, double yPocket) {

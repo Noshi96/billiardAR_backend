@@ -13,8 +13,7 @@ public class BilliardApplication {
 	public static void main(String[] args) {
 		System.loadLibrary("opencv_java347");
 		SpringApplication.run(BilliardApplication.class, args);
-		/*
-		Kinect kinect = new Kinect();
+		/*Kinect kinect = new Kinect();
 		kinect.start(Kinect.COLOR);
 		try {
 			Thread.sleep(60000);
@@ -23,8 +22,8 @@ public class BilliardApplication {
 			e.printStackTrace();
 		}
 		
-		kinect.stop();
-		*/
+		kinect.stop();*/
+		
 	}
 
 }
