@@ -29,8 +29,8 @@ public class ModelService {
 		List<Ball> balls = bts.getTable().getBalls();
 
 		for (Ball ball : balls) {
-			double x = ball.getPoint().getX();
-			double y = ball.getPoint().getY();
+			double x = ball.getPoint().x;
+			double y = ball.getPoint().y;
 			
 			org.opencv.core.Point ballB = new org.opencv.core.Point(x, y);
 

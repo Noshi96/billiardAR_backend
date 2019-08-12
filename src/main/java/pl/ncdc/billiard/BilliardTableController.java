@@ -1,6 +1,7 @@
 package pl.ncdc.billiard;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,8 +12,8 @@ import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.service.NewPoint;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 
@@ -84,11 +85,11 @@ public class BilliardTableController {
     }
 
     @PutMapping("/hints")
-    public HashMap<Point, Point> allPossibleHits() {
+    public List<NewPoint> allPossibleHits() {
         List<Pocket> listPocket = tableService.getTable().getPockets();
         List<Ball> listBall = tableService.getTable().getBalls();
 
-        HashMap<Point, Point> points = hitService.allPossibleHits(listPocket, listBall);
+        List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall);
 
         tableService.getTable().setAllPossibleHits(points);
 
