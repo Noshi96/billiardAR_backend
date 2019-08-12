@@ -11,9 +11,10 @@ import pl.ncdc.billiard.websocket.SocketHandler;
 
 @Service
 public class BilliardTableService {
-
+	
 //	@Autowired
 //	SocketHandler socketHandler;
+
 	
     private Kinect kinect;
 
@@ -30,29 +31,31 @@ public class BilliardTableService {
         return table;
     }
 
-    public void selectBall(Long ballId) {
+	public void selectBall(Long ballId) {
+		table.setSelectedBall(null);
 
-        for (Ball ball : table.getBalls()) {
-            table.setSelectedBall(null);
+		for (Ball ball : table.getBalls()) {
 
-            if (ball.getId() == ballId) {
-                table.setSelectedBall(ball);
-            }
-        }
-        // socketHandler.sendToAll(getTable());
+			if (ball.getId() == ballId) {
+				table.setSelectedBall(ball);
+			}
+		}
+		// socketHandler.sendToAll(getTable());
 
-    }
+	}
 
-    public void selectPocket(Long pocketId) {
-        for (Pocket pocket : table.getPockets()) {
-            table.setSelectedPocket(null);
+	public void selectPocket(Long pocketId) {
+		table.setSelectedPocket(null);
+		for (Pocket pocket : table.getPockets()) {
 
-            if (pocket.getId() == pocketId) {
-                table.setSelectedPocket(pocket);
-            }
-        }
 
-        // socketHandler.sendToAll(getTable());
+			if (pocket.getId() == pocketId) {
+				table.setSelectedPocket(pocket);
+
+			}
+		}
+		
+		// socketHandler.sendToAll(getTable());
 
     }
 
