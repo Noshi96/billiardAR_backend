@@ -1,12 +1,13 @@
 package pl.ncdc.billiard.models;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.opencv.core.Point;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Pocket;
+import pl.ncdc.billiard.service.NewPoint;
 
 public class BilliardTable {
 	
@@ -26,7 +27,7 @@ public class BilliardTable {
 	
 	private Point hittingPoint;
 	
-	private HashMap<Point, Point> allPossibleHits;
+	private List<NewPoint> allPossibleHits;
 
 	public BilliardTable() {
 		pockets = new ArrayList<>();
@@ -86,11 +87,11 @@ public class BilliardTable {
 		return hittingPoint;
 	}
 
-	public HashMap<Point, Point> getAllPossibleHits() {
+	public List<NewPoint> getAllPossibleHits() {
 		return allPossibleHits;
 	}
 
-	public void setAllPossibleHits(HashMap<Point, Point> allPossibleHits) {
+	public void setAllPossibleHits(List<NewPoint> allPossibleHits) {
 		this.allPossibleHits = allPossibleHits;
 	}
 	

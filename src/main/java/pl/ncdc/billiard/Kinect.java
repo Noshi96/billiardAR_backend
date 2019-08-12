@@ -1,11 +1,11 @@
 package pl.ncdc.billiard;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -81,7 +81,8 @@ public class Kinect extends J4KSDK {
 			double[] c = circles.get(0, x);
 			// Point center = new Point();
 			Point point = new Point();
-			point.setLocation(w - c[0], c[1]);
+			point.x = w - c[0];
+			point.y = c[1];
 			/*
 			 * double sum = 0; for (int i = 0; i < 2 * c[2]; i++) { for (int j = 0; j < 2 *
 			 * c[2]; j++) { if ( i + (int) c[0] - (int) c[2] > 0 && i + (int) c[0] - (int)

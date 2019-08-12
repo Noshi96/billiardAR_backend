@@ -90,13 +90,13 @@ public class HitService {
 
 				Point targetPoint = findHittingPoint(listBall.get(0).getPoint().x,
 					listBall.get(0).getPoint().y, listBall.get(x).getPoint().x,
-						listBall.get(x).getPoint().y, listPocket.get(y).getPoint().getX(),
-						listPocket.get(y).getPoint().getY());
+						listBall.get(x).getPoint().y, listPocket.get(y).getPoint().x,
+						listPocket.get(y).getPoint().y);
 
 				Point pocketPoint = new Point();
 
-				pocketPoint.x = (double) listPocket.get(y).getPoint().getX();
-				pocketPoint.y = (double) listPocket.get(y).getPoint().getY();
+				pocketPoint.x = (double) listPocket.get(y).getPoint().x;
+				pocketPoint.y = (double) listPocket.get(y).getPoint().y;
 				
 				
 				Point selectedPoint = new Point();
