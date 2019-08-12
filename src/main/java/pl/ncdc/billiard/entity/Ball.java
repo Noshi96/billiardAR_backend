@@ -13,17 +13,11 @@ public class Ball {
 
 	public static  final float DIAMETER = 5.72F;
 
-	private boolean selected;
-
 	private Point point;
 
-	boolean white;
-
-	public Ball(int id, boolean selected, Point point, boolean white) {
+	public Ball(int id,Point point) {
 		this.id = id;
-		this.selected = selected;
 		this.point = point;
-		this.white = white;
 	}
 
 	public Ball() {
@@ -37,28 +31,12 @@ public class Ball {
 		this.id = id;
 	}
 
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
-
 	public Point getPoint() {
 		return point;
 	}
 
 	public void setPoint(Point point) {
 		this.point = point;
-	}
-
-	public boolean isWhite() {
-		return white;
-	}
-
-	public void setWhite(boolean white) {
-		this.white = white;
 	}
 
 }

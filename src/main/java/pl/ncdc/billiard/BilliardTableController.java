@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import pl.ncdc.billiard.commands.HitCommand;
 import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
@@ -60,19 +59,6 @@ public class BilliardTableController {
 		return tableService.update(tableToUpdate);
 
 	}
-//	@PutMapping("/hit")
-//	public Point findHittingPoint(@RequestBody HitCommand hitcommand) {
-//		Point ball = hitcommand.getBall();
-//		double ballX = ball.getX();
-//		double ballY = ball.getY();
-//		
-//		Point pocket = hitcommand.getPocket();
-//		double pocketX = pocket.getX();
-//		double pocketY = pocket.getY();
-//		
-//		return hitService.findHittingPoint(ballX, ballY, pocketX, pocketY);
-//
-//	}
 
 	@PutMapping("/hit")
 	public Point findHittingPoint() {
@@ -120,7 +106,7 @@ public class BilliardTableController {
 		HashMap<Point, Point> points = hitService.allPossibleHits(listPocket, listBall);
 
 		tableService.getTable().setAllPossibleHits(points);
-		// socketHandler.sendToAll(tableService.getTable());
+		//socketHandler.sendToAll(tableService.getTable());
 
 		if (points != null) {
 			return points;

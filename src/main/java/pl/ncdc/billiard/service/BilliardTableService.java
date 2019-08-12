@@ -11,84 +11,83 @@ import pl.ncdc.billiard.websocket.SocketHandler;
 
 @Service
 public class BilliardTableService {
-	
+
 //	@Autowired
 //	SocketHandler socketHandler;
-
 	
-	private Kinect kinect;
-	
-	private BilliardTable table;
+    private Kinect kinect;
 
-	public BilliardTableService() {
-		this.kinect = new Kinect();
-		this.table = new BilliardTable();
-		kinect.start(Kinect.COLOR);
-	}
-	
-	public BilliardTable getTable() {
-		table = kinect.getTable();
-		return table;
-	}
+    private BilliardTable table;
 
-	public void selectBall(Long ballId) {
-		
-		for (Ball ball : table.getBalls()) {
-			table.setSelectedBall(null);
+    public BilliardTableService() {
+        this.kinect = new Kinect();
+        this.table = new BilliardTable();
+        kinect.start(Kinect.COLOR);
+    }
 
-			if (ball.getId() == ballId) {
-				table.setSelectedBall(ball);
-			}
-		}
-		// socketHandler.sendToAll(getTable());
+    public BilliardTable getTable() {
+        table = kinect.getTable();
+        return table;
+    }
 
-	}
+    public void selectBall(Long ballId) {
 
-	public void selectPocket(Long pocketId) {
-		for (Pocket pocket : table.getPockets()) {
-			table.setSelectedPocket(null);
+        for (Ball ball : table.getBalls()) {
+            table.setSelectedBall(null);
 
-			if (pocket.getId() == pocketId) {
-				table.setSelectedPocket(pocket);
-			}
-		}
-		
-		// socketHandler.sendToAll(getTable());
+            if (ball.getId() == ballId) {
+                table.setSelectedBall(ball);
+            }
+        }
+        // socketHandler.sendToAll(getTable());
 
-	}
+    }
 
-	public BilliardTable update(BilliardTable tableToUpdate) {
-		for (Ball ballInOpenCv : tableToUpdate.getBalls()) {
-			boolean ballToUpdateIsInTable = false;
+    public void selectPocket(Long pocketId) {
+        for (Pocket pocket : table.getPockets()) {
+            table.setSelectedPocket(null);
 
-			for (Ball ball : table.getBalls()) {
-				if (ball.getId() == ballInOpenCv.getId()) {
-					ballToUpdateIsInTable = true;
-					ball.setPoint(ballInOpenCv.getPoint());
-					break;
-				}
-			}
+            if (pocket.getId() == pocketId) {
+                table.setSelectedPocket(pocket);
+            }
+        }
 
-			if (ballToUpdateIsInTable = false) {
-				table.getBalls().add(ballInOpenCv);
-			}
+        // socketHandler.sendToAll(getTable());
 
-			boolean isBallInOpenCv = false;
+    }
 
-			for (Ball ball : table.getBalls()) {
-				for (Ball ballOpenCv : tableToUpdate.getBalls()) {
-					if (ball.getId() == ballOpenCv.getId()) {
-						isBallInOpenCv = true;
-					}
-				}
-				if (isBallInOpenCv == false) {
-					table.getBalls().remove(ball);
-				}
-			}
-		}
-		
-		// socketHandler.sendToAll(getTable());
+    public BilliardTable update(BilliardTable tableToUpdate) {
+        for (Ball ballInOpenCv : tableToUpdate.getBalls()) {
+            boolean ballToUpdateIsInTable = false;
 
-		return table;
-	}
+            for (Ball ball : table.getBalls()) {
+                if (ball.getId() == ballInOpenCv.getId()) {
+                    ballToUpdateIsInTable = true;
+                    ball.setPoint(ballInOpenCv.getPoint());
+                    break;
+                }
+            }
+
+            if (ballToUpdateIsInTable = false) {
+                table.getBalls().add(ballInOpenCv);
+            }
+
+            boolean isBallInOpenCv = false;
+
+            for (Ball ball : table.getBalls()) {
+                for (Ball ballOpenCv : tableToUpdate.getBalls()) {
+                    if (ball.getId() == ballOpenCv.getId()) {
+                        isBallInOpenCv = true;
+                    }
+                }
+                if (isBallInOpenCv == false) {
+                    table.getBalls().remove(ball);
+                }
+            }
+        }
+
+        // socketHandler.sendToAll(getTable());
+
+        return table;
+    }
 }
