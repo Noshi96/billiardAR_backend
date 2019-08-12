@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.6.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -10,16 +10,19 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'com.google.code.gson:gson:2.8.2'
-	
-	runtimeOnly 'com.h2database:h2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compile fileTree(dir: 'lib', include: ['*.jar'])
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile fileTree(dir: 'lib', include: ['*.jar'])
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.1.1.RELEASE'
+
 }

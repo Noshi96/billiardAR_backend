@@ -8,7 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pl.ncdc.billiard.entity.Ball;
+import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.service.BilliardTableService;
 
 @Service

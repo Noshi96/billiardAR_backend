@@ -1,14 +1,9 @@
-package pl.ncdc.billiard.entity;
+package pl.ncdc.billiard.models;
 
 import org.opencv.core.Point;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
 public class Ball {
 
-	@Id
 	private int id;
 
 	public static  final float DIAMETER = 5.72F;
