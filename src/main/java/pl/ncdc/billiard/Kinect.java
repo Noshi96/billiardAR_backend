@@ -91,7 +91,7 @@ public class Kinect extends J4KSDK {
 			 * c[2])[0]; } } if (sum > 10) System.out.println("X: " + c[0] + ", Y: " + c[1]
 			 * + " Sum: " + sum);
 			 */
-			ball = new Ball(x, false, point, false);
+			ball = new Ball(x, point);
 			list.add(ball);
 			/*
 			 * org.opencv.core.Point center = new org.opencv.core.Point(Math.round(c[0]),
@@ -106,15 +106,14 @@ public class Kinect extends J4KSDK {
 		}
 		table.setBalls(list);
 		table.setWhiteBall(list.get(0));
-		list.get(0).setWhite(true);
 		table.setSelectedBall(list.get(1));
 		List<Pocket> pockets = new ArrayList<Pocket>();
-		pockets.add(new Pocket(1, false, new Point(90, 85)));
-		pockets.add(new Pocket(2, false, new Point(670, 58)));
-		pockets.add(new Pocket(3, false, new Point(1250, 90)));
-		pockets.add(new Pocket(4, false, new Point(80, 660)));
-		pockets.add(new Pocket(5, false, new Point(665, 680)));
-		pockets.add(new Pocket(6, false, new Point(1240, 665)));
+		pockets.add(new Pocket(1, new Point(90, 85)));
+		pockets.add(new Pocket(2, new Point(670, 58)));
+		pockets.add(new Pocket(3, new Point(1250, 90)));
+		pockets.add(new Pocket(4, new Point(80, 660)));
+		pockets.add(new Pocket(5, new Point(665, 680)));
+		pockets.add(new Pocket(6, new Point(1240, 665)));
 
 		// HighGui.imshow("Frame", gray);
 		// HighGui.waitKey(1);
