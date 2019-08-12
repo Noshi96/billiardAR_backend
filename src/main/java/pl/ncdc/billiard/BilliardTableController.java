@@ -74,8 +74,8 @@ public class BilliardTableController {
 //
 //	}
 
-	@PutMapping("/hit")
-	public Point findHittingPoint() {
+	@PutMapping("/hit/{x1}/{y1}/{x2}/{y2}/{x3}/{y3}")
+	public Point findHittingPoint(@PathVariable double x1,@PathVariable double y1,@PathVariable double x2,@PathVariable double y2,@PathVariable double x3,@PathVariable double y3) {
 		if (tableService.getTable().getSelectedBall() == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
@@ -89,16 +89,16 @@ public class BilliardTableController {
 		}
 
 		Point ball = tableService.getTable().getSelectedBall().getPoint();
-		double ballX = ball.getX();
-		double ballY = ball.getY();
+		double ballX = x1;//ball.getX();
+		double ballY = y1;//ball.getY();
 
 		Point whiteBall = tableService.getTable().getWhiteBall().getPoint();
-		double whiteBallX = whiteBall.getX();
-		double whiteBallY = whiteBall.getY();
+		double whiteBallX = x2;//whiteBall.getX();
+		double whiteBallY = y2;//whiteBall.getY();
 
 		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
-		double pocketX = pocket.getX();
-		double pocketY = pocket.getY();
+		double pocketX = x3;//pocket.getX();
+		double pocketY = y3;//pocket.getY();
 
 		Point hittingPoint = hitService.findHittingPoint(whiteBallX, whiteBallY, ballX, ballY, pocketX, pocketY);
 
