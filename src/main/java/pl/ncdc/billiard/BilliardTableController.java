@@ -7,6 +7,9 @@ import java.util.List;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,9 +58,10 @@ public class BilliardTableController {
 	}
 
 	@PutMapping
+	@MessageMapping("/table")
+	@SendTo("/table/update")
 	public BilliardTable update(@RequestBody BilliardTable tableToUpdate) {
 		return tableService.update(tableToUpdate);
-
 	}
 
 	@PutMapping("/hit/{x1}/{y1}/{x2}/{y2}/{x3}/{y3}")
