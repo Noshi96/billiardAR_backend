@@ -30,7 +30,6 @@ public class BilliardTableController {
     @Autowired
     ModelService modelService;
 
-    @PutMapping
     @SendTo("/table/live")
     @GetMapping("")
     public BilliardTable getTable() {
