@@ -1,7 +1,6 @@
-package pl.ncdc.billiard.entity;
+package pl.ncdc.billiard.models;
 
 import org.opencv.core.Point;
-
 
 public class Ball {
 
