@@ -33,7 +33,7 @@ public class HitService {
 
 	}
 
-	public Point findHittingPoint(Point white, Point selected, Point pocket) {
+	public Point findHittingPoint(Point white, Point selected, Point pocket, List<Ball> list) {
 
 		Point point = new Point();
 
@@ -49,18 +49,33 @@ public class HitService {
 		point.x = x;
 		point.y = y;
 
-		if (findAngle(white, point, pocket) < 1.57)
+		if (findAngle(white, point, pocket) < 1.57 || findCollision(pocket, point, list) || findCollisionSecond(white, point, list))
 			return null;
 
 		return point;
 
 	}
 
-	public boolean findCollision(Pocket pocket, Ball target, List<Ball> listBall) {
+//	public boolean findCollision(Pocket pocket, Ball target, List<Ball> listBall) {
+//
+//		for (Ball ball : listBall) {
+//			if (ball != target) {
+//				double angle = findAngleOfCollision(target.getPoint(), ball.getPoint(), pocket.getPoint());
+//				angle *= 57;
+//				if (angle < 190 && angle > 160)
+//					return false;
+//			}
+//		}
+//
+//		return true;
+//
+//	}
+
+	public boolean findCollision(Point pocket, Point target, List<Ball> listBall) {
 
 		for (Ball ball : listBall) {
-			if (ball != target) {
-				double angle = findAngleOfCollision(target.getPoint(), ball.getPoint(), pocket.getPoint());
+			if (ball.getPoint() != target) {
+				double angle = findAngleOfCollision(target, ball.getPoint(), pocket);
 				angle *= 57;
 				if (angle < 190 && angle > 160)
 					return false;
@@ -70,6 +85,23 @@ public class HitService {
 		return true;
 
 	}
+	
+	
+	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
+
+		for (Ball ball : listBall) {
+			if (ball.getPoint() != target) {
+				double angle = findAngleOfCollision(white, ball.getPoint(), target);
+				angle *= 57;
+				if (angle < 190 && angle > 10)
+					return false;
+			}
+		}
+
+		return true;
+
+	}
+
 
 	public List<NewPoint> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall, Ball white) {
 
@@ -77,8 +109,8 @@ public class HitService {
 
 		for (Ball ball : listBall)
 			for (Pocket pocket : listPocket) {
-				Point target = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint());
-				if (target != null && findCollision(pocket, ball, listBall)) {
+				Point target = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall);
+				if (target != null) {
 					list.add(new NewPoint(target, pocket.getPoint()));
 				}
 			}

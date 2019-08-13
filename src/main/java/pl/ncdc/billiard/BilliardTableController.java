@@ -56,14 +56,14 @@ public class BilliardTableController {
 
 	}
 
-	@PutMapping("/hit/")
+	@GetMapping("/hit/")
 	public Point findHittingPoint() {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
 		if (white == null || selected == null || pocket == null)
 			return null;
-		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint());
+		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls());
 
 	}
 
