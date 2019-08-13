@@ -1,10 +1,8 @@
 package pl.ncdc.billiard;
 
-import java.awt.Point;
-import java.util.HashMap;
+import org.opencv.core.Point;
 import java.util.List;
 
-import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,6 +18,7 @@ import pl.ncdc.billiard.entity.Ball;
 import pl.ncdc.billiard.entity.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.service.NewPoint;
 import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
@@ -35,9 +34,6 @@ public class BilliardTableController {
 
 	@Autowired
 	SocketHandler socketHandler;
-
-	@Autowired
-	ModelService modelService;
 
 	@GetMapping("")
 	public BilliardTable getTable() {
@@ -60,64 +56,29 @@ public class BilliardTableController {
 
 	}
 
-	@PutMapping("/hit/{x1}/{y1}/{x2}/{y2}/{x3}/{y3}")
-	public Point findHittingPoint(@PathVariable double x1,@PathVariable double y1,@PathVariable double x2,@PathVariable double y2,@PathVariable double x3,@PathVariable double y3) {
-		if (tableService.getTable().getSelectedBall() == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
+	@PutMapping("/hit/")
+	public Point findHittingPoint() {
+		Ball white = tableService.getTable().getWhiteBall();
+		Ball selected = tableService.getTable().getSelectedBall();
+		Pocket pocket = tableService.getTable().getSelectedPocket();
+		if (white == null || selected == null || pocket == null)
+			return null;
+		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint());
 
-		if (tableService.getTable().getWhiteBall() == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-
-		if (tableService.getTable().getSelectedPocket() == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-
-		Point ball = tableService.getTable().getSelectedBall().getPoint();
-		double ballX = x1;//ball.getX();
-		double ballY = y1;//ball.getY();
-
-		Point whiteBall = tableService.getTable().getWhiteBall().getPoint();
-		double whiteBallX = x2;//whiteBall.getX();
-		double whiteBallY = y2;//whiteBall.getY();
-
-		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
-		double pocketX = x3;//pocket.getX();
-		double pocketY = y3;//pocket.getY();
-
-		Point hittingPoint = hitService.findHittingPoint(whiteBallX, whiteBallY, ballX, ballY, pocketX, pocketY);
-
-		tableService.getTable().setHittingPoint(hittingPoint);
-		// socketHandler.sendToAll(tableService.getTable());
-
-		if (hittingPoint != null) {
-			return hittingPoint;
-		}
-
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 
 	@PutMapping("/hints")
-	public HashMap<Point, Point> allPossibleHits() {
+	public List<NewPoint> allPossibleHits() {
 		List<Pocket> listPocket = tableService.getTable().getPockets();
 		List<Ball> listBall = tableService.getTable().getBalls();
-
-		HashMap<Point, Point> points = hitService.allPossibleHits(listPocket, listBall);
+		Ball white = tableService.getTable().getWhiteBall();
+		List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall, white);
 
 		tableService.getTable().setAllPossibleHits(points);
-		//socketHandler.sendToAll(tableService.getTable());
+		// socketHandler.sendToAll(tableService.getTable());
 
-		if (points != null) {
-			return points;
-		}
-
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		if (points == null)
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		return points;
 	}
-
-	@GetMapping("/print")
-	public Mat print() {
-		return modelService.print();
-	}
-
 }

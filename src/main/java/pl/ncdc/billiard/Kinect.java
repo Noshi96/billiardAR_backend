@@ -2,6 +2,9 @@ package pl.ncdc.billiard;
 
 import org.opencv.core.Point;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.opencv.core.CvType;
@@ -87,6 +90,11 @@ public class Kinect extends J4KSDK {
 			else
 				list.add(ball);
 		}
+		int i=1;
+		Collections.sort(list, new CustomComparator());
+		for (Ball tmp : list) {
+			System.out.println(i++ + " X: " + tmp.getPoint().x + " Y: " + tmp.getPoint().y);
+		}
 		table.setBalls(list);
 	}
 
@@ -94,6 +102,15 @@ public class Kinect extends J4KSDK {
 		Rect r = new Rect(x, y, w, h);
 		Mat cropped = new Mat(img, r);
 		return cropped;
+	}
+
+	public class CustomComparator implements Comparator<Ball> {
+		@Override
+		public int compare(Ball o1, Ball o2) {
+			if (o1.getPoint().x < o2.getPoint().x)
+				return 0;
+			return 1;
+		}
 	}
 
 	@Override
