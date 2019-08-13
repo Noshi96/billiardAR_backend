@@ -1,7 +1,6 @@
 package pl.ncdc.billiard.models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.opencv.core.Point;
@@ -10,35 +9,36 @@ import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.NewPoint;
 
 public class BilliardTable {
-	
+
 	private int height;
 
 	private int width;
 
-	private List<Ball> balls = new ArrayList<>();
+	private List<Ball> balls;
 
-	private List<Pocket> pockets = new ArrayList<>();
+	private List<Pocket> pockets;
 
 	private Ball whiteBall;
 
 	private Ball selectedBall;
 
 	private Pocket selectedPocket;
-	
+
 	private Point hittingPoint;
 	
 	private List<NewPoint> allPossibleHits;
 
 	public BilliardTable() {
-		pockets = new ArrayList<>();
-		pockets.add(new Pocket(1));
-		pockets.add(new Pocket(2));
-		pockets.add(new Pocket(3));
-		pockets.add(new Pocket(4));
-		pockets.add(new Pocket(5));
-		pockets.add(new Pocket(6));
+		balls = new ArrayList<>();
+		pockets = new ArrayList<Pocket>();
+		pockets.add(new Pocket(1, new Point(90, 85)));
+		pockets.add(new Pocket(2, new Point(670, 58)));
+		pockets.add(new Pocket(3, new Point(1250, 90)));
+		pockets.add(new Pocket(4, new Point(80, 660)));
+		pockets.add(new Pocket(5, new Point(665, 680)));
+		pockets.add(new Pocket(6, new Point(1240, 665)));
 	}
-	
+
 	public List<Ball> getBalls() {
 		return balls;
 	}
@@ -78,11 +78,11 @@ public class BilliardTable {
 	public void setSelectedPocket(Pocket selectedPocket) {
 		this.selectedPocket = selectedPocket;
 	}
-	
+
 	public void setHittingPoint(Point hittingPoint) {
 		this.hittingPoint = hittingPoint;
 	}
-	
+
 	public Point getHittingPoint() {
 		return hittingPoint;
 	}
@@ -94,6 +94,21 @@ public class BilliardTable {
 	public void setAllPossibleHits(List<NewPoint> allPossibleHits) {
 		this.allPossibleHits = allPossibleHits;
 	}
-	
-	
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
 }

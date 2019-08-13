@@ -6,8 +6,6 @@ public class Ball {
 
 	private int id;
 
-	public static  final float DIAMETER = 5.72F;
-
 	private Point point;
 
 	public Ball(int id,Point point) {
