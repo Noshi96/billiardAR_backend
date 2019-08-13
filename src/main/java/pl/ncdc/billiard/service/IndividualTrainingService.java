@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.commands.IndividualTrainingCommand;
-import pl.ncdc.billiard.entity.IndividualTraining;
+import pl.ncdc.billiard.models.IndividualTraining;
 
 @Service
 public class IndividualTrainingService {

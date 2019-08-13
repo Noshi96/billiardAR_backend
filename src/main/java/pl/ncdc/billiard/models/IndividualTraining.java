@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.entity;
+package pl.ncdc.billiard.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

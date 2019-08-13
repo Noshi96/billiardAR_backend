@@ -1,5 +1,6 @@
 package pl.ncdc.billiard;
 
+import org.opencv.core.Point;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -25,8 +26,11 @@ public class BilliardApplication {
 		
 		kinect.stop();*/
 		
-		HitService hitService = new HitService(); 
-		System.out.println(hitService.findHittingPoint(13.,24.,35.,46.,56.,63.));
+		HitService hitService = new HitService();
+		Point pointWhite = new Point(13,24);
+		Point pointSelected = new Point(35,46);
+		Point pointPocket = new Point(56,63);
+		System.out.println(hitService.findHittingPoint(pointWhite, pointSelected, pointPocket));
 		
 		
 	}

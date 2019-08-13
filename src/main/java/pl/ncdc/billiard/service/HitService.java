@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Pocket;
-import pl.ncdc.billiard.IndividualTraining;
 
 @Service
 public class HitService {
@@ -33,15 +32,14 @@ public class HitService {
 	 * @param yPocket Pozycja na osi Y �uzy
 	 * @return Zwraca k�t mi�dzy bia�� bil�, bil� VIRTUALN� i �uz�.
 	 */
-	public double findAngle(double xBallWhite, double yBallWhite, double xCenterPoint, double yCenterPoint,
-			double xPocket, double yPocket) {
-		double p0c = Math.sqrt(Math.pow(xCenterPoint - xBallWhite, 2) + Math.pow(yCenterPoint - yBallWhite, 2));
+	public double findAngle(Point white, Point target, Point pocket) {
 
 		double p0c = Math.sqrt(Math.pow(target.x - white.x, 2) + Math.pow(target.y - white.y, 2));
 		double p1c = Math.sqrt(Math.pow(target.x - pocket.x, 2) + Math.pow(target.y - pocket.y, 2));
 		double p0p1 = Math.sqrt(Math.pow(pocket.x - white.x, 2) + Math.pow(pocket.y - white.y, 2));
 		return Math.acos((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c));
 	}
+
 
 	
 	/**
@@ -54,17 +52,16 @@ public class HitService {
 	 * @param yPocket Pozycja na osi Y �uzy
 	 * @return Zwraca k�t mi�dzy wybran� bil�, bil� kt�ra znajduje si� na drodz� do �uzy i �uz�.
 	 */
-	public double findAngleOfCollision(double xBallSelected, double yBallSelected, double xBallDisturb,
-			double yBallDisturb, double xPocket, double yPocket) {
-
-		double p0c = Math.sqrt(Math.pow(xBallDisturb - xBallSelected, 2) + Math.pow(yBallDisturb - yBallSelected, 2));
+	public double findAngleOfCollision(Point selected, Point disturb, Point pocket) {
 
 		double p0c = Math.sqrt(Math.pow(disturb.x - selected.x, 2) + Math.pow(disturb.y - selected.y, 2));
 		double p1c = Math.sqrt(Math.pow(disturb.x - pocket.x, 2) + Math.pow(disturb.y - pocket.y, 2));
 		double p0p1 = Math.sqrt(Math.pow(pocket.x - selected.x, 2) + Math.pow(pocket.y - selected.y, 2));
 
 		return Math.acos(((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)));
+
 	}
+
 
 	
 	/**
@@ -80,8 +77,7 @@ public class HitService {
 	 * Je�li nie to zwraca NULL.
 	 * K�t w tym wypadku okre�lany jest w radianach.
 	 */
-	public Point findHittingPoint(double xBallWhite, double yBallWhite, double xBallSelected, double yBallSelected,
-			double xPocket, double yPocket) {
+	public Point findHittingPoint(Point white, Point selected, Point pocket) {
 
 		Point point = new Point();
 
@@ -104,6 +100,8 @@ public class HitService {
 
 	}
 
+
+
 	
 	/**
 	 *
@@ -113,7 +111,7 @@ public class HitService {
 	 * @param listBall	Lista wszystkich bili na stole
 	 * @return Zwraca TRUE je�li na drodz� wyznaczonej bili do �uzy NIE STOI inna bila
 	 */
-	public boolean findCollision(Point pocketPoint, Point selectedBall, int index, List<Ball> listBall) {
+	public boolean findCollision(Pocket pocket, Ball target, List<Ball> listBall) {
 
 		for (Ball ball : listBall) {
 			if (ball != target) {
@@ -123,8 +121,11 @@ public class HitService {
 					return false;
 			}
 		}
+
 		return true;
+
 	}
+
 
 	/**
 	 *
