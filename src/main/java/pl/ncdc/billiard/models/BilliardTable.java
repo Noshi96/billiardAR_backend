@@ -1,11 +1,11 @@
-package pl.ncdc.billiard;
+package pl.ncdc.billiard.models;
 
-import org.opencv.core.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import pl.ncdc.billiard.entity.Ball;
-import pl.ncdc.billiard.entity.Pocket;
+import org.opencv.core.Point;
+import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.NewPoint;
 
 public class BilliardTable {
@@ -25,7 +25,7 @@ public class BilliardTable {
 	private Pocket selectedPocket;
 
 	private Point hittingPoint;
-
+	
 	private List<NewPoint> allPossibleHits;
 
 	public BilliardTable() {

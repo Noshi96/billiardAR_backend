@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -16,8 +17,9 @@ import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
 
 import edu.ufl.digitalworlds.j4k.J4KSDK;
-import pl.ncdc.billiard.entity.Ball;
-import pl.ncdc.billiard.entity.Pocket;
+import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.Pocket;
 
 public class Kinect extends J4KSDK {
 

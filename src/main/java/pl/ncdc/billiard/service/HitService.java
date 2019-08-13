@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import pl.ncdc.billiard.entity.Ball;
-import pl.ncdc.billiard.entity.Pocket;
+import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.Pocket;
 
 @Service
 public class HitService {
@@ -106,7 +106,6 @@ public class HitService {
 	public List<NewPoint> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall, Ball white) {
 
 		List<NewPoint> list = new ArrayList<NewPoint>();
-
 		for (Ball ball : listBall)
 			for (Pocket pocket : listPocket) {
 				Point target = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall);
