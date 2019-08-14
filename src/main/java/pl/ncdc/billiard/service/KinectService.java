@@ -1,19 +1,27 @@
 package pl.ncdc.billiard.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DefaultPropertiesPersister;
 
 import pl.ncdc.billiard.Kinect;
 import pl.ncdc.billiard.models.Ball;
@@ -21,75 +29,104 @@ import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class KinectService {
-	
+
 	@Autowired
 	private BilliardTable table;
-	
+
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
-	
-	Kinect kinect;
+
+	private Kinect kinect;
 	// Mask from empty billiard table
-	Mat fgMask;
-	// recived frame
-	Mat frame;
+	private Mat fgMask;
 	//
-	BackgroundSubtractor backSub;
-	
+	private BackgroundSubtractor backSub;
+
 	// kalibracja
-	int x;
-	int y;
-	int h;
-	int w;
-	
-	public KinectService() {
-		
-		x = 435;
-		y = 280;
-		w = 1190;
-		h = 620;
+	@Value("${leftMargin:0}")
+	private int left_margin;
+	@Value("${topMargin:0}")
+	private int top_margin;
+	@Value("${areaHeight:1}")
+	private int areaHeight;
+	@Value("${areaWidth:1}")
+	private int areaWidth;
+
+	public void init() {
+
+		//table = new BilliardTable();
+		table.setHeight(this.areaHeight);
+		table.setWidth(this.areaWidth);
 		// read tmp mask
 		fgMask = Imgcodecs.imread("src/main/resources/mask.jpg");
 		// crop mask
-		fgMask = crop(x, y, w, h, fgMask);
+		fgMask = crop(left_margin, top_margin, this.areaWidth, this.areaHeight, fgMask);
 		// convert mask to gray
 		Imgproc.cvtColor(fgMask, fgMask, Imgproc.COLOR_BGR2GRAY);
 		// create substractor
 		backSub = Video.createBackgroundSubtractorMOG2();
 		// apply mask
 		backSub.apply(fgMask, fgMask, 1);
-	
 	}
-	
+
+	public void saveProperties() {
+		try {
+
+			Properties properties = new Properties();
+			properties.setProperty("leftMargin", Integer.toString(this.left_margin));
+			properties.setProperty("topMargin", Integer.toString(this.top_margin));
+			properties.setProperty("height", Integer.toString(this.areaHeight));
+			properties.setProperty("width", Integer.toString(this.areaWidth));
+
+			File file = new File("src/main/resources/application.properties");
+			OutputStream out = new FileOutputStream(file);
+			DefaultPropertiesPersister defaultProperties = new DefaultPropertiesPersister();
+
+			defaultProperties.store(properties, out, "Kinect Properties");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void send(byte[] data, int height, int width) {
-		frame = new Mat(height, width, CvType.CV_8UC4);
+		// convert data to image
+		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
+		// create grayscale image
 		Mat gray = new Mat();
 		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
-		gray = crop(x, y, w, h, gray);
+		// cut image on edges
+		gray = crop(left_margin, top_margin, this.areaWidth, this.areaHeight, gray);
+		// create and apply mask
 		fgMask = new Mat();
 		backSub.apply(gray, fgMask, 0);
+		// apply blur
 		Imgproc.medianBlur(fgMask, fgMask, 5);
+		// detect circles
 		Mat circles = new Mat();
 		Imgproc.HoughCircles(fgMask, circles, Imgproc.HOUGH_GRADIENT, 1.0, (double) gray.rows() / 16, 15.0, 10.0, 10,
 				16);
+		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
 		Ball ball;
 
-		Point whiteBallPoint = whiteBallDetection(frame, circles, x, y, w, h, 14);
+		// detecte white ball
+		Point whiteBallPoint = whiteBallDetection(frame, circles, left_margin, top_margin, this.areaWidth, this.areaHeight, 14);
 		ball = new Ball(0, whiteBallPoint);
 		table.setWhiteBall(ball);
 
 		for (int x = 0; x < circles.cols(); x++) {
 			double[] c = circles.get(0, x);
 			Point point = new Point();
-			point.x = w - c[0];
+			point.x = width - c[0];
 			point.y = c[1];
 			if (table.getWhiteBall().getPoint().x != point.x) {
 				ball = new Ball(0, point);
 				list.add(ball);
 			}
 		}
+		// sort balls by X
 		list.sort((o1, o2) -> {
 			if (o1.getPoint().x > o2.getPoint().x)
 				return -1;
@@ -98,10 +135,10 @@ public class KinectService {
 		for (int i = 1; i < list.size(); i++)
 			list.get(i).setId(i);
 		table.setBalls(list);
-		
+		// send table by websocket
 		simpMessagingTemplate.convertAndSend("/table/live", table);
 	}
-	
+
 	public static Point whiteBallDetection(Mat fullPicture, Mat circles, int xCut, int yCut, int width, int height,
 			int radius) {
 		double maxSum = Integer.MIN_VALUE;
@@ -130,9 +167,43 @@ public class KinectService {
 
 		return whiteBallPoint;
 	}
-	public Mat crop(int x, int y, int w, int h, Mat img) {
-		Rect r = new Rect(x, y, w, h);
+
+	public Mat crop(int x, int y, int width, int height, Mat img) {
+		Rect r = new Rect(x, y, width, height);
 		Mat cropped = new Mat(img, r);
 		return cropped;
 	}
+
+	public int getLeft_margin() {
+		return left_margin;
+	}
+
+	public void setLeft_margin(int left_margin) {
+		this.left_margin = left_margin;
+	}
+
+	public int getTop_margin() {
+		return top_margin;
+	}
+
+	public void setTop_margin(int top_margin) {
+		this.top_margin = top_margin;
+	}
+
+	public int getAreaHeight() {
+		return areaHeight;
+	}
+
+	public void setAreaHeight(int areaHeight) {
+		this.areaHeight = areaHeight;
+	}
+
+	public int getAreaWidth() {
+		return areaWidth;
+	}
+
+	public void setAreaWidth(int areaWidth) {
+		this.areaWidth = areaWidth;
+	}
+	
 }
