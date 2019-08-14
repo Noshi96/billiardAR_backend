@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.ncdc.billiard.models.Ball;
@@ -14,11 +16,11 @@ import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.NewPoint;
-import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
 @RequestMapping("/table")
 @CrossOrigin(value = "*")
+@EnableScheduling
 public class BilliardTableController {
 
     @Autowired
@@ -30,10 +32,18 @@ public class BilliardTableController {
     @Autowired
     ModelService modelService;
 
-    @SendTo("/table/live")
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     @GetMapping("")
     public BilliardTable getTable() {
         return tableService.getTable();
+    }
+
+    // to remove
+    @Scheduled(fixedRate = 500)
+    public void tableLive() {
+        simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
     }
 
     @PutMapping("/ball/{ballId}")
@@ -65,7 +75,6 @@ public class BilliardTableController {
 		List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall, white);
 
 		tableService.getTable().setAllPossibleHits(points);
-		// socketHandler.sendToAll(tableService.getTable());
 
 		if (points == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
