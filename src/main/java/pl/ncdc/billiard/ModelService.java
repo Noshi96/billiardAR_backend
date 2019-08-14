@@ -15,8 +15,7 @@ import pl.ncdc.billiard.service.BilliardTableService;
 public class ModelService {
 
 	private Mat obraz;
-	// to remove
-	private double ballDiameter = 20;
+
 	BilliardTableService bts;
 
 	@Autowired
@@ -35,7 +34,7 @@ public class ModelService {
 			
 			org.opencv.core.Point ballB = new org.opencv.core.Point(x, y);
 
-			Imgproc.circle(obraz, ballB, (int) (ballDiameter/2), new Scalar(0, 0, 255), 10);
+			Imgproc.circle(obraz, ballB, (int) (Ball.DIAMETER/2), new Scalar(0, 0, 255), 10);
 		}
 
 		return obraz;

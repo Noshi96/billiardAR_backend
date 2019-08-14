@@ -15,6 +15,7 @@ import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.NewPoint;
 
 @RestController
@@ -30,7 +31,7 @@ public class BilliardTableController {
     HitService hitService;
 
     @Autowired
-    ModelService modelService;
+    KinectService kinectService;
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -56,14 +57,14 @@ public class BilliardTableController {
         tableService.selectPocket(pocketId);
     }
 
-	@PutMapping("/hit/")
+	@GetMapping("/hit/")
 	public Point findHittingPoint() {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
 		if (white == null || selected == null || pocket == null)
 			return null;
-		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint());
+		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls());
 
 	}
 
