@@ -9,9 +9,6 @@ import pl.ncdc.billiard.models.Pocket;
 
 @Service
 public class BilliardTableService {
-	
-//	@Autowired
-//	SocketHandler socketHandler;
 
 	@Autowired
     private BilliardTable table;
@@ -32,22 +29,14 @@ public class BilliardTableService {
 				table.setSelectedBall(ball);
 			}
 		}
-		// socketHandler.sendToAll(getTable());
-
 	}
 
 	public void selectPocket(Long pocketId) {
 		table.setSelectedPocket(null);
 		for (Pocket pocket : table.getPockets()) {
-
-
 			if (pocket.getId() == pocketId) {
 				table.setSelectedPocket(pocket);
-
 			}
 		}
-		
-		// socketHandler.sendToAll(getTable());
-
     }
 }
