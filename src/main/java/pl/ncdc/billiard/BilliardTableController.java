@@ -16,7 +16,6 @@ import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.NewPoint;
-import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
 @RequestMapping("/table")
@@ -76,7 +75,6 @@ public class BilliardTableController {
 		List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall, white);
 
 		tableService.getTable().setAllPossibleHits(points);
-		// socketHandler.sendToAll(tableService.getTable());
 
 		if (points == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
