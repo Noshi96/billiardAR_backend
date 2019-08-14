@@ -13,8 +13,9 @@ import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.NewPoint;
-import pl.ncdc.billiard.websocket.SocketHandler;
+//import pl.ncdc.billiard.websocket.SocketHandler;
 
 @RestController
 @RequestMapping("/table")
@@ -28,9 +29,9 @@ public class BilliardTableController {
     HitService hitService;
 
     @Autowired
-    ModelService modelService;
+    KinectService kinectService;
 
-    @SendTo("/table/live")
+//    @SendTo("/table/live")
     @GetMapping("")
     public BilliardTable getTable() {
         return tableService.getTable();

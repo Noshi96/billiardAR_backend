@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Point;
+import org.springframework.stereotype.Component;
+
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.NewPoint;
 
+@Component
 public class BilliardTable {
 
 	private int height;
