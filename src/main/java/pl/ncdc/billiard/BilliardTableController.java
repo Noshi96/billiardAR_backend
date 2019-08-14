@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,12 +42,6 @@ public class BilliardTableController {
     @GetMapping("")
     public BilliardTable getTable() {
         return tableService.getTable();
-    }
-
-    // to remove
-    @Scheduled(fixedRate = 500)
-    public void tableLive() {
-        simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
     }
 
     @PutMapping("/ball/{ballId}")

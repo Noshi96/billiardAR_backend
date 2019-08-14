@@ -141,33 +141,14 @@ public class HitService {
 			if (ball.getPoint() != target) {
 				double angle = findAngleOfCollision(white, ball.getPoint(), target);
 				angle *= 57;
-				if (angle < 190 && angle > 10)
+				if (angle < 190 && angle > 170)
 					return false;
 			}
 		}
 
 		return true;
-
 	}
 	
-	
-	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
-
-		for (Ball ball : listBall) {
-			if (ball.getPoint() != target) {
-				double angle = findAngleOfCollision(white, ball.getPoint(), target);
-				angle *= 57;
-				if (angle < 190 && angle > 10)
-					return false;
-			}
-		}
-
-		return true;
-
-	}
-
-
-
 	/**
 	 *
 	 * @param listPocket Lista z pozycjami ka�dej �uzy
