@@ -24,7 +24,6 @@ public class BilliardTableService {
 		table.setSelectedBall(null);
 
 		for (Ball ball : table.getBalls()) {
-
 			if (ball.getId() == ballId) {
 				table.setSelectedBall(ball);
 			}
