@@ -149,6 +149,23 @@ public class HitService {
 		return true;
 
 	}
+	
+	
+	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
+
+		for (Ball ball : listBall) {
+			if (ball.getPoint() != target) {
+				double angle = findAngleOfCollision(white, ball.getPoint(), target);
+				angle *= 57;
+				if (angle < 190 && angle > 10)
+					return false;
+			}
+		}
+
+		return true;
+
+	}
+
 
 
 	/**
@@ -194,15 +211,15 @@ public class HitService {
 
 	/**
 	 *
-	 * @param firstBall   Pierwsza bila np Najczêœciej bia³a
-	 * @param secondBall  Bila Virtualna(wyliczona wczeœniej oznaczaj¹ca miejsce w
-	 *                    którym ma siê znaleŸæ bia³a bila jeœli chcemy trafiæ
-	 *                    zaznaczon¹ bilê do ³uzy)
-	 * @param bandAxisX   W zale¿noœci od sytuacji oznacza bandê na osi X, mo¿e
-	 *                    przyj¹æ wartoœæ 0 lub 1000
-	 * @param bandAxisY   W zale¿noœci od sytuacji oznacza bandê na osi Y, mo¿e
-	 *                    przyj¹æ wartoœæ 0 lub 600
-	 * @param currentAxis oznacza aktualn¹ oœ w zale¿noœci od kierunku
+	 * @param firstBall   Pierwsza bila np Najczï¿½ciej biaï¿½a
+	 * @param secondBall  Bila Virtualna(wyliczona wczeï¿½niej oznaczajï¿½ca miejsce w
+	 *                    ktï¿½rym ma siï¿½ znaleï¿½ï¿½ biaï¿½a bila jeï¿½li chcemy trafiï¿½
+	 *                    zaznaczonï¿½ bilï¿½ do ï¿½uzy)
+	 * @param bandAxisX   W zaleï¿½noï¿½ci od sytuacji oznacza bandï¿½ na osi X, moï¿½e
+	 *                    przyjï¿½ï¿½ wartoï¿½ï¿½ 0 lub 1000
+	 * @param bandAxisY   W zaleï¿½noï¿½ci od sytuacji oznacza bandï¿½ na osi Y, moï¿½e
+	 *                    przyjï¿½ï¿½ wartoï¿½ï¿½ 0 lub 600
+	 * @param currentAxis oznacza aktualnï¿½ oï¿½ w zaleï¿½noï¿½ci od kierunku
 	 * @return
 	 */
 	public Point bandHitingPoint(Point whiteBall, Point targetBall, int bandPos, int idBand) {
