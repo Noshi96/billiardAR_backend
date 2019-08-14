@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.Kinect;
@@ -23,6 +24,9 @@ public class KinectService {
 	
 	@Autowired
 	private BilliardTable table;
+	
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
 	
 	Kinect kinect;
 	// Mask from empty billiard table
@@ -94,7 +98,10 @@ public class KinectService {
 		for (int i = 1; i < list.size(); i++)
 			list.get(i).setId(i);
 		table.setBalls(list);
+		
+		simpMessagingTemplate.convertAndSend("/table/live", table);
 	}
+	
 	public static Point whiteBallDetection(Mat fullPicture, Mat circles, int xCut, int yCut, int width, int height,
 			int radius) {
 		double maxSum = Integer.MIN_VALUE;

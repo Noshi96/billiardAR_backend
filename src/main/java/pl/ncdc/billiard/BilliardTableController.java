@@ -41,12 +41,6 @@ public class BilliardTableController {
         return tableService.getTable();
     }
 
-    // to remove
-    @Scheduled(fixedRate = 500)
-    public void tableLive() {
-        simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
-    }
-
     @PutMapping("/ball/{ballId}")
     public void selectBall(@PathVariable Long ballId) {
         tableService.selectBall(ballId);
