@@ -6,6 +6,7 @@ public class NewPoint {
 
 	private Point bill;
 	private Point pocket;
+	private Point band;
 
 	public double getBillX() {
 		return bill.x;
@@ -39,9 +40,25 @@ public class NewPoint {
 		this.pocket.y = y;
 	}
 
-	public NewPoint(Point bill, Point pocket) {
+	public double getBandX(double x) {
+		return band.x = x;
+	}
+
+	public double getBandY(double y) {
+		return band.y = y;
+	}
+
+	public void setBandX(double x) {
+		this.band.x = x;
+	}
+
+	public void setBandY(double y) {
+		this.band.y = y;
+	}
+	public NewPoint(Point bill, Point pocket, Point band) {
 		this.bill = bill;
 		this.pocket = pocket;
+		this.band = band;
 	}
 
 }

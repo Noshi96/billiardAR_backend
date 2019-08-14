@@ -6,7 +6,7 @@ import javax.persistence.Id;
 @Entity
 public class IndividualTraining {
 	@Id
-	private int id;
+	private long id;
 	
 	private String difficultyLvl;
 	
@@ -20,7 +20,7 @@ public class IndividualTraining {
 	
 
 
-	public IndividualTraining(int id, String difficultyLvl, String positionOfWhiteBall, String positionOfSelectedBall,
+	public IndividualTraining(long id, String difficultyLvl, String positionOfWhiteBall, String positionOfSelectedBall,
 			String positionsOfDisturbBalls, String positionOfRectangle) {
 		this.id = id;
 		this.difficultyLvl = difficultyLvl;
@@ -34,7 +34,7 @@ public class IndividualTraining {
 
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

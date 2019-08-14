@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+
 import pl.ncdc.billiard.commands.IndividualTrainingCommand;
 import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.repository.IndividualTrainingRepository;
 
 @Service
 public class IndividualTrainingService {
@@ -20,6 +23,8 @@ public class IndividualTrainingService {
     @Autowired
     JdbcTemplate jdbcTemplate;
     
+    @Autowired
+    private IndividualTrainingRepository individualTrainingRepository;
       
 	
     /**
@@ -133,15 +138,78 @@ public class IndividualTrainingService {
         });
     }
     
-    public List<IndividualTraining> returnPoints(int id) {
+	public IndividualTraining fetch(Long id) {
+		Optional<IndividualTraining> optionalIndividualTraining = individualTrainingRepository.findById(id);
+		if(!optionalIndividualTraining.isPresent()) {
+			return null;
+		}
+		return optionalIndividualTraining.get();
+	}
+	
+	
+	/**
+	 * W bazie nie mo¿e byæ nullów
+	 * @param id
+	 * @return
+	 */
+	 public List<IndividualTrainingCommand> returnIndividualTrainingCommand(long id){
+		 
+		 List<IndividualTrainingCommand> individualTrainingCommandList = new ArrayList<>();
+		 IndividualTrainingCommand individualTrainingCommand = new IndividualTrainingCommand();
+		 
+		 IndividualTraining individualTraining = fetch(id);
+		 
+		 String[] posWhiteBallAndSelected =  individualTraining.getPositionOfWhiteBall().split(",");
+		 String[] posDisturbBalls =  individualTraining.getPositionsOfDisturbBalls().split(",");
+		 String[] posRectangle =  individualTraining.getPositionOfRectangle().split(",");
+		 
+		 if (posWhiteBallAndSelected.length != 0 ) {
+			 individualTrainingCommand.setId(individualTraining.getId());
+			 individualTrainingCommand.setDifficultyLvl(individualTraining.getDifficultyLvl());
+			 individualTrainingCommand.setPositionOfWhiteBallX(posWhiteBallAndSelected[0]);
+			 individualTrainingCommand.setPositionOfWhiteBallY(posWhiteBallAndSelected[1]);
+			 posWhiteBallAndSelected = individualTraining.getPositionOfSelectedBall().split(",");
+			 if (posWhiteBallAndSelected.length != 0 ) {
+				 individualTrainingCommand.setPositionOfSelectedBallX(posWhiteBallAndSelected[0]);
+				 individualTrainingCommand.setPositionOfSelectedBallY(posWhiteBallAndSelected[1]);	
+				 }
+		 	}
+		 	 
+		 individualTrainingCommandList.add(individualTrainingCommand);
+		 
+		 if (posDisturbBalls.length != 0 && posDisturbBalls.length % 2 == 0 )  {			 
+			 for(int i = 0; i < posDisturbBalls.length; i=i+2) {
+				 
+				 IndividualTrainingCommand individualTrainingCommand2 = new IndividualTrainingCommand();
+				 individualTrainingCommand2.setPositionsOfDisturbBallsX(posDisturbBalls[i]);
+				 individualTrainingCommand2.setPositionsOfDisturbBallsY(posDisturbBalls[i+1]);
+				 individualTrainingCommandList.add(individualTrainingCommand2);
+			 	}
+		 }
+		 if (posRectangle.length != 0 && posRectangle.length % 2 == 0) {
+			 for(int i = 0; i < posRectangle.length; i=i+2) {
+				 
+				 IndividualTrainingCommand individualTrainingCommand2 = new IndividualTrainingCommand();
+				 individualTrainingCommand2.setPositionOfRectangleX(posRectangle[i]);
+				 individualTrainingCommand2.setPositionOfRectangleY(posRectangle[i+1]);
+				 individualTrainingCommandList.add(individualTrainingCommand2);
+			 	} 
+		 }
+		 return individualTrainingCommandList;
+	 }
+	
+    
+    
+    public List<IndividualTrainingCommand> returnPoints(int id) {
         List<IndividualTraining> trainingList = new ArrayList<>();
         List<String> listPointsX = new ArrayList<>();
         List<String> listPointsY = new ArrayList<>();
-        List<String> listPoints = new ArrayList<>();
+        List<String> listOfDisturbBalls = new ArrayList<>();
+        List<String> positionOfRectangle = new ArrayList<>();
         String sql = "SELECT * FROM individual_training WHERE id='"+ id +"'";
         Collection<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
         
-        IndividualTrainingCommand individualTrainingCommand = new IndividualTrainingCommand();
+        
         List<IndividualTrainingCommand> individualTrainingCommandList = new ArrayList<>();
         
         rows.stream().map((row)->{
@@ -154,22 +222,19 @@ public class IndividualTrainingService {
         	  individualTraining.setPositionsOfDisturbBalls((String) row.get("positions_of_disturb_balls"));
         	  return individualTraining;
           }).forEach((individualTraining)->{
-        	  listPoints.add(individualTraining.getPositionsOfDisturbBalls());
+        	  listOfDisturbBalls.add(individualTraining.getPositionsOfDisturbBalls());
           });
-        for(int i = 0; i < listPoints.size(); i++ ) {
-        	if (i % 2 == 0) {
-        		listPointsX.add((listPoints.get(i).split(","))[i]);
-        		individualTrainingCommand.setPositionsOfDisturbBallsX(listPointsX.get(i));
-        		individualTrainingCommandList.add(individualTrainingCommand);
-        	} else {
-        		listPointsY.add((listPoints.get(i).split(","))[i]);
-        		individualTrainingCommand.setPositionsOfDisturbBallsY(listPointsX.get(i));
-        		individualTrainingCommandList.add(individualTrainingCommand);
-        	}
-        }
-        	
-          //System.out.print(rows);
-          return trainingList;
+//        String[] points = listOfDisturbBalls.get(0).split(",");
+//        for(int i = 0; i < points.length; i=i+2 ) {
+//        	IndividualTrainingCommand individualTrainingCommand = new IndividualTrainingCommand();
+//        	individualTrainingCommand.setPositionsOfDisturbBallsX(points[i]);
+//        	individualTrainingCommand.setPositionsOfDisturbBallsY(points[i+1]);
+//        	individualTrainingCommandList.add(individualTrainingCommand);
+//        }
+       
+
+          //System.out.print(points.length);
+          return individualTrainingCommandList;
         
     }
     

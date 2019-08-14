@@ -26,13 +26,6 @@ public class BilliardApplication {
 		
 		kinect.stop();*/
 		
-		HitService hitService = new HitService();
-		Point pointWhite = new Point(13,24);
-		Point pointSelected = new Point(35,46);
-		Point pointPocket = new Point(56,63);
-		System.out.println(hitService.findHittingPoint(pointWhite, pointSelected, pointPocket));
-		
-		
 	}
 
 }
