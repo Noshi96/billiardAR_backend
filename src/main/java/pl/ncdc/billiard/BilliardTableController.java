@@ -10,11 +10,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.commands.IndividualTrainingCommand;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
+import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.NewPoint;
 
@@ -26,15 +30,13 @@ public class BilliardTableController {
 
     @Autowired
     BilliardTableService tableService;
+    
+    @Autowired
+    IndividualTrainingService individualTrainingService;
 
     @Autowired
     HitService hitService;
 
-    @Autowired
-    KinectService kinectService;
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping("")
     public BilliardTable getTable() {
@@ -57,14 +59,15 @@ public class BilliardTableController {
         tableService.selectPocket(pocketId);
     }
 
-	@GetMapping("/hit/")
-	public Point findHittingPoint() {
+	@PutMapping("/hit/")
+	public List<Point> findHittingPoint() {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
 		if (white == null || selected == null || pocket == null)
 			return null;
-		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls());
+		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls(), idPocket);
 
 	}
 
@@ -73,7 +76,8 @@ public class BilliardTableController {
 		List<Pocket> listPocket = tableService.getTable().getPockets();
 		List<Ball> listBall = tableService.getTable().getBalls();
 		Ball white = tableService.getTable().getWhiteBall();
-		List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall, white);
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		List<NewPoint> points = hitService.allPossibleHits(listPocket, listBall, white, idPocket);
 
 		tableService.getTable().setAllPossibleHits(points);
 
@@ -81,4 +85,50 @@ public class BilliardTableController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
 	}
+
+
+	
+    @GetMapping("/fetchFromDatabase")
+    public List<IndividualTraining> testSql() {
+        return individualTrainingService.getIndividualTraining();
+    }
+    
+    
+    @RequestMapping(value="/trainingDataBase", method=RequestMethod.POST)
+    public String insertUser(@RequestBody IndividualTraining individualTraining){
+    	individualTrainingService.createIndividualTraining(individualTraining);
+        return "Training created successfully";
+    }
+    
+    @RequestMapping(value = "/trainingDataBase/{id}", method = RequestMethod.GET)
+    public List<IndividualTraining> getArticleById(@PathVariable int id){
+        return individualTrainingService.getIndividualTrainingById(id);
+    }
+    
+    @RequestMapping(value = "/getTrainingDataBaseByLvl/{lvl}", method = RequestMethod.GET)
+    public List<IndividualTraining> getArticleById(@PathVariable String lvl){
+        return individualTrainingService.getIndividualTrainingByLvl(lvl);
+    }
+    
+    @RequestMapping(value = "/returnPoints/{id}", method = RequestMethod.GET)
+    public List<IndividualTrainingCommand> returnPointsById(@PathVariable int id){
+        return individualTrainingService.returnPoints(id);
+    }
+    
+	@RequestMapping(method = RequestMethod.GET, path = "/fetchTreningById/{id}")
+	public ResponseEntity<IndividualTraining> fetch(@PathVariable Long id) {
+		IndividualTraining individualTraining = individualTrainingService.fetch(id);
+		if(individualTraining == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<IndividualTraining>(individualTraining, HttpStatus.OK);
+	}
+	
+    @RequestMapping(value = "/getTreningAllInfoById/{id}", method = RequestMethod.GET)
+    public List<IndividualTrainingCommand> returnIndividualTrainingCommand(@PathVariable long id){
+        return individualTrainingService.returnIndividualTrainingCommand(id);
+    }
+    
+
 }
+
