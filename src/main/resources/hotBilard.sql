@@ -1,0 +1,74 @@
+-- MySQL dump 10.13  Distrib 8.0.16, for Win64 (x86_64)
+--
+-- Host: localhost    Database: hot_bilard
+-- ------------------------------------------------------
+-- Server version	8.0.16
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+ SET NAMES utf8 ;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Dumping data for table `ball`
+--
+
+LOCK TABLES `ball` WRITE;
+/*!40000 ALTER TABLE `ball` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ball` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `hit`
+--
+
+LOCK TABLES `hit` WRITE;
+/*!40000 ALTER TABLE `hit` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hit` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `individual_training`
+--
+
+LOCK TABLES `individual_training` WRITE;
+/*!40000 ALTER TABLE `individual_training` DISABLE KEYS */;
+INSERT INTO `individual_training` VALUES (1,'2','2,5,10,4','4,5','2,3','10,20'),(2,'3','5,6,12,14','5,10','60,30','21,46,11,86'),(3,'1','21,10,4,12','12,64','20,10','21,55,33,12'),(4,'1','2,3,4,5','10,20','50,40','11,22,33,44,77,123'),(5,'1','12,20,30,40','50,40','70,40',''),(6,'1','50,350,200,500','100,350','200,200',''),(7,'1','850,400,1100,550','900,400','850,150',''),(8,'2','950,150,1190,400','1100,250','750,150','950,250'),(9,'3','1,1,250,250','100,200','400,400','300,350'),(10,'3','1,1,250,250','300,200','1050,500','659,350');
+/*!40000 ALTER TABLE `individual_training` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `pocket`
+--
+
+LOCK TABLES `pocket` WRITE;
+/*!40000 ALTER TABLE `pocket` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pocket` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `trening`
+--
+
+LOCK TABLES `trening` WRITE;
+/*!40000 ALTER TABLE `trening` DISABLE KEYS */;
+INSERT INTO `trening` VALUES (1,'2','3,4','6,7','10,10','4,5'),(2,'3','5,7','3,4','10,23,63,67','3,4');
+/*!40000 ALTER TABLE `trening` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2019-08-14 14:42:21
