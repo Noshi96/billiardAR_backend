@@ -18,7 +18,8 @@ public class BilliardApplication {
 	@Autowired
 	public BilliardApplication(Kinect kinect) {
 		this.kinect = kinect;
-		this.kinect.start(Kinect.COLOR);
+		/*this.kinect.init();
+		this.kinect.start(Kinect.COLOR);*/
 	}
 	
 	public static void main(String[] args) {
