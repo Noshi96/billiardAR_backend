@@ -12,6 +12,10 @@ public class Kinect extends J4KSDK {
 	@Autowired
 	KinectService kinectService;
 
+	public void init() {
+		this.kinectService.init();
+	}
+	
 	@Override
 	public void onSkeletonFrameEvent(boolean[] skeleton_tracked, float[] positions, float[] orientations,
 			byte[] joint_status) {
