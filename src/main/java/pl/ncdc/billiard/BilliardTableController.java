@@ -38,6 +38,14 @@ public class BilliardTableController {
     @Autowired
     HitService hitService;
 
+    //Koala
+//    @Scheduled(fixedRate = 5000)
+//    public void tableLive() {
+//    simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+//    }
+//    
+//    @Autowired
+//    SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping("")
     public BilliardTable getTable() {
@@ -54,7 +62,7 @@ public class BilliardTableController {
         tableService.selectPocket(pocketId);
     }
 
-	@PutMapping("/hit/")
+	@PutMapping("/hit")
 	public List<Point> findHittingPoint() {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
