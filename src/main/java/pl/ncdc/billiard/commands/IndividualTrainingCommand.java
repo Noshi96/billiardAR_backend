@@ -6,30 +6,36 @@ import org.opencv.core.Point;
 
 public class IndividualTrainingCommand {
 
-		private long id;
+		private Long id;
 		
 		private String difficultyLvl;
 		
+		private String positionOfWhiteBall;
 		private String positionOfWhiteBallX;
 		private String positionOfWhiteBallY;
 		
+		private String positionOfSelectedBall;
 		private String positionOfSelectedBallX;
 		private String positionOfSelectedBallY;
 		
+		private String positionsOfDisturbBalls;
 		private String positionsOfDisturbBallsX;
 		private String positionsOfDisturbBallsY;
 		
+		private String positionOfRectangle;
 		private String positionOfRectangleX;
 		private String positionOfRectangleY;
+		
+		private int idPocket;
 		
 		public IndividualTrainingCommand(){
 			
 		}
 		
-		public IndividualTrainingCommand(long id, String difficultyLvl, String positionOfWhiteBallX,
+		public IndividualTrainingCommand(Long id, String difficultyLvl, String positionOfWhiteBallX,
 				String positionOfWhiteBallY, String positionOfSelectedBallX, String positionOfSelectedBallY,
 				String positionsOfDisturbBallsX, String positionsOfDisturbBallsY, String positionOfRectangleX,
-				String positionOfRectangleY) {
+				String positionOfRectangleY, int idPocket) {
 			super();
 			this.id = id;
 			this.difficultyLvl = difficultyLvl;
@@ -41,11 +47,12 @@ public class IndividualTrainingCommand {
 			this.positionsOfDisturbBallsY = positionsOfDisturbBallsY;
 			this.positionOfRectangleX = positionOfRectangleX;
 			this.positionOfRectangleY = positionOfRectangleY;
+			this.idPocket = idPocket;
 		}
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
-		public void setId(long id) {
+		public void setId(Long id) {
 			this.id = id;
 		}
 		public String getDifficultyLvl() {
@@ -102,6 +109,47 @@ public class IndividualTrainingCommand {
 		public void setPositionOfRectangleY(String positionOfRectangleY) {
 			this.positionOfRectangleY = positionOfRectangleY;
 		}
+
+		public String getPositionOfWhiteBall() {
+			return positionOfWhiteBall;
+		}
+
+		public void setPositionOfWhiteBall(String positionOfWhiteBall) {
+			this.positionOfWhiteBall = positionOfWhiteBall;
+		}
+
+		public String getPositionOfSelectedBall() {
+			return positionOfSelectedBall;
+		}
+
+		public void setPositionOfSelectedBall(String positionOfSelectedBall) {
+			this.positionOfSelectedBall = positionOfSelectedBall;
+		}
+
+		public String getPositionsOfDisturbBalls() {
+			return positionsOfDisturbBalls;
+		}
+
+		public void setPositionsOfDisturbBalls(String positionsOfDisturbBalls) {
+			this.positionsOfDisturbBalls = positionsOfDisturbBalls;
+		}
+
+		public String getPositionOfRectangle() {
+			return positionOfRectangle;
+		}
+
+		public void setPositionOfRectangle(String positionOfRectangle) {
+			this.positionOfRectangle = positionOfRectangle;
+		}
+
+		public int getIdPocket() {
+			return idPocket;
+		}
+
+		public void setIdPocket(int idPocket) {
+			this.idPocket = idPocket;
+		}
+		
 
 				
 	}

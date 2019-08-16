@@ -18,16 +18,17 @@ public class IndividualTraining {
 	
 	private String positionOfRectangle;
 	
+	private int idPocket;
 
 
-	public IndividualTraining(long id, String difficultyLvl, String positionOfWhiteBall, String positionOfSelectedBall,
-			String positionsOfDisturbBalls, String positionOfRectangle) {
-		this.id = id;
+	public IndividualTraining( String difficultyLvl, String positionOfWhiteBall, String positionOfSelectedBall,
+			String positionsOfDisturbBalls, String positionOfRectangle, int idPocket) {
 		this.difficultyLvl = difficultyLvl;
 		this.positionOfWhiteBall = positionOfWhiteBall;
 		this.positionOfSelectedBall = positionOfSelectedBall;
 		this.positionsOfDisturbBalls = positionsOfDisturbBalls;
 		this.positionOfRectangle = positionOfRectangle;
+		this.idPocket = idPocket;
 	}
 	
 	public IndividualTraining() {
@@ -81,9 +82,16 @@ public class IndividualTraining {
 	public void setPositionOfRectangle(String positionOfRectangle) {
 		this.positionOfRectangle = positionOfRectangle;
 	}
+
+	public int getIdPocket() {
+		return idPocket;
+	}
+
+	public void setIdPocket(int idPocket) {
+		this.idPocket = idPocket;
+	}
 	
 	
 	
 	
 }
-

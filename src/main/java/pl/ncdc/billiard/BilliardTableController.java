@@ -79,37 +79,18 @@ public class BilliardTableController {
 		if (points == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
-	}
-
-
-	
-    @GetMapping("/fetchFromDatabase")
-    public List<IndividualTraining> testSql() {
-        return individualTrainingService.getIndividualTraining();
+	}   
+    
+    @RequestMapping(value = "/updateIndividualTraining/{id}", method = RequestMethod.POST)
+    public IndividualTraining updateIndividualTraining(@RequestBody IndividualTrainingCommand individualTrainingCommand, @PathVariable Long id){
+        return individualTrainingService.updateIndividualTraining(individualTrainingCommand, id);
     }
     
-    
-    @RequestMapping(value="/trainingDataBase", method=RequestMethod.POST)
-    public String insertUser(@RequestBody IndividualTraining individualTraining){
-    	individualTrainingService.createIndividualTraining(individualTraining);
-        return "Training created successfully";
-    }
-    
-    @RequestMapping(value = "/trainingDataBase/{id}", method = RequestMethod.GET)
-    public List<IndividualTraining> getArticleById(@PathVariable int id){
-        return individualTrainingService.getIndividualTrainingById(id);
-    }
-    
-    @RequestMapping(value = "/getTrainingDataBaseByLvl/{lvl}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getIndividualTrainingsByLvl/{lvl}", method = RequestMethod.GET)
     public List<IndividualTraining> getArticleById(@PathVariable String lvl){
-        return individualTrainingService.getIndividualTrainingByLvl(lvl);
+        return individualTrainingService.sortListByLvl(lvl);
     }
-    
-    @RequestMapping(value = "/returnPoints/{id}", method = RequestMethod.GET)
-    public List<IndividualTrainingCommand> returnPointsById(@PathVariable int id){
-        return individualTrainingService.returnPoints(id);
-    }
-    
+        
 	@RequestMapping(method = RequestMethod.GET, path = "/fetchTreningById/{id}")
 	public ResponseEntity<IndividualTraining> fetch(@PathVariable Long id) {
 		IndividualTraining individualTraining = individualTrainingService.fetch(id);
@@ -119,11 +100,25 @@ public class BilliardTableController {
 		return new ResponseEntity<IndividualTraining>(individualTraining, HttpStatus.OK);
 	}
 	
+	@RequestMapping(method  = RequestMethod.GET, path="/fetchAll")
+	public List<IndividualTraining> listPerson(){
+		return individualTrainingService.fetchAll();
+	}
+		
     @RequestMapping(value = "/getTreningAllInfoById/{id}", method = RequestMethod.GET)
     public List<IndividualTrainingCommand> returnIndividualTrainingCommand(@PathVariable long id){
         return individualTrainingService.returnIndividualTrainingCommand(id);
     }
     
-
+	@RequestMapping(method = RequestMethod.POST, path="/save")
+	public IndividualTraining save(@RequestBody IndividualTrainingCommand individualTrainingCommand) {
+		return individualTrainingService.save(individualTrainingCommand);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, path="/deleteIndividualTrenig/{id}")
+	public IndividualTraining delete(@PathVariable Long id) {
+		return individualTrainingService.delete(id);
+	}
+    
 }
 

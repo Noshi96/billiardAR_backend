@@ -23,14 +23,11 @@ public class HitService {
 	
 
 	/**
-	 *
-	 * @param xBallWhite Pozycja na osi X ï¿½rodka biaï¿½ej bili
-	 * @param yBallWhite Pozycja na osi Y ï¿½rodka biaï¿½ej bili
-	 * @param xCenterPoint Pozycja na osi X ï¿½rodka VIRTUALNEJ bili stojï¿½cej na przedï¿½uï¿½eniu lini do ï¿½uzy
-	 * @param yCenterPoint Pozycja na osi Y ï¿½rodka VIRTUALNEJ bili stojï¿½cej na przedï¿½uï¿½eniu lini do ï¿½uzy
-	 * @param xPocket Pozycja na osi X ï¿½uzy
-	 * @param yPocket Pozycja na osi Y ï¿½uzy
-	 * @return Zwraca kï¿½t miï¿½dzy biaï¿½ï¿½ bilï¿½, bilï¿½ VIRTUALNï¿½ i ï¿½uzï¿½.
+	 * 
+	 * @param white Pozycja bialek bili
+	 * @param target Pozycja Virtualnej bili
+	 * @param pocket Pozycja luzy
+	 * @return Zwraca kat miedzy biala bila, bila VIRTUALNA i luza.
 	 */
 	public double findAngle(Point white, Point target, Point pocket) {
 
@@ -40,17 +37,12 @@ public class HitService {
 		return Math.acos((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c));
 	}
 
-
-	
 	/**
-	 *
-	 * @param xBallSelected Pozycja na osi X ï¿½rodka wybranej bili
-	 * @param yBallSelected Pozycja na osi Y ï¿½rodka wybranej bili
-	 * @param xBallDisturb Pozycja na osi X ï¿½rodka bili, ktï¿½ra moï¿½na znaleï¿½ï¿½ siï¿½ na lini miï¿½dzy bilï¿½ wybranï¿½, a ï¿½uzï¿½.
-	 * @param yBallDisturb Pozycja na osi Y ï¿½rodka bili, ktï¿½ra moï¿½na znaleï¿½ï¿½ siï¿½ na lini miï¿½dzy bilï¿½ wybranï¿½, a ï¿½uzï¿½.
-	 * @param xPocket Pozycja na osi X ï¿½uzy
-	 * @param yPocket Pozycja na osi Y ï¿½uzy
-	 * @return Zwraca kï¿½t miï¿½dzy wybranï¿½ bilï¿½, bilï¿½ ktï¿½ra znajduje siï¿½ na drodzï¿½ do ï¿½uzy i ï¿½uzï¿½.
+	 * 
+	 * @param white Pozycja bialek bili
+	 * @param target Pozycja Virtualnej bili
+	 * @param pocket Pozycja luzy
+	 * @return Zwraca kat miedzy biala bila, bila VIRTUALNA i luza.
 	 */
 	public double findAngleOfCollision(Point selected, Point disturb, Point pocket) {
 
@@ -59,23 +51,19 @@ public class HitService {
 		double p0p1 = Math.sqrt(Math.pow(pocket.x - selected.x, 2) + Math.pow(pocket.y - selected.y, 2));
 
 		return Math.acos(((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)));
-
 	}
-
-
 	
 	/**
-	 *
-	 * @param xBallWhite Pozycja na osi X ï¿½rodka biaï¿½ej bili
-	 * @param yBallWhite Pozycja na osi Y ï¿½rodka biaï¿½ej bili
-	 * @param xBallSelected Pozycja na osi X ï¿½rodka wybranej bili
-	 * @param yBallSelected Pozycja na osi Y ï¿½rodka wybranej bili
-	 * @param xPocket Pozycja na osi X ï¿½uzy
-	 * @param yPocket Pozycja na osi Y ï¿½uzy
-	 * @return Zwraca ï¿½rodek bili VIRTUALNEJ(Bila wirtualna styka siï¿½ bilï¿½ wybranï¿½ i oznacza miejsce docelowe biaï¿½ej bili, jeï¿½li chcemy trafiï¿½ w ï¿½uzï¿½) jako Point,
-	 * dodatokowo sprawdza czy kï¿½t stworzony przez biaï¿½ï¿½ bilï¿½, virtualnï¿½ i ï¿½uzï¿½ jest dozwolony.
-	 * Jeï¿½li nie to zwraca NULL.
-	 * Kï¿½t w tym wypadku okreï¿½lany jest w radianach.
+	 * 
+	 * @param white Pozycja bialej bli
+	 * @param selected Pozycja zaznaczonej bili
+	 * @param pocket Pozycja luzy
+	 * @param list lista wszystkich bill
+	 * @param idPocket id luzy
+	 * @return Zwraca srodek bili VIRTUALNEJ(Bila wirtualna styka siê bila wybrana i oznacza miejsce docelowe bialej bili, jesli chcemy trafic w luze) jako Point,
+	 * dodatokowo sprawdza czy kat stworzony przez bia³a bile, virtualna i ³uze jest dozwolony.
+	 * Jesli nie to zwraca NULL.
+	 * Kat w tym wypadku okreslany jest w radianach.
 	 */
 	public List<Point> findHittingPoint(Point white, Point selected, Point pocket, List<Ball> list, int idPocket) {
 
@@ -96,23 +84,20 @@ public class HitService {
 		double rightAngle = 1.57;
 		
 		listPoints.add(pointTarget);
-		if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list) || findCollisionSecond(white, pointTarget, list)) {
+		if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list) == false || findCollisionSecond(white, pointTarget, list) == false) {
 			
-			listPoints.add(find(pointTarget, white, pocket, idPocket));		
+			listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
 		}			
 		return listPoints;
 	}
 
-
-
-	
 	/**
 	 *
-	 * @param pocketPoint Wspï¿½ï¿½dne ï¿½uzy
-	 * @param selectedBall Wspï¿½ï¿½dne zaznaczonej bili
+	 * @param pocketPoint Wspolzedne luzy
+	 * @param selectedBall Wspolzedne zaznaczonej bili
 	 * @param index	Index
 	 * @param listBall	Lista wszystkich bili na stole
-	 * @return Zwraca TRUE jeï¿½li na drodzï¿½ wyznaczonej bili do ï¿½uzy NIE STOI inna bila
+	 * @return Zwraca TRUE jezeli na drodze½ wyznaczonej bili do luzy NIE STOI inna bila
 	 */
 	public boolean findCollision(Point pocket, Point target, List<Ball> listBall) {
 
@@ -129,11 +114,11 @@ public class HitService {
 	}
 	
 	/**
-	 * 
-	 * @param white
-	 * @param target
-	 * @param listBall
-	 * @return
+	 * Znajduje kolizje
+	 * @param white Pozycja bialej
+	 * @param target Pozycja Virtualnej
+	 * @param listBall Lista wszystkich bill
+	 * @return false jesli znajdzie kolizje
 	 */
 	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
 
@@ -151,10 +136,9 @@ public class HitService {
 	
 	/**
 	 *
-	 * @param listPocket Lista z pozycjami kaï¿½dej ï¿½uzy
+	 * @param listPocket Lista z pozycjami kazdej luzy
 	 * @param listBall Lista wszystkich bill na stole
-	 * @return Zwracana jest HashMapa gdzie kluczem jest ï¿½rodek bili VIRTUALNEJ, a wartoï¿½ciï¿½ jest pozycja ï¿½uzy.
-	 * Zwrï¿½cone bile nie kolidujï¿½ z innymi bilami na stole(Na drodze bili do ï¿½uzy nie stoi ï¿½adna inna bila).
+	 * @return Zwracana wszystkie mozliwe sciezki
 	 */
 	public List<NewPoint> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall, Ball white, int idPocket) {
 		List<NewPoint> list = new ArrayList<NewPoint>();
@@ -177,7 +161,14 @@ public class HitService {
 		return list;
 	}
 
-	
+	/**
+	 * Zwraca liste w ktorej na pierwszym miejscu znajduje sie wspolczynnik a a na drugim wspolczynnik b
+	 * @param xBallWhite
+	 * @param yBallWhite
+	 * @param xBallSelected
+	 * @param yBallSelected
+	 * @return Zwraca wspolczynniki funkcji y = ax + b dla dwoch punktów podanych w parametrze
+	 */
 	public List<Double> abOfFunction(double xBallWhite, double yBallWhite, double xBallSelected,
 			double yBallSelected) {
 		List<Double> listOfAB = new ArrayList<>();
@@ -189,18 +180,13 @@ public class HitService {
 		listOfAB.add(b);
 		return listOfAB;
 	}
-
+	
 	/**
-	 *
-	 * @param firstBall   Pierwsza bila np Najczï¿½ciej biaï¿½a
-	 * @param secondBall  Bila Virtualna(wyliczona wczeï¿½niej oznaczajï¿½ca miejsce w
-	 *                    ktï¿½rym ma siï¿½ znaleï¿½ï¿½ biaï¿½a bila jeï¿½li chcemy trafiï¿½
-	 *                    zaznaczonï¿½ bilï¿½ do ï¿½uzy)
-	 * @param bandAxisX   W zaleï¿½noï¿½ci od sytuacji oznacza bandï¿½ na osi X, moï¿½e
-	 *                    przyjï¿½ï¿½ wartoï¿½ï¿½ 0 lub 1000
-	 * @param bandAxisY   W zaleï¿½noï¿½ci od sytuacji oznacza bandï¿½ na osi Y, moï¿½e
-	 *                    przyjï¿½ï¿½ wartoï¿½ï¿½ 0 lub 600
-	 * @param currentAxis oznacza aktualnï¿½ oï¿½ w zaleï¿½noï¿½ci od kierunku
+	 * Zwraca punkt odbicia od bandy
+	 * @param whiteBall Pozycja bia³ek bili
+	 * @param targetBall Pozycja wirtualnej bili
+	 * @param bandPos Pozycja odbicia od bandy
+	 * @param idBand Id bandy
 	 * @return
 	 */
 	public Point bandHitingPoint(Point whiteBall, Point targetBall, int bandPos, int idBand) {
@@ -259,12 +245,13 @@ public class HitService {
 
 	
 	/**
-	 * 
+	 * Metoda znajduje dwa mozliwe do wykonania odbicia od bandy, po czym wybiera
+	 * bardziej optymalne
 	 * @param target
 	 * @param white
 	 * @param pocket
 	 * @param idPocket
-	 * @return
+	 * @return Punkt odbicia od bandy
 	 */
 	public Point find(Point target, Point white, Point pocket, int idPocket) {
 
