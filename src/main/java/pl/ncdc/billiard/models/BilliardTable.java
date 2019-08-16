@@ -30,6 +30,12 @@ public class BilliardTable {
 	private Point hittingPoint;
 	
 	private List<NewPoint> allPossibleHits;
+	
+	private List<Point> yellowBox;
+	
+	private String difficultyLevel;
+	
+	private List<Point> disturbPoints;
 
 	public BilliardTable() {
 		balls = new ArrayList<>();
@@ -114,4 +120,30 @@ public class BilliardTable {
 		this.width = width;
 	}
 
+	public List<Point> getYellowBox() {
+		return yellowBox;
+	}
+
+	public void setYellowBox(List<Point> yellowBox) {
+		this.yellowBox = yellowBox;
+	}
+
+	public String getDifficultyLevel() {
+		return difficultyLevel;
+	}
+
+	public void setDifficultyLevel(String difficultyLevel) {
+		this.difficultyLevel = difficultyLevel;
+	}
+
+	public List<Point> getDisturbPoints() {
+		return disturbPoints;
+	}
+
+	public void setDisturbPoints(List<Point> disturbPoints) {
+		this.disturbPoints = disturbPoints;
+	}
+
+	
+	
 }
