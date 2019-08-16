@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,16 +28,19 @@ import pl.ncdc.billiard.service.NewPoint;
 @EnableScheduling
 public class BilliardTableController {
 
-    @Autowired
-    BilliardTableService tableService;
-    
-    @Autowired
-    IndividualTrainingService individualTrainingService;
+	@Autowired
+	BilliardTableService tableService;
 
-    @Autowired
-    HitService hitService;
+	@Autowired
+	HitService hitService;
 
-    //Koala
+	@Autowired
+	KinectService kinectService;
+
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
+
+	    //Koala
 //    @Scheduled(fixedRate = 5000)
 //    public void tableLive() {
 //    simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
@@ -47,20 +49,23 @@ public class BilliardTableController {
 //    @Autowired
 //    SimpMessagingTemplate simpMessagingTemplate;
 
-    @GetMapping("")
-    public BilliardTable getTable() {
-        return tableService.getTable();
-    }
+	@GetMapping("")
+	public BilliardTable getTable() {
+		return tableService.getTable();
+	}
 
-    @PutMapping("/ball/{ballId}")
-    public void selectBall(@PathVariable Long ballId) {
-        tableService.selectBall(ballId);
-    }
+	@PutMapping("/ball/{ballId}")
+	public void selectBall(@PathVariable Long ballId) {
+		tableService.selectBall(ballId);
+	}
 
-    @PutMapping("/pocket/{pocketId}")
-    public void selectPocket(@PathVariable Long pocketId) {
-        tableService.selectPocket(pocketId);
-    }
+    @Autowired
+    IndividualTrainingService individualTrainingService;
+
+	@PutMapping("/pocket/{pocketId}")
+	public void selectPocket(@PathVariable Long pocketId) {
+		tableService.selectPocket(pocketId);
+	}
 
 	@PutMapping("/hit")
 	public List<Point> findHittingPoint() {
@@ -70,8 +75,28 @@ public class BilliardTableController {
 		int idPocket = tableService.getTable().getSelectedPocket().getId();
 		if (white == null || selected == null || pocket == null)
 			return null;
-		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls(), idPocket);
 
+		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls(), idPocket);
+	}
+
+	@PutMapping("/kalibracja")
+	public void Kalibracja(@RequestBody List<Point> list) {
+		if (list != null || list.size() != 4) {
+			int leftMargin = (int) list.get(0).x;
+			int topMargin = (int) list.get(0).y;
+			int height = (int) (list.get(1).x - list.get(0).x);
+			int width = (int) (list.get(1).y - list.get(0).y);
+
+			if (leftMargin < 1 || topMargin < 1 || width < 1 || height < 1)
+				return;
+
+			kinectService.setLeft_margin(leftMargin);
+			kinectService.setTop_margin(topMargin);
+			kinectService.setAreaHeight(height);
+			kinectService.setAreaWidth(width);
+
+			this.kinectService.saveProperties();
+		}
 	}
 
 	@PutMapping("/hints")
