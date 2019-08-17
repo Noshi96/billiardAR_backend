@@ -18,13 +18,13 @@ public class CalibrationController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
-    public CalibrationParams test() {
+    public CalibrationParams getCalibrationParams() {
         return this.calibrationService.getCalibrationParams();
     }
 
     @PutMapping
     public void updateCalibration(@RequestBody CalibrationParams calibrationParams) {
-        calibrationService.updateCalibration(calibrationParams);
-        simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
+        CalibrationParams params = calibrationService.save(calibrationParams);
+        simpMessagingTemplate.convertAndSend("/calibration/live", params);
     }
 }

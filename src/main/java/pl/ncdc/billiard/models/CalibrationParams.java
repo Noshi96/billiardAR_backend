@@ -2,22 +2,58 @@ package pl.ncdc.billiard.models;
 
 import org.opencv.core.Point;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 public class CalibrationParams {
-    private Point leftBottomCorner = new Point(0, 0);
-    private Point leftUpperCorner = new Point(0, 1080);
-    private Point rightBottomCorner = new Point(1920, 0);
-    private Point rightUpperCorner = new Point(1920, 1080);
-    private int ballDiameter = 20;
+
+    private Long id;
+    private String presetName;
+    private Point leftBottomCorner;
+    private Point leftUpperCorner;
+    private Point rightBottomCorner;
+    private Point rightUpperCorner;
+
+    private int ballDiameter;
+
 
     public CalibrationParams() {
     }
 
-    public CalibrationParams(Point leftBottomCorner, Point leftUpperCorner, Point rightBottomCorner, Point rightUpperCorner, int ballDiameter) {
+    public CalibrationParams(Long id, String presetName, Point leftBottomCorner, Point leftUpperCorner, Point rightBottomCorner, Point rightUpperCorner, int ballDiameter) {
+        this.id = id;
+        this.presetName = presetName;
         this.leftBottomCorner = leftBottomCorner;
         this.leftUpperCorner = leftUpperCorner;
         this.rightBottomCorner = rightBottomCorner;
         this.rightUpperCorner = rightUpperCorner;
         this.ballDiameter = ballDiameter;
+    }
+
+    public static CalibrationParams getDefaultCalibrationParams() {
+        return new CalibrationParams(null, "Default",
+                new Point(0, 0),
+                new Point(0, 1080),
+                new Point(1920, 0),
+                new Point(1920, 1080),
+                20);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPresetName() {
+        return presetName;
+    }
+
+    public void setPresetName(String presetName) {
+        this.presetName = presetName;
     }
 
     public Point getLeftBottomCorner() {
