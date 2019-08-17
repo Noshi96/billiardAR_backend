@@ -86,7 +86,7 @@ public class BilliardTableController {
 			kinectService.setAreaHeight(height);
 			kinectService.setAreaWidth(width);
 
-			this.kinectService.saveProperties();
+			//this.kinectService.saveProperties();
 		}
 	}
 

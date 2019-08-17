@@ -23,6 +23,10 @@ public class CalibrationService {
         this.billiardTableService = billiardTableService;
         this.kinectService = kinectService;
         this.calibrationParamsRepository = calibrationParamsRepository;
+
+        CalibrationParams calibrationParams = getCalibrationParams();
+        this.billiardTableService.updateCalibrationParams(calibrationParams);
+        this.kinectService.updateCalibrationParams(calibrationParams);
     }
 
     public CalibrationParams save(CalibrationParams calibrationParams) {
@@ -41,8 +45,6 @@ public class CalibrationService {
             return params.toModel();
         }
 
-    public void updateCalibration(CalibrationParams calibrationParams) {
-        this.calibrationParams = calibrationParams;
     }
 
     public CalibrationParams getCalibrationParams() {

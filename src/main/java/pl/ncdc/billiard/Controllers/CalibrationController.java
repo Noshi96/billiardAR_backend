@@ -11,11 +11,14 @@ import pl.ncdc.billiard.service.CalibrationService;
 @CrossOrigin(value = "*")
 public class CalibrationController {
 
-    @Autowired
-    private CalibrationService calibrationService;
+    private final CalibrationService calibrationService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    public CalibrationController(CalibrationService calibrationService, SimpMessagingTemplate simpMessagingTemplate) {
+        this.calibrationService = calibrationService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
 
     @GetMapping
     public CalibrationParams getCalibrationParams() {
