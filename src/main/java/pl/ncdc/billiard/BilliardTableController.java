@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -47,6 +48,11 @@ public class BilliardTableController {
 	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
+	}
+
+	@Scheduled(fixedRate = 500)
+	public void tableLive() {
+		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
 
 	@PutMapping("/ball/{ballId}")
