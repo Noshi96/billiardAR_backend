@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,15 +40,28 @@ public class BilliardTableController {
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
+	
+	@Autowired
+    IndividualTrainingService individualTrainingService;
+	
 
-	    //Koala
-//    @Scheduled(fixedRate = 5000)
-//    public void tableLive() {
-//    simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
-//    }
-//    
-//    @Autowired
-//    SimpMessagingTemplate simpMessagingTemplate;
+    // Koala
+    @Scheduled(fixedRate = 5000)
+    public void tableLive() {
+    simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+    }
+    // dodane przez Koala
+	@PutMapping("/setViewMode/{viewMode}")
+	public void setViewMode(@PathVariable int viewMode) {
+		tableService.setViewMode(viewMode);
+	}
+	// dodane przez Koala
+	@PutMapping("/setChallenge/{selectedChallenge}")
+	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
+		tableService.setSelectedChallenge(selectedChallenge);
+	}
+
+
 
 	@GetMapping("")
 	public BilliardTable getTable() {
@@ -59,8 +73,6 @@ public class BilliardTableController {
 		tableService.selectBall(ballId);
 	}
 
-    @Autowired
-    IndividualTrainingService individualTrainingService;
 
 	@PutMapping("/pocket/{pocketId}")
 	public void selectPocket(@PathVariable Long pocketId) {

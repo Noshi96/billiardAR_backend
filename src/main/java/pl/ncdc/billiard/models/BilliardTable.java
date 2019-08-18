@@ -36,16 +36,62 @@ public class BilliardTable {
 	private String difficultyLevel;
 	
 	private List<Point> disturbPoints;
+	
+	// dodane przez Koala, przydatne do fronta
+	// view mode- okresla wyswietlanie zawartosci na stronie
+	// apka: 0 - pokazuej same bile, 1 - tryb pasywny 1, rysuje bile, rysuje zaznaczenia oraz trajektorie
+	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1 - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje trajektorie
+	private int selectedViewMode = 0;
+	
+	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i zczytywanie bil; 0<int - okresla id poziomu do zaladowania
+	private int selectedChallenge = 0;
 
+	
+	public int getSelectedViewMode() {
+		return selectedViewMode;
+	}
+
+	public void setSelectedViewMode(int selectedViewMode) {
+		this.selectedViewMode = selectedViewMode;
+	}
+
+	public int getSelectedChallenge() {
+		return selectedChallenge;
+	}
+
+	public void setSelectedChallenge(int selectedChallenge) {
+		this.selectedChallenge = selectedChallenge;
+	}
+
+
+	// odwrocone bandy
 	public BilliardTable() {
 		balls = new ArrayList<>();
 		pockets = new ArrayList<Pocket>();
-		pockets.add(new Pocket(1, new Point(90, 85)));
-		pockets.add(new Pocket(2, new Point(670, 58)));
-		pockets.add(new Pocket(3, new Point(1250, 90)));
-		pockets.add(new Pocket(4, new Point(80, 660)));
-		pockets.add(new Pocket(5, new Point(665, 680)));
-		pockets.add(new Pocket(6, new Point(1240, 665)));
+		pockets.add(new Pocket(0, new Point(0, 620)));
+		pockets.add(new Pocket(1, new Point(1190 / 2, 620)));
+		pockets.add(new Pocket(2, new Point(1190, 620)));
+		pockets.add(new Pocket(3, new Point(0, 0)));
+		pockets.add(new Pocket(4, new Point(1190 / 2, 0)));
+		pockets.add(new Pocket(5, new Point(1190, 0)));
+
+		balls = new ArrayList<>();
+		balls.add(new Ball(0, new Point(1000, 580)));
+		balls.add(new Ball(1, new Point(55,222)));
+		balls.add(new Ball(2, new Point(400,29) ));
+		balls.add(new Ball(3, new Point(111,99)));
+		balls.add(new Ball(4, new Point(480,29) ));		
+		balls.add(new Ball(5, new Point(1190/2, 620/2)));
+		balls.add(new Ball(6, new Point(1100, 600)));
+		balls.add(new Ball(7, new Point(1000, 200)));
+		balls.add(new Ball(8, new Point(400, 80)));
+		balls.add(new Ball(9, new Point(666, 444)));
+		//balls.add(new Ball(6, new Point(800,450)));
+		//balls.add(new Ball(2, false, new Point(111,99), false));
+		//balls.add(new Ball(2, false, new Point(111,99), false));
+		this.setWhiteBall(balls.get(3));
+		this.setSelectedBall(this.balls.get(5));
+		this.setSelectedPocket(this.pockets.get(5));
 	}
 
 	public List<Ball> getBalls() {
