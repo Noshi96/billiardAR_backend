@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.Entities;
+package pl.ncdc.billiard.entities;
 
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;

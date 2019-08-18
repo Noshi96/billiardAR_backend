@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.Controllers;
+package pl.ncdc.billiard.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

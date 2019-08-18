@@ -28,17 +28,21 @@ import pl.ncdc.billiard.service.NewPoint;
 @EnableScheduling
 public class BilliardTableController {
 
-	@Autowired
-	BilliardTableService tableService;
+	private final BilliardTableService tableService;
+	private final HitService hitService;
+	private final KinectService kinectService;
+	private final IndividualTrainingService individualTrainingService;
+	private final SimpMessagingTemplate simpMessagingTemplate;
 
 	@Autowired
-	HitService hitService;
-
-	@Autowired
-	KinectService kinectService;
-
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+	public BilliardTableController(BilliardTableService tableService, HitService hitService, KinectService kinectService,
+								   IndividualTrainingService individualTrainingService, SimpMessagingTemplate simpMessagingTemplate) {
+		this.tableService = tableService;
+		this.hitService = hitService;
+		this.kinectService = kinectService;
+		this.individualTrainingService = individualTrainingService;
+		this.simpMessagingTemplate = simpMessagingTemplate;
+	}
 
 	@GetMapping("")
 	public BilliardTable getTable() {
@@ -49,9 +53,6 @@ public class BilliardTableController {
 	public void selectBall(@PathVariable Long ballId) {
 		tableService.selectBall(ballId);
 	}
-
-    @Autowired
-    IndividualTrainingService individualTrainingService;
 
 	@PutMapping("/pocket/{pocketId}")
 	public void selectPocket(@PathVariable Long pocketId) {

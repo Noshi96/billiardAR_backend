@@ -22,7 +22,7 @@ public class CalibrationService {
     }
 
     public CalibrationParams save(CalibrationParams calibrationParams) {
-        pl.ncdc.billiard.Entities.CalibrationParams entity = getCalibrationParamsEntity();
+        pl.ncdc.billiard.entities.CalibrationParams entity = getCalibrationParamsEntity();
         calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);
 
         calibrationParamsRepository.save(entity);
@@ -35,13 +35,13 @@ public class CalibrationService {
         return calibrationParamsMapper.toModel(getCalibrationParamsEntity());
     }
 
-    private pl.ncdc.billiard.Entities.CalibrationParams getCalibrationParamsEntity() {
-        Optional<pl.ncdc.billiard.Entities.CalibrationParams> optionalCalibrationParams = calibrationParamsRepository.findFirstByOrderByIdAsc();
+    private pl.ncdc.billiard.entities.CalibrationParams getCalibrationParamsEntity() {
+        Optional<pl.ncdc.billiard.entities.CalibrationParams> optionalCalibrationParams = calibrationParamsRepository.findFirstByOrderByIdAsc();
         if(optionalCalibrationParams.isPresent()) {
             return optionalCalibrationParams.get();
         } else {
             CalibrationParams defaultCalibrationParams = CalibrationParams.getDefaultCalibrationParams();
-            pl.ncdc.billiard.Entities.CalibrationParams entity = calibrationParamsMapper.toEntity(defaultCalibrationParams);
+            pl.ncdc.billiard.entities.CalibrationParams entity = calibrationParamsMapper.toEntity(defaultCalibrationParams);
 
             calibrationParamsRepository.save(entity);
 
