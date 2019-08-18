@@ -27,7 +27,7 @@ public class CalibrationController {
 
     @PutMapping
     public void updateCalibration(@RequestBody CalibrationParams calibrationParams) {
-        CalibrationParams params = calibrationService.save(calibrationParams);
-        simpMessagingTemplate.convertAndSend("/calibration/live", params);
+        calibrationParams = calibrationService.save(calibrationParams);
+        simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
     }
 }
