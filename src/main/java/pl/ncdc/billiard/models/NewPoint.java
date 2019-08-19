@@ -6,12 +6,9 @@ import org.opencv.core.Point;
 
 @Data
 @AllArgsConstructor
-public class Pocket {
-	private int id;
-	
-	private Point point = new Point();
+public class NewPoint {
 
-	public Pocket(int id) {
-		this.id = id;
-	}
+	private Point bill;
+	private Point pocket;
+	private Point band;
 }

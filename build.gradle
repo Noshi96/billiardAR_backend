@@ -1,9 +1,13 @@
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
+	id "io.freefair.lombok" version "3.8.4"
+	id 'net.ltgt.apt' version '0.20'
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'net.ltgt.apt-idea'
+apply plugin: 'net.ltgt.apt-eclipse'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
@@ -18,18 +22,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'com.google.code.gson:gson:2.8.2'
-	
-	compile 'mysql:mysql-connector-java'
+
+	implementation 'org.hibernate:hibernate-spatial'
+	implementation 'mysql:mysql-connector-java'
+
+	implementation 'org.projectlombok:lombok'
+
+	implementation 'org.mapstruct:mapstruct:1.3.0.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
+
+	implementation fileTree(dir: 'lib', include: ['*.jar'])
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	//compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
-	compile fileTree(dir: 'lib', include: ['*.jar'])
-	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.1.1.RELEASE'
-    
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-	
+}
+
+compileJava {
+	options.compilerArgs = [
+			'-Amapstruct.defaultComponentModel=spring'
+	]
 }
 
 bootRun {
+	jvmArgs=['-Djava.awt.headless=false']
     systemProperty 'java.library.path', 'dll'
 }
