@@ -15,29 +15,9 @@ import pl.ncdc.billiard.service.HitService;
 @SpringBootApplication
 public class BilliardApplication {
 	
-	private Kinect kinect;
-	
-	@Autowired
-	public BilliardApplication(Kinect kinect) {
-		this.kinect = kinect;
-		/*this.kinect.init();
-		this.kinect.start(Kinect.COLOR);*/
-	}
-	
 	public static void main(String[] args) {
 		System.loadLibrary("opencv_java347");
 		SpringApplication.run(BilliardApplication.class, args);
-		/*Kinect kinect = new Kinect();
-		kinect.start(Kinect.COLOR);
-		try {
-			Thread.sleep(60000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		kinect.stop();*/
-		
 	}
 
 	@Bean
