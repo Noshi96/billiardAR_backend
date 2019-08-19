@@ -30,7 +30,7 @@ public class BilliardTable {
 	private Pocket selectedPocket;
 
 	private Point hittingPoint;
-	
+
 	private List<NewPoint> allPossibleHits;
 
 	private List<Point> yellowBox;
@@ -40,13 +40,6 @@ public class BilliardTable {
 	private List<Point> disturbPoints;
 
 	public BilliardTable() {
-		balls = new ArrayList<>();
-		pockets = new ArrayList<Pocket>();
-		pockets.add(new Pocket(1, new Point(90, 85)));
-		pockets.add(new Pocket(2, new Point(670, 58)));
-		pockets.add(new Pocket(3, new Point(1250, 90)));
-		pockets.add(new Pocket(4, new Point(80, 660)));
-		pockets.add(new Pocket(5, new Point(665, 680)));
-		pockets.add(new Pocket(6, new Point(1240, 665)));
 	}
+
 }

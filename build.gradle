@@ -26,6 +26,8 @@ dependencies {
 	implementation 'org.hibernate:hibernate-spatial'
 	implementation 'mysql:mysql-connector-java'
 
+	implementation 'org.projectlombok:lombok'
+
 	implementation 'org.mapstruct:mapstruct:1.3.0.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
 
@@ -41,5 +43,6 @@ compileJava {
 }
 
 bootRun {
+	jvmArgs=['-Djava.awt.headless=false']
     systemProperty 'java.library.path', 'dll'
 }
