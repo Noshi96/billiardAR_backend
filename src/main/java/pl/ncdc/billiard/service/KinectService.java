@@ -146,6 +146,7 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
+		//show(frame);
 		updateTable(frame);
 		// send table by web socket
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
@@ -176,11 +177,9 @@ public class KinectService {
 		Mat gray = new Mat();
 
 		// wrap image
-		if (this.perspectiveTransform != null)
-			Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
-					new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
+		Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
+				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
 		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
-
 		// create and apply mask
 		this.mask = new Mat();
 		this.backgroundSubstractor.apply(gray, this.mask, 0);

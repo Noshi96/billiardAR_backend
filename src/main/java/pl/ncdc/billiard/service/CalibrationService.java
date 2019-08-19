@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.mappers.CalibrationParamsMapper;
@@ -21,7 +22,7 @@ public class CalibrationService {
     private final CalibrationParamsMapper calibrationParamsMapper;
 
 	@Autowired
-	public CalibrationService(KinectService kinectService, BilliardTableService billiardTableService, CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper) {
+	public CalibrationService(@Lazy KinectService kinectService, BilliardTableService billiardTableService, CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper) {
 		this.kinectService = kinectService;
 		this.billiardTableService = billiardTableService;
 		this.calibrationParamsRepository = calibrationParamsRepository;

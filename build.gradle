@@ -27,8 +27,6 @@ dependencies {
 	implementation 'mysql:mysql-connector-java'
 
 	implementation 'org.projectlombok:lombok'
-	compileOnly 'org.projectlombok:lombok:1.18.8'
-
 
 	implementation 'org.mapstruct:mapstruct:1.3.0.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
@@ -45,5 +43,6 @@ compileJava {
 }
 
 bootRun {
+	jvmArgs=['-Djava.awt.headless=false']
     systemProperty 'java.library.path', 'dll'
 }
