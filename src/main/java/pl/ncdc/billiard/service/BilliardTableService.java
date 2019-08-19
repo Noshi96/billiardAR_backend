@@ -6,16 +6,16 @@ import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Pocket;
-//import pl.ncdc.billiard.websocket.SocketHandler;
 
 @Service
 public class BilliardTableService {
 
-	@Autowired
-    private BilliardTable table;
+    private final BilliardTable table;
 
-    public BilliardTableService() {
-    }
+    @Autowired
+    public BilliardTableService(BilliardTable table) {
+		this.table = table;
+	}
 
     public BilliardTable getTable() {
         return table;
@@ -38,5 +38,5 @@ public class BilliardTableService {
 				table.setSelectedPocket(pocket);
 			}
 		}
-    }
+	}
 }

@@ -1,15 +1,20 @@
-package pl.ncdc.billiard.models;
+package pl.ncdc.billiard.entities;
 
+import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opencv.core.Point;
 
+import javax.persistence.*;
+
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CalibrationParams {
 
+    @Id
+    @GeneratedValue
     private Long id;
     private String presetName;
     private Point leftBottomCorner;
@@ -17,13 +22,4 @@ public class CalibrationParams {
     private Point rightBottomCorner;
     private Point rightUpperCorner;
     private int ballDiameter;
-
-    public static CalibrationParams getDefaultCalibrationParams() {
-        return new CalibrationParams(null, "Default",
-                new Point(0, 0),
-                new Point(0, 1080),
-                new Point(1920, 0),
-                new Point(1920, 1080),
-                20);
-    }
 }

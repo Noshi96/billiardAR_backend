@@ -1,11 +1,7 @@
 package pl.ncdc.billiard.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -18,14 +14,13 @@ import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DefaultPropertiesPersister;
 
 import pl.ncdc.billiard.Kinect;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.CalibrationParams;
 
 @Service
 public class KinectService {
@@ -36,6 +31,7 @@ public class KinectService {
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
+	private CalibrationParams calibrationParams;
 	private Kinect kinect;
 	// Mask from empty billiard table
 	private Mat fgMask;
@@ -43,13 +39,9 @@ public class KinectService {
 	private BackgroundSubtractor backSub;
 
 	// kalibracja
-	@Value("${leftMargin:0}")
 	private int left_margin;
-	@Value("${topMargin:0}")
 	private int top_margin;
-	@Value("${areaHeight:1}")
 	private int areaHeight;
-	@Value("${areaWidth:1}")
 	private int areaWidth;
 
 	public void init() {
@@ -67,26 +59,6 @@ public class KinectService {
 		backSub = Video.createBackgroundSubtractorMOG2();
 		// apply mask
 		backSub.apply(fgMask, fgMask, 1);
-	}
-
-	public void saveProperties() {
-		try {
-
-			Properties properties = new Properties();
-			properties.setProperty("leftMargin", Integer.toString(this.left_margin));
-			properties.setProperty("topMargin", Integer.toString(this.top_margin));
-			properties.setProperty("height", Integer.toString(this.areaHeight));
-			properties.setProperty("width", Integer.toString(this.areaWidth));
-
-			File file = new File("src/main/resources/application.properties");
-			OutputStream out = new FileOutputStream(file);
-			DefaultPropertiesPersister defaultProperties = new DefaultPropertiesPersister();
-
-			defaultProperties.store(properties, out, "Kinect Properties");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void send(byte[] data, int height, int width) {
@@ -205,5 +177,8 @@ public class KinectService {
 	public void setAreaWidth(int areaWidth) {
 		this.areaWidth = areaWidth;
 	}
-	
+
+    public void updateCalibrationParams(CalibrationParams calibrationParams) {
+		this.calibrationParams = calibrationParams;
+    }
 }

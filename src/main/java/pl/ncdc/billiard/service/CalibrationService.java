@@ -1,18 +1,51 @@
 package pl.ncdc.billiard.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.ncdc.billiard.mappers.CalibrationParamsMapper;
 import pl.ncdc.billiard.models.CalibrationParams;
+import pl.ncdc.billiard.repository.CalibrationParamsRepository;
+import java.util.Optional;
+
 
 @Service
 public class CalibrationService {
 
-    private CalibrationParams calibrationParams = new CalibrationParams();
+    private final CalibrationParamsRepository calibrationParamsRepository;
+    private final CalibrationParamsMapper calibrationParamsMapper;
 
-    public void updateCalibration(CalibrationParams calibrationParams) {
-        this.calibrationParams = calibrationParams;
+
+    @Autowired
+    public CalibrationService(CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper){
+        this.calibrationParamsRepository = calibrationParamsRepository;
+        this.calibrationParamsMapper = calibrationParamsMapper;
+    }
+
+    public CalibrationParams save(CalibrationParams calibrationParams) {
+        pl.ncdc.billiard.entities.CalibrationParams entity = getCalibrationParamsEntity();
+        calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);
+
+        calibrationParamsRepository.save(entity);
+
+        calibrationParamsMapper.updateModelFromEntity(entity, calibrationParams);
+        return calibrationParams;
     }
 
     public CalibrationParams getCalibrationParams() {
-        return calibrationParams;
+        return calibrationParamsMapper.toModel(getCalibrationParamsEntity());
+    }
+
+    private pl.ncdc.billiard.entities.CalibrationParams getCalibrationParamsEntity() {
+        Optional<pl.ncdc.billiard.entities.CalibrationParams> optionalCalibrationParams = calibrationParamsRepository.findFirstByOrderByIdAsc();
+        if(optionalCalibrationParams.isPresent()) {
+            return optionalCalibrationParams.get();
+        } else {
+            CalibrationParams defaultCalibrationParams = CalibrationParams.getDefaultCalibrationParams();
+            pl.ncdc.billiard.entities.CalibrationParams entity = calibrationParamsMapper.toEntity(defaultCalibrationParams);
+
+            calibrationParamsRepository.save(entity);
+
+            return entity;
+        }
     }
 }

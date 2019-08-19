@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.Controllers;
+package pl.ncdc.billiard.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,20 +11,23 @@ import pl.ncdc.billiard.service.CalibrationService;
 @CrossOrigin(value = "*")
 public class CalibrationController {
 
-    @Autowired
-    private CalibrationService calibrationService;
+    private final CalibrationService calibrationService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    public CalibrationController(CalibrationService calibrationService, SimpMessagingTemplate simpMessagingTemplate) {
+        this.calibrationService = calibrationService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
 
     @GetMapping
-    public CalibrationParams test() {
+    public CalibrationParams getCalibrationParams() {
         return this.calibrationService.getCalibrationParams();
     }
 
     @PutMapping
     public void updateCalibration(@RequestBody CalibrationParams calibrationParams) {
-        calibrationService.updateCalibration(calibrationParams);
+        calibrationParams = calibrationService.save(calibrationParams);
         simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
     }
 }
