@@ -19,7 +19,7 @@ import pl.ncdc.billiard.models.Pocket;
 @Service
 public class HitService {
 
-	double diameter = 20;
+	double diameter = 26;
 	
 
 	/**
@@ -82,9 +82,9 @@ public class HitService {
 		pointTarget.x = x;
 		pointTarget.y = y;
 		double rightAngle = 1.57;
-		
+
 		listPoints.add(pointTarget);
-		if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list) == false || findCollisionSecond(white, pointTarget, list) == false) {
+		if (findAngle(white, pointTarget, pocket) < rightAngle   || findCollision(pocket, pointTarget, list) == false || findCollisionSecond(white, pointTarget, list) == false) {
 			
 			listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
 		}			
