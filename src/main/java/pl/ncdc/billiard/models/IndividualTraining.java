@@ -24,5 +24,17 @@ public class IndividualTraining {
 	private String positionsOfDisturbBalls;
 	
 	private String positionOfRectangle;
+	
+	private int idPocket;
+
+	public IndividualTraining( String difficultyLvl, String positionOfWhiteBall, String positionOfSelectedBall,
+							   String positionsOfDisturbBalls, String positionOfRectangle, int idPocket) {
+		this.difficultyLvl = difficultyLvl;
+		this.positionOfWhiteBall = positionOfWhiteBall;
+		this.positionOfSelectedBall = positionOfSelectedBall;
+		this.positionsOfDisturbBalls = positionsOfDisturbBalls;
+		this.positionOfRectangle = positionOfRectangle;
+		this.idPocket = idPocket;
+	}
 }
 

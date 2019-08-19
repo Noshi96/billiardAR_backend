@@ -33,6 +33,12 @@ public class BilliardTable {
 	
 	private List<NewPoint> allPossibleHits;
 
+	private List<Point> yellowBox;
+
+	private String difficultyLevel;
+
+	private List<Point> disturbPoints;
+
 	public BilliardTable() {
 		balls = new ArrayList<>();
 		pockets = new ArrayList<Pocket>();
