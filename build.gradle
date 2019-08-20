@@ -46,3 +46,16 @@ bootRun {
 	jvmArgs=['-Djava.awt.headless=false']
     systemProperty 'java.library.path', 'dll'
 }
+
+task copyResources(type: Copy) {
+	from "$buildDir/resources/main"
+	into "$buildDir/libs/src/main/resources"
+}
+
+task copyDll(type: Copy) {
+	from "dll"
+	into "$buildDir/libs"
+}
+
+build.dependsOn copyResources
+build.dependsOn copyDll
