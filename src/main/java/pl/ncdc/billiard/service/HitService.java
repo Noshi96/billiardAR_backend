@@ -17,7 +17,7 @@ public class HitService {
 
 	/**
 	 * 
-	 * @param white Pozycja bialek bili
+	 * @param white Pozycja bialej bili
 	 * @param target Pozycja Virtualnej bili
 	 * @param pocket Pozycja luzy
 	 * @return Zwraca kat miedzy biala bila, bila VIRTUALNA i luza.
@@ -53,8 +53,8 @@ public class HitService {
 	 * @param pocket Pozycja luzy
 	 * @param list lista wszystkich bill
 	 * @param idPocket id luzy
-	 * @return Zwraca srodek bili VIRTUALNEJ(Bila wirtualna styka siê bila wybrana i oznacza miejsce docelowe bialej bili, jesli chcemy trafic w luze) jako Point,
-	 * dodatokowo sprawdza czy kat stworzony przez bia³a bile, virtualna i ³uze jest dozwolony.
+	 * @return Zwraca srodek bili VIRTUALNEJ(Bila wirtualna styka sie z bila wybrana i oznacza miejsce docelowe bialej bili, jesli chcemy trafic w luze) jako Point,
+	 * dodatokowo sprawdza czy kat stworzony przez biala bile, virtualna i luze jest dozwolony.
 	 * Jesli nie to zwraca NULL.
 	 * Kat w tym wypadku okreslany jest w radianach.
 	 */
@@ -90,7 +90,7 @@ public class HitService {
 	 * @param selectedBall Wspolzedne zaznaczonej bili
 	 * @param index	Index
 	 * @param listBall	Lista wszystkich bili na stole
-	 * @return Zwraca TRUE jezeli na drodze½ wyznaczonej bili do luzy NIE STOI inna bila
+	 * @return Zwraca TRUE jezeli na drodze wyznaczonej bili do luzy NIE STOI inna bila
 	 */
 	public boolean findCollision(Point pocket, Point target, List<Ball> listBall) {
 
@@ -155,12 +155,12 @@ public class HitService {
 	}
 
 	/**
-	 * Zwraca liste w ktorej na pierwszym miejscu znajduje sie wspolczynnik a a na drugim wspolczynnik b
+	 * Zwraca liste w ktorej na pierwszym miejscu znajduje sie wspolczynnik a, a na drugim wspolczynnik b
 	 * @param xBallWhite
 	 * @param yBallWhite
 	 * @param xBallSelected
 	 * @param yBallSelected
-	 * @return Zwraca wspolczynniki funkcji y = ax + b dla dwoch punktów podanych w parametrze
+	 * @return Zwraca wspolczynniki funkcji y = ax + b dla dwoch punktow podanych w parametrze
 	 */
 	public List<Double> abOfFunction(double xBallWhite, double yBallWhite, double xBallSelected,
 			double yBallSelected) {
@@ -176,7 +176,7 @@ public class HitService {
 	
 	/**
 	 * Zwraca punkt odbicia od bandy
-	 * @param whiteBall Pozycja bia³ek bili
+	 * @param whiteBall Pozycja bialej bili
 	 * @param targetBall Pozycja wirtualnej bili
 	 * @param bandPos Pozycja odbicia od bandy
 	 * @param idBand Id bandy

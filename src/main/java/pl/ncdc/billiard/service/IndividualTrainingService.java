@@ -88,13 +88,13 @@ public class IndividualTrainingService {
 	}
 	
 	/**
-	 * Zwraca wszystkie informacjê na temat treningu w postaci listy rekordów, gdzie w pierwszym obiekcie mamy
-	 * informacjê o po³o¿eniu bil bia³ej oraz zaznaczonej i okreœlony poziom trudnoœci.
-	 * Kolejne obiekty s¹ reprezentacj¹ pojedyñczych bil przeszkadzaj¹cych lub wspó³¿êdnych dla rysowanego prostok¹ta
+	 * Zwraca wszystkie informacje na temat treningu w postaci listy rekordow, gdzie w pierwszym obiekcie mamy
+	 * informacje o polozeniu bil bialej oraz zaznaczonej i okreslony poziom trudnosci.
+	 * Kolejne obiekty sa reprezentacja pojedynczych bil przeszkadzajacych lub wspolzednych dla rysowanego prostokata
 	 * @param id Treningu indywidualnego
 	 * @return
 	 */
-	// W bazie nie mo¿e byæ nullów
+	// W bazie nie moze byc nullow
 	 public List<IndividualTrainingCommand> returnIndividualTrainingCommand(long id){
 		 
 		 List<IndividualTrainingCommand> individualTrainingCommandList = new ArrayList<>();
@@ -143,7 +143,7 @@ public class IndividualTrainingService {
 	 	 
 	 /**
 	  * Zapisuje nowy rekord do bazy
-	  * W JSONIE kolejne wspó³¿êdne s¹ podawane jako X,Y,X,Y ka¿da kolejna para to pojeduñcza bila
+	  * W JSONIE kolejne wspolzedne sa podawane jako X,Y,X,Y kazda kolejna para to pojedyncza bila
 	  * @param individualTrainingCommand
 	  * @return
 	  */
@@ -187,9 +187,9 @@ public class IndividualTrainingService {
 		
 		
 		/**
-		 * 
+		 * !!! nie powinno byc += w 214?, 198;;
 		 * @param billiardTable
-		 * @return
+		 * @return Pobiera aktualne dane ze stolu i wpisuje do obiektu treningu
 		 */
 	    public IndividualTraining setNewTraining(BilliardTable billiardTable) {
 	    	
