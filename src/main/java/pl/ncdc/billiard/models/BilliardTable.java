@@ -38,17 +38,20 @@ public class BilliardTable {
 	private String difficultyLevel;
 
 	private List<Point> disturbPoints;
-	
+
 	// dodane przez Koala, przydatne do fronta
 	// view mode- okresla wyswietlanie zawartosci na stronie
-	// apka: 0 - pokazuej same bile, 1 - tryb pasywny 1, rysuje bile, rysuje zaznaczenia oraz trajektorie
-	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1 - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje trajektorie
+	// apka: 0 - pokazuej same bile, 1 - tryb pasywny 1, rysuje bile, rysuje
+	// zaznaczenia oraz trajektorie
+	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1
+	// - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje
+	// trajektorie
 	private int selectedViewMode = 0;
-	
-	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i zczytywanie bil; 0<int - okresla id poziomu do zaladowania
+
+	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
+	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
 	private int selectedChallenge = 0;
 
-	
 	public int getSelectedViewMode() {
 		return selectedViewMode;
 	}
@@ -64,7 +67,6 @@ public class BilliardTable {
 	public void setSelectedChallenge(int selectedChallenge) {
 		this.selectedChallenge = selectedChallenge;
 	}
-
 
 	// odwrocone bandy
 	public BilliardTable() {

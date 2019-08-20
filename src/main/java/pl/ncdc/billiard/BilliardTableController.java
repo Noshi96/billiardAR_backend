@@ -52,10 +52,11 @@ public class BilliardTableController {
 	
 	
     // Koala
+	/*
     @Scheduled(fixedRate = 500)
     public void tableLive() {
     simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
-    }
+    }*/
     // dodane przez Koala
 	@PutMapping("/setViewMode/{viewMode}")
 	public void setViewMode(@PathVariable int viewMode) {

@@ -77,12 +77,10 @@ public class BilliardTableService {
 		}
 	}
 
-	// dodane przez Koala
 	public void setViewMode(int viewMode) {
 		table.setSelectedViewMode(viewMode);
 	}
 
-	// to tez
 	public void setSelectedChallenge(int selectedChallenge) {
 		table.setSelectedChallenge(selectedChallenge);
 	}

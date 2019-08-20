@@ -57,14 +57,15 @@ public class KinectService {
 	private int minBallRadius;
 	private int maxBallRadius;
 
+	private int counter = 0;
+
 	private int status;
-	private List<List<Ball>> history;
+	private List<Ball> history;
 
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
 		backgroundSubstractor = Video.createBackgroundSubtractorMOG2();
-		this.history = new ArrayList<List<Ball>>();
 	}
 
 	@PostConstruct
@@ -112,7 +113,7 @@ public class KinectService {
 		// this.maxBallRadius = calibrationParams.getBallDiameter() + 2;
 
 		this.minBallRadius = 11;
-		this.maxBallRadius = 14;
+		this.maxBallRadius = 15;
 
 		// add points to a list and generate Mat object
 		List<Point> pts = new ArrayList<Point>();
@@ -150,12 +151,18 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
+		counter++;
+		if (counter > 60)
+			counter = 0;
 		// show(frame);
-		updateTable(frame);
+		// updateTable(frame);
 		// send table by web socket
+		List<Ball> newList = updateTable(frame);
+
+		this.table.setBalls(updateHipstory(newList));
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
-		updateHipstory();
+		// updateHipstory();
 
 		// if calibrate
 		if (this.status == 1) {
@@ -165,23 +172,17 @@ public class KinectService {
 		}
 	}
 
-	private void updateHipstory() {
-
-		Point sum, point;
-		int detected;
+	private List<Ball> updateHipstory(List<Ball> list) {
+		Point point;
+		List<Ball> newList = new ArrayList<Ball>();
+		if (this.table.getBalls() == null || this.table.getBalls().size() == 0 || counter == 0)
+			return list;
 		for (Ball ball : this.table.getBalls()) {
-			detected = 0;
-			sum = new Point();
-			for (List<Ball> list : history) {
-				point = findBallByPoint(ball.getPoint(), list);
-				if (point != null) {
-					detected++;
-					sum.x += point.x;
-					sum.y += point.y;
-				}
-			}
+			point = findBallByPoint(ball.getPoint(), list);
+			if (point != null)
+				newList.add(ball);
 		}
-		this.history.add(this.table.getBalls());
+		return newList;
 	}
 
 	public Point findBallByPoint(Point point, List<Ball> list) {
@@ -205,7 +206,7 @@ public class KinectService {
 	 * @see Imgproc#HoughCircles(Mat, Mat, int, double, double, double, double, int,
 	 *      int)
 	 */
-	private void updateTable(Mat frame) {
+	private List<Ball> updateTable(Mat frame) {
 		Mat circles = new Mat();
 		Mat gray = new Mat();
 
@@ -214,14 +215,13 @@ public class KinectService {
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
 		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
 		// create and apply mask
-		this.mask = new Mat();
+		// this.mask = new Mat();
 		this.backgroundSubstractor.apply(gray, this.mask, 0);
 		// apply blur
-		Imgproc.medianBlur(this.mask, this.mask, 5);
-		// 15, 10
+		Imgproc.medianBlur(this.mask, this.mask, 9);
+		// show(mask);
 		Imgproc.HoughCircles(this.mask, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
-
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
 		// Detect white ball
@@ -233,8 +233,8 @@ public class KinectService {
 		for (int x = 0; x < circles.cols(); x++) {
 			double[] c = circles.get(0, x);
 			Point point = new Point(table.getWidth() - c[0], c[1]);
-			if (whiteBall == null || whiteBall.getPoint().x - point.x > this.minBallRadius
-					|| whiteBall.getPoint().y - point.y > this.minBallRadius) {
+			if (whiteBall == null || Math.abs(whiteBall.getPoint().x - point.x) > this.minBallRadius
+					|| Math.abs(whiteBall.getPoint().y - point.y) > this.minBallRadius) {
 				list.add(new Ball(0, point));
 			}
 		}
@@ -242,7 +242,7 @@ public class KinectService {
 		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o1.getPoint().x));
 		for (int i = 1; i < list.size(); i++)
 			list.get(i).setId(i);
-		this.table.setBalls(list);
+		return list;
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class KinectService {
 	 */
 	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
 		double maxSum = Integer.MIN_VALUE;
-		maxSum = 370000.0;
+		maxSum = 350000.0;
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
 			int x = (int) c[0] - r;
