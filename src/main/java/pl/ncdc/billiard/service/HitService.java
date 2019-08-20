@@ -249,8 +249,8 @@ public class HitService {
 	public Point find(Point target, Point white, Point pocket, int idPocket) {
 
 		int leftBand = 0;
-		int rightBand = 1190;
-		int upperBand = 620;
+		int rightBand = 1168;
+		int upperBand = 584;
 		int lowerBand = 0;
 		int idBand;
 		// 1-gora, 2-prawa, 3-dol, 4-lewy
