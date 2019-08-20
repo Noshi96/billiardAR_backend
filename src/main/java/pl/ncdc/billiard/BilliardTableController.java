@@ -1,20 +1,28 @@
 package pl.ncdc.billiard;
 
-import org.opencv.core.Point;
 import java.util.List;
 
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.commands.IndividualTrainingCommand;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
@@ -28,17 +36,21 @@ import pl.ncdc.billiard.service.NewPoint;
 @EnableScheduling
 public class BilliardTableController {
 
-	@Autowired
-	BilliardTableService tableService;
+	private final BilliardTableService tableService;
+	private final HitService hitService;
+	private final KinectService kinectService;
+	private final IndividualTrainingService individualTrainingService;
+	private final SimpMessagingTemplate simpMessagingTemplate;
 
 	@Autowired
-	HitService hitService;
-
-	@Autowired
-	KinectService kinectService;
-
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+	public BilliardTableController(BilliardTableService tableService, HitService hitService, KinectService kinectService,
+								   IndividualTrainingService individualTrainingService, SimpMessagingTemplate simpMessagingTemplate) {
+		this.tableService = tableService;
+		this.hitService = hitService;
+		this.kinectService = kinectService;
+		this.individualTrainingService = individualTrainingService;
+		this.simpMessagingTemplate = simpMessagingTemplate;
+	}
 
 	    //Koala
 //    @Scheduled(fixedRate = 5000)
@@ -54,11 +66,15 @@ public class BilliardTableController {
 		return tableService.getTable();
 	}
 
+	@Scheduled(fixedRate = 500)
+	public void tableLive() {
+		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+	}
+
 	@PutMapping("/ball/{ballId}")
 	public void selectBall(@PathVariable Long ballId) {
 		tableService.selectBall(ballId);
 	}
-
 
 	@PutMapping("/pocket/{pocketId}")
 	public void selectPocket(@PathVariable Long pocketId) {
@@ -75,26 +91,6 @@ public class BilliardTableController {
 			return null;
 
 		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls(), idPocket);
-	}
-
-	@PutMapping("/kalibracja")
-	public void Kalibracja(@RequestBody List<Point> list) {
-		if (list != null || list.size() != 4) {
-			int leftMargin = (int) list.get(0).x;
-			int topMargin = (int) list.get(0).y;
-			int height = (int) (list.get(1).x - list.get(0).x);
-			int width = (int) (list.get(1).y - list.get(0).y);
-
-			if (leftMargin < 1 || topMargin < 1 || width < 1 || height < 1)
-				return;
-
-			kinectService.setLeft_margin(leftMargin);
-			kinectService.setTop_margin(topMargin);
-			kinectService.setAreaHeight(height);
-			kinectService.setAreaWidth(width);
-
-			this.kinectService.saveProperties();
-		}
 	}
 
 	@PutMapping("/hints")

@@ -1,17 +1,10 @@
 package pl.ncdc.billiard.service;
 
-import org.opencv.core.Point;
 import java.util.ArrayList;
-
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opencv.core.Point;
 import org.springframework.stereotype.Service;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Pocket;

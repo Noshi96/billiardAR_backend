@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.Controllers;
+package pl.ncdc.billiard.controllers;
 
 import java.util.List;
 

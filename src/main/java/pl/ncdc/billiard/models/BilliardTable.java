@@ -3,14 +3,16 @@ package pl.ncdc.billiard.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.opencv.core.Point;
 import org.springframework.stereotype.Component;
 
-import pl.ncdc.billiard.models.Ball;
-import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.NewPoint;
 
 @Component
+@Data
+@AllArgsConstructor
 public class BilliardTable {
 
 	private int height;
@@ -28,122 +30,16 @@ public class BilliardTable {
 	private Pocket selectedPocket;
 
 	private Point hittingPoint;
-	
+
 	private List<NewPoint> allPossibleHits;
-	
+
 	private List<Point> yellowBox;
-	
+
 	private String difficultyLevel;
-	
+
 	private List<Point> disturbPoints;
 
 	public BilliardTable() {
-		balls = new ArrayList<>();
-		pockets = new ArrayList<Pocket>();
-		pockets.add(new Pocket(1, new Point(90, 85)));
-		pockets.add(new Pocket(2, new Point(670, 58)));
-		pockets.add(new Pocket(3, new Point(1250, 90)));
-		pockets.add(new Pocket(4, new Point(80, 660)));
-		pockets.add(new Pocket(5, new Point(665, 680)));
-		pockets.add(new Pocket(6, new Point(1240, 665)));
 	}
 
-	public List<Ball> getBalls() {
-		return balls;
-	}
-
-	public void setBalls(List<Ball> balls) {
-		this.balls = balls;
-	}
-
-	public List<Pocket> getPockets() {
-		return pockets;
-	}
-
-	public void setPockets(List<Pocket> pockets) {
-		this.pockets = pockets;
-	}
-
-	public Ball getWhiteBall() {
-		return whiteBall;
-	}
-
-	public void setWhiteBall(Ball whiteBall) {
-		this.whiteBall = whiteBall;
-	}
-
-	public Ball getSelectedBall() {
-		return selectedBall;
-	}
-
-	public void setSelectedBall(Ball selectedBall) {
-		this.selectedBall = selectedBall;
-	}
-
-	public Pocket getSelectedPocket() {
-		return selectedPocket;
-	}
-
-	public void setSelectedPocket(Pocket selectedPocket) {
-		this.selectedPocket = selectedPocket;
-	}
-
-	public void setHittingPoint(Point hittingPoint) {
-		this.hittingPoint = hittingPoint;
-	}
-
-	public Point getHittingPoint() {
-		return hittingPoint;
-	}
-
-	public List<NewPoint> getAllPossibleHits() {
-		return allPossibleHits;
-	}
-
-	public void setAllPossibleHits(List<NewPoint> allPossibleHits) {
-		this.allPossibleHits = allPossibleHits;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public List<Point> getYellowBox() {
-		return yellowBox;
-	}
-
-	public void setYellowBox(List<Point> yellowBox) {
-		this.yellowBox = yellowBox;
-	}
-
-	public String getDifficultyLevel() {
-		return difficultyLevel;
-	}
-
-	public void setDifficultyLevel(String difficultyLevel) {
-		this.difficultyLevel = difficultyLevel;
-	}
-
-	public List<Point> getDisturbPoints() {
-		return disturbPoints;
-	}
-
-	public void setDisturbPoints(List<Point> disturbPoints) {
-		this.disturbPoints = disturbPoints;
-	}
-
-	
-	
 }
