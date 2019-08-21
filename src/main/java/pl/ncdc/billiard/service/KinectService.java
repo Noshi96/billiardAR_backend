@@ -57,8 +57,6 @@ public class KinectService {
 	private int minBallRadius;
 	private int maxBallRadius;
 
-	private int counter = 0;
-
 	private int status;
 	private List<Ball> history;
 
@@ -151,9 +149,9 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
-		//counter++;
-		//if (counter > 60)
-		//	counter = 0;
+		// counter++;
+		// if (counter > 60)
+		// counter = 0;
 		// show(frame);
 		// updateTable(frame);
 		// send table by web socket
@@ -176,12 +174,17 @@ public class KinectService {
 	private List<Ball> updateHipstory(List<Ball> list) {
 		Point point;
 		List<Ball> newList = new ArrayList<Ball>();
-		if (this.table.getBalls() == null || this.table.getBalls().size() == 0 || counter == 0)
+		if (this.table.getBalls() == null || this.table.getBalls().size() == 0)
 			return list;
 		for (Ball ball : this.table.getBalls()) {
 			point = this.table.findBallByPoint(ball.getPoint());
-			if (point != null)
+			if (point == null)
 				newList.add(ball);
+			else {
+				ball.getPoint().x = (ball.getPoint().x + point.x) / 2;
+				ball.getPoint().y = (ball.getPoint().y + point.y) / 2;
+				newList.add(ball);
+			}
 		}
 		return newList;
 	}
