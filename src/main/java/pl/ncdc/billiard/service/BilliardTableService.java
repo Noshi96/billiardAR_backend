@@ -22,14 +22,10 @@ public class BilliardTableService {
 		return table;
 	}
 
-	public void selectBall(Long ballId) {
-		table.setSelectedBall(null);
-
-		for (Ball ball : table.getBalls()) {
-			if (ball.getId() == ballId) {
-				table.setSelectedBall(ball);
-			}
-		}
+	public void selectBall(Point point) {
+		// table.setSelectedBall(null);
+		table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
+		System.out.println(table.getSelectedBall().getPoint());
 	}
 
 	/**
@@ -49,6 +45,8 @@ public class BilliardTableService {
 		int height = (int) (leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2;
 		this.table.setWidth(width);
 		this.table.setHeight(height);
+		// this.table.setBallRadius(calibrationParams.getBallDiameter());
+		this.table.setBallRadius(13);
 
 		// add pockets
 		List<Pocket> pockets = new ArrayList<Pocket>();

@@ -151,15 +151,16 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
-		counter++;
-		if (counter > 60)
-			counter = 0;
+		//counter++;
+		//if (counter > 60)
+		//	counter = 0;
 		// show(frame);
 		// updateTable(frame);
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
 
-		this.table.setBalls(updateHipstory(newList));
+		// this.table.setBalls(updateHipstory(newList));
+		this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		// updateHipstory();
@@ -178,20 +179,11 @@ public class KinectService {
 		if (this.table.getBalls() == null || this.table.getBalls().size() == 0 || counter == 0)
 			return list;
 		for (Ball ball : this.table.getBalls()) {
-			point = findBallByPoint(ball.getPoint(), list);
+			point = this.table.findBallByPoint(ball.getPoint());
 			if (point != null)
 				newList.add(ball);
 		}
 		return newList;
-	}
-
-	public Point findBallByPoint(Point point, List<Ball> list) {
-		for (Ball ball : list) {
-			if (Math.abs(ball.getPoint().x - point.x) < this.maxBallRadius
-					&& Math.abs(ball.getPoint().y - point.y) < this.maxBallRadius)
-				return ball.getPoint();
-		}
-		return null;
 	}
 
 	/**

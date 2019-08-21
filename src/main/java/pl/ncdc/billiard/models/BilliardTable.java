@@ -1,13 +1,12 @@
 package pl.ncdc.billiard.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.opencv.core.Point;
 import org.springframework.stereotype.Component;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import pl.ncdc.billiard.service.NewPoint;
 
 @Component
@@ -36,6 +35,8 @@ public class BilliardTable {
 	private List<Point> yellowBox;
 
 	private String difficultyLevel;
+
+	private int ballRadius;
 
 	private List<Point> disturbPoints;
 
@@ -67,9 +68,22 @@ public class BilliardTable {
 	public void setSelectedChallenge(int selectedChallenge) {
 		this.selectedChallenge = selectedChallenge;
 	}
-
-	// odwrocone bandy
 	public BilliardTable() {
+		
 	}
-
+	/**
+	 * Search in Ball collection and try to find correct match
+	 * 
+	 * @param point
+	 * @return {@code Point} position of ball.</br>
+	 *         Null if not found
+	 */
+	public Point findBallByPoint(Point point) {
+		for (Ball ball : this.balls) {
+			if (Math.abs(ball.getPoint().x - point.x) < this.ballRadius
+					&& Math.abs(ball.getPoint().y - point.y) < this.ballRadius)
+				return ball.getPoint();
+		}
+		return null;
+	}
 }
