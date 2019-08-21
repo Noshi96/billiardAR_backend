@@ -49,6 +49,7 @@ bootRun {
 
 task copyResources(type: Copy) {
 	from "$buildDir/resources/main"
+	exclude "static"
 	into "$buildDir/libs/src/main/resources"
 }
 
