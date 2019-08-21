@@ -65,4 +65,10 @@ public class CalibrationService {
             return entity;
         }
     }
+
+    public CalibrationParams resetToDefault() {
+		pl.ncdc.billiard.entities.CalibrationParams calibrationParamsEntity = getCalibrationParamsEntity();
+		calibrationParamsMapper.updateEntityFromModelIgnoreId(CalibrationParams.getDefaultCalibrationParams(), calibrationParamsEntity);
+		return calibrationParamsMapper.toModel(calibrationParamsEntity);
+	}
 }
