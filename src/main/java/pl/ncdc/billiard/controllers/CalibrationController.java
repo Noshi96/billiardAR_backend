@@ -42,4 +42,11 @@ public class CalibrationController {
 		calibrationParams = calibrationService.save(calibrationParams);
 		simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
 	}
+
+	@GetMapping("/reset")
+	public CalibrationParams resetToDefault() {
+		CalibrationParams calibrationParams = this.calibrationService.resetToDefault();
+		simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
+		return calibrationParams;
+	}
 }
