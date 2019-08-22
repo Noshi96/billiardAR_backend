@@ -22,18 +22,15 @@ public class BilliardTableService {
 		return table;
 	}
 
-	public void selectBall(Long ballId) {
-		table.setSelectedBall(null);
-
-		for (Ball ball : table.getBalls()) {
-			if (ball.getId() == ballId) {
-				table.setSelectedBall(ball);
-			}
-		}
+	public void selectBall(Point point) {
+		// table.setSelectedBall(null);
+		table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
+		System.out.println(table.getSelectedBall().getPoint());
 	}
 
 	/**
-	 * Calculate new table height, width, and pockets positions 
+	 * Calculate new table height, width, and pockets positions
+	 * 
 	 * @param calibrationParams
 	 */
 	public void updateCalibration(CalibrationParams calibrationParams) {
@@ -46,8 +43,11 @@ public class BilliardTableService {
 		// calculate new area size
 		int width = (int) (rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2;
 		int height = (int) (leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2;
+		
 		this.table.setWidth(width);
 		this.table.setHeight(height);
+		
+		this.table.setBallRadius(calibrationParams.getBallDiameter()/2);
 
 		// add pockets
 		List<Pocket> pockets = new ArrayList<Pocket>();
@@ -63,7 +63,7 @@ public class BilliardTableService {
 		pockets.add(new Pocket(4, new Point(width / 2, height)));
 		// bottom left
 		pockets.add(new Pocket(5, new Point(0, height)));
-		
+
 		this.table.setPockets(pockets);
 	}
 
@@ -74,5 +74,13 @@ public class BilliardTableService {
 				table.setSelectedPocket(pocket);
 			}
 		}
+	}
+	
+	public void setViewMode(int viewMode) {
+		table.setSelectedViewMode(viewMode);
+	}
+
+	public void setSelectedChallenge(int selectedChallenge) {
+		table.setSelectedChallenge(selectedChallenge);
 	}
 }

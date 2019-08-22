@@ -22,4 +22,10 @@ public class CalibrationParams {
     private Point rightBottomCorner;
     private Point rightUpperCorner;
     private int ballDiameter;
+    private Point tableSizeInCm;
+    private int whiteBallDensity;
+    private Point leftBottomCornerProjector;
+    private Point leftUpperCornerProjector;
+    private Point rightBottomCornerProjector;
+    private Point rightUpperCornerProjector;
 }

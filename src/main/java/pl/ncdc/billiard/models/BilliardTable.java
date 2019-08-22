@@ -1,13 +1,12 @@
 package pl.ncdc.billiard.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.opencv.core.Point;
 import org.springframework.stereotype.Component;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import pl.ncdc.billiard.service.NewPoint;
 
 @Component
@@ -37,9 +36,54 @@ public class BilliardTable {
 
 	private String difficultyLevel;
 
+	private int ballRadius;
+
 	private List<Point> disturbPoints;
 
-	public BilliardTable() {
+	// dodane przez Koala, przydatne do fronta
+	// view mode- okresla wyswietlanie zawartosci na stronie
+	// apka: 0 - pokazuej same bile, 1 - tryb pasywny 1, rysuje bile, rysuje
+	// zaznaczenia oraz trajektorie
+	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1
+	// - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje
+	// trajektorie
+	private int selectedViewMode = 0;
+
+	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
+	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
+	private int selectedChallenge = 0;
+
+	public int getSelectedViewMode() {
+		return selectedViewMode;
 	}
 
+	public void setSelectedViewMode(int selectedViewMode) {
+		this.selectedViewMode = selectedViewMode;
+	}
+
+	public int getSelectedChallenge() {
+		return selectedChallenge;
+	}
+
+	public void setSelectedChallenge(int selectedChallenge) {
+		this.selectedChallenge = selectedChallenge;
+	}
+	public BilliardTable() {
+		
+	}
+	/**
+	 * Search in Ball collection and try to find correct match
+	 * 
+	 * @param point
+	 * @return {@code Point} position of ball.</br>
+	 *         Null if not found
+	 */
+	public Point findBallByPoint(Point point) {
+		for (Ball ball : this.balls) {
+			if (Math.abs(ball.getPoint().x - point.x) < this.ballRadius
+					&& Math.abs(ball.getPoint().y - point.y) < this.ballRadius)
+				return ball.getPoint();
+		}
+		return null;
+	}
 }

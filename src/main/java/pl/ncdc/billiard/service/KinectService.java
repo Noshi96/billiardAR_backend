@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -42,9 +41,11 @@ import pl.ncdc.billiard.models.CalibrationParams;
 public class KinectService {
 
 	@Autowired
-	protected BilliardTable table;
+	private BilliardTable table;
 	@Autowired
-	protected SimpMessagingTemplate simpMessagingTemplate;
+	private HistoryService historyService;
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private Kinect kinect;
 
@@ -57,6 +58,9 @@ public class KinectService {
 	// kalibracja
 	private int minBallRadius;
 	private int maxBallRadius;
+	private int minWhiteBallDensity;
+
+	Mat actualFrame;;
 
 	private int status;
 
@@ -64,6 +68,7 @@ public class KinectService {
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
 		backgroundSubstractor = Video.createBackgroundSubtractorMOG2();
+		actualFrame = new Mat();
 	}
 
 	@PostConstruct
@@ -80,6 +85,11 @@ public class KinectService {
 
 		// read mask
 		this.mask = Imgcodecs.imread(this.filename);
+		if (this.mask == null) {
+			System.out.println("File '" + this.filename + "' cannot be found.");
+			System.out.println("Create new mask");
+			this.mask = new Mat(this.table.getWidth(), this.table.getHeight(), CvType.CV_8UC4);
+		}
 		// wrap mask
 		Imgproc.warpPerspective(this.mask, this.mask, this.perspectiveTransform,
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
@@ -107,8 +117,10 @@ public class KinectService {
 		Point rightTop = calibrationParams.getRightUpperCorner();
 
 		// check detected ball's diameter
-		this.minBallRadius = calibrationParams.getBallDiameter() - 2;
-		this.maxBallRadius = calibrationParams.getBallDiameter() + 2;
+		this.minBallRadius = calibrationParams.getBallDiameter() / 2 - 2;
+		this.maxBallRadius = calibrationParams.getBallDiameter() / 2 + 2;
+
+		this.minWhiteBallDensity = calibrationParams.getWhiteBallDensity();
 
 		// add points to a list and generate Mat object
 		List<Point> pts = new ArrayList<Point>();
@@ -146,9 +158,12 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
-		//show(frame);
-		updateTable(frame);
+		this.actualFrame = frame.clone();
 		// send table by web socket
+		List<Ball> newList = updateTable(frame);
+		// this.table.setBalls(updateHipstory(newList));
+		this.table.setBalls(this.historyService.updateHistory(newList, maxBallRadius));
+		//this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		// if calibrate
@@ -157,6 +172,24 @@ public class KinectService {
 		} else if (this.status == 2) {
 			generateMask(frame);
 		}
+	}
+
+	private List<Ball> updateHipstory(List<Ball> list) {
+		Point point;
+		List<Ball> newList = new ArrayList<Ball>();
+		if (this.table.getBalls() == null || this.table.getBalls().size() == 0)
+			return list;
+		for (Ball ball : this.table.getBalls()) {
+			point = this.table.findBallByPoint(ball.getPoint());
+			if (point == null)
+				newList.add(ball);
+			else {
+				ball.getPoint().x = (ball.getPoint().x + point.x) / 2;
+				ball.getPoint().y = (ball.getPoint().y + point.y) / 2;
+				newList.add(ball);
+			}
+		}
+		return newList;
 	}
 
 	/**
@@ -170,9 +203,8 @@ public class KinectService {
 	 * @param width  number of columns - image <b>WIDTH</b>
 	 * @see Imgproc#HoughCircles(Mat, Mat, int, double, double, double, double, int,
 	 *      int)
-	 * 
 	 */
-	private void updateTable(Mat frame) {
+	private List<Ball> updateTable(Mat frame) {
 		Mat circles = new Mat();
 		Mat gray = new Mat();
 
@@ -181,36 +213,34 @@ public class KinectService {
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
 		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
 		// create and apply mask
-		this.mask = new Mat();
+		// this.mask = new Mat();
 		this.backgroundSubstractor.apply(gray, this.mask, 0);
 		// apply blur
-		Imgproc.medianBlur(this.mask, this.mask, 5);
-		Imgproc.HoughCircles(this.mask, circles, Imgproc.HOUGH_GRADIENT, 1.0, (double) gray.rows() / 16, 15.0, 10.0,
+		Imgproc.medianBlur(this.mask, this.mask, 9);
+		// show(mask);
+		Imgproc.HoughCircles(this.mask, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
-
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
-		Ball ball;
 		// Detect white ball
 		Ball whiteBall = whiteBallDetection(frame, circles, this.maxBallRadius);
+		if (whiteBall != null)
+			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
 		this.table.setWhiteBall(whiteBall);
 
 		for (int x = 0; x < circles.cols(); x++) {
 			double[] c = circles.get(0, x);
-			Point point = new Point();
-			// TODO: check,
-			point.x = table.getWidth() - c[0];
-			point.y = c[1];
-			if (table.getWhiteBall().getPoint().x != point.x) {
-				ball = new Ball(0, point);
-				list.add(ball);
+			Point point = new Point(table.getWidth() - c[0], c[1]);
+			if (whiteBall == null || Math.abs(whiteBall.getPoint().x - point.x) > this.minBallRadius
+					|| Math.abs(whiteBall.getPoint().y - point.y) > this.minBallRadius) {
+				list.add(new Ball(0, point));
 			}
 		}
 		// sort balls by X
 		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o1.getPoint().x));
 		for (int i = 1; i < list.size(); i++)
 			list.get(i).setId(i);
-		this.table.setBalls(list);
+		return list;
 	}
 
 	/**
@@ -260,30 +290,80 @@ public class KinectService {
 	 * @return Function return Ball pointed to the White Ball
 	 */
 	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
-		double maxSum = Integer.MIN_VALUE;
-		Point whiteBall = new Point();
-
+		// for each circle
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
-			// Rect rect = new Rect((int) c[0] - r + this.left_margin, (int) c[1] - r +
-			// this.top_margin, r * 2, r * 2);
-			Rect rect = new Rect((int) c[0] - r + 0, (int) c[1] - r + 0, r * 2, r * 2);
+			// get position
+			int x = (int) c[0] - r;
+			int y = (int) c[1] - r;
+			// reset sum
 			double rectSum = 0;
-			for (int j = rect.y; j <= rect.y + rect.height; j++) {
-				for (int k = rect.x; k <= rect.x + rect.width; k++) {
-					rectSum += image.get(j, k)[0];
-					rectSum += image.get(j, k)[1];
-					rectSum += image.get(j, k)[2];
+			// for each pixel in distance < radius from circle center
+			for (int j = y; j <= y + 2 * r; j++) {
+				for (int k = x; k <= x + 2 * r; k++) {
+					if (Math.pow(k - c[0], 2) + Math.pow(j - c[1], 2) <= Math.pow(c[2], 2)) {
+						// if position is inside the image (array)
+						if (j > 0 && k > 0 && j < table.getHeight() && k < table.getWidth()) {
+							rectSum += image.get(j, k)[0];
+							rectSum += image.get(j, k)[1];
+							rectSum += image.get(j, k)[2];
+						}
+					}
 				}
 			}
-
-			if (rectSum > maxSum) {
-				whiteBall = new Point(c[0], c[1]);
-				maxSum = rectSum;
-			}
+			// current ball accept criteria
+			if (rectSum > this.minWhiteBallDensity)
+				return new Ball(0, new Point(c[0], c[1]));
 		}
-
-		return new Ball(0, whiteBall);
+		// white ball not detected
+		return null;
 	}
 
+	/**
+	 * Try to detect Billiard Table by pockets and compute his parameters
+	 * 
+	 * @param calibrationParams Parameters that will be updated
+	 * @return CalibrationParams contains new values
+	 */
+	public CalibrationParams automaticCalibration(CalibrationParams calibrationParams) {
+		Mat frame = this.actualFrame.clone();
+		Mat circles = new Mat();
+		Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.medianBlur(frame, frame, 9);
+		Imgproc.HoughCircles(frame, circles, Imgproc.HOUGH_GRADIENT, 1.0, 32, 20.0, 25.0, 20, 40);
+		List<Point> pockets = new ArrayList<Point>();
+		double radius = 0;
+		for (int i = 0; i < circles.cols(); i++) {
+			double[] c = circles.get(0, i);
+			if (c[2] > radius)
+				radius = c[2];
+			pockets.add(new Point(circles.get(0, i)));
+		}
+		radius = Math.floor(radius / 2);
+		if (pockets.size() != 6)
+			return null;
+
+		for (int index = 0; index < pockets.size(); index++) {
+			pockets.get(index).x = Math.floor(pockets.get(index).x);
+			pockets.get(index).y = Math.floor(pockets.get(index).y);
+		}
+		pockets.sort((p1, p2) -> Double.compare(p1.x, p2.x));
+		System.out.println(pockets);
+		if (pockets.get(0).y < pockets.get(1).y) {
+			calibrationParams.setLeftUpperCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y + radius));
+			calibrationParams.setLeftBottomCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y - radius));
+		} else {
+			calibrationParams.setLeftUpperCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y + radius));
+			calibrationParams.setLeftBottomCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y - radius));
+		}
+		if (pockets.get(5).y < pockets.get(4).y) {
+			calibrationParams.setRightUpperCorner(new Point(pockets.get(5).x - radius, pockets.get(5).y + radius));
+			calibrationParams.setRightBottomCorner(new Point(pockets.get(4).x - radius, pockets.get(4).y - radius));
+		} else {
+			calibrationParams.setRightUpperCorner(new Point(pockets.get(4).x - radius, pockets.get(4).y + radius));
+			calibrationParams.setRightBottomCorner(new Point(pockets.get(5).x - radius, pockets.get(5).y - radius));
+		}
+
+		return calibrationParams;
+	}
 }

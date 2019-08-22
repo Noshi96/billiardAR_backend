@@ -12,21 +12,21 @@ import pl.ncdc.billiard.mappers.CalibrationParamsMapper;
 import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.repository.CalibrationParamsRepository;
 
-
 @Service
 public class CalibrationService {
 
 	private KinectService kinectService;
 	private BilliardTableService billiardTableService;
 	private final CalibrationParamsRepository calibrationParamsRepository;
-    private final CalibrationParamsMapper calibrationParamsMapper;
+	private final CalibrationParamsMapper calibrationParamsMapper;
 
 	@Autowired
-	public CalibrationService(@Lazy KinectService kinectService, BilliardTableService billiardTableService, CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper) {
+	public CalibrationService(@Lazy KinectService kinectService, BilliardTableService billiardTableService,
+			CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper) {
 		this.kinectService = kinectService;
 		this.billiardTableService = billiardTableService;
 		this.calibrationParamsRepository = calibrationParamsRepository;
-        this.calibrationParamsMapper = calibrationParamsMapper;
+		this.calibrationParamsMapper = calibrationParamsMapper;
 	}
 
 	@PostConstruct
@@ -40,29 +40,46 @@ public class CalibrationService {
 		this.kinectService.updateCalibration(calibrationParams);
 
 		pl.ncdc.billiard.entities.CalibrationParams entity = getCalibrationParamsEntity();
-        calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);
+		calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);
 
-        calibrationParamsRepository.save(entity);
+		calibrationParamsRepository.save(entity);
 
-        calibrationParamsMapper.updateModelFromEntity(entity, calibrationParams);
-        return calibrationParams;
+		calibrationParamsMapper.updateModelFromEntity(entity, calibrationParams);
+		return calibrationParams;
 	}
-	
-	 public CalibrationParams getCalibrationParams() {
-        return calibrationParamsMapper.toModel(getCalibrationParamsEntity());
-    }
+
+	public CalibrationParams getCalibrationParams() {
+		return calibrationParamsMapper.toModel(getCalibrationParamsEntity());
+	}
 
 	private pl.ncdc.billiard.entities.CalibrationParams getCalibrationParamsEntity() {
-        Optional<pl.ncdc.billiard.entities.CalibrationParams> optionalCalibrationParams = calibrationParamsRepository.findFirstByOrderByIdAsc();
-        if(optionalCalibrationParams.isPresent()) {
-            return optionalCalibrationParams.get();
-        } else {
-            CalibrationParams defaultCalibrationParams = CalibrationParams.getDefaultCalibrationParams();
-            pl.ncdc.billiard.entities.CalibrationParams entity = calibrationParamsMapper.toEntity(defaultCalibrationParams);
+		Optional<pl.ncdc.billiard.entities.CalibrationParams> optionalCalibrationParams = calibrationParamsRepository
+				.findFirstByOrderByIdAsc();
+		if (optionalCalibrationParams.isPresent()) {
+			return optionalCalibrationParams.get();
+		} else {
+			CalibrationParams defaultCalibrationParams = CalibrationParams.getDefaultCalibrationParams();
+			pl.ncdc.billiard.entities.CalibrationParams entity = calibrationParamsMapper
+					.toEntity(defaultCalibrationParams);
+			calibrationParamsRepository.save(entity);
 
-            calibrationParamsRepository.save(entity);
+			return entity;
+		}
+	}
 
-            return entity;
-        }
-    }
+	public CalibrationParams resetToDefault() {
+		pl.ncdc.billiard.entities.CalibrationParams calibrationParamsEntity = getCalibrationParamsEntity();
+		calibrationParamsMapper.updateEntityFromModelIgnoreId(CalibrationParams.getDefaultCalibrationParams(),
+				calibrationParamsEntity);
+		calibrationParamsRepository.save(calibrationParamsEntity);
+		return calibrationParamsMapper.toModel(calibrationParamsEntity);
+	}
+
+	public void automaticCalibration() {
+		CalibrationParams calibrationParams = getCalibrationParams();
+		CalibrationParams newParams = null;
+		while (newParams == null)
+			newParams = this.kinectService.automaticCalibration(calibrationParams);
+		this.save(newParams);
+	}
 }

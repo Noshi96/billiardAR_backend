@@ -14,7 +14,7 @@ import pl.ncdc.billiard.models.Pocket;
 @Service
 public class HitService {
 
-	double diameter = 20;
+	double diameter = 26;
 	
 
 	/**
@@ -63,37 +63,63 @@ public class HitService {
 	 */
 	public List<Point> findHittingPoint(Point white, Point selected, Point pocket, List<Ball> list, int idPocket) {
 
-		Point pointTarget = new Point();
-		List<Point> listPoints = new ArrayList<Point>();
-		
-		//Imgproc.
-		Point bandPoint = new Point();
-
-		double length = Math.sqrt(
-				(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
-
-		double dx = (selected.x - pocket.x) / length;
-		double dy = (selected.y - pocket.y) / length;
-
-		double x = pocket.x + ((diameter + length) * dx);
-		double y = pocket.y + ((diameter + length) * dy);
-
-		pointTarget.x = x;
-		pointTarget.y = y;
-		double rightAngle = 1.57;
-		
-		listPoints.add(pointTarget);
-		if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list) == false) {
-			bandPoint = find(pointTarget, white, pocket, idPocket + 1);
+		if (selected != null) {
+			Point pointTarget = new Point();
+			List<Point> listPoints = new ArrayList<Point>();
+			Point bandPoint = new Point();
+			double length = Math.sqrt(
+					(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
 			
-			//Jesli zwroci true znaczy ze nie ma kolizji wiec moze dodac sobie punkt bandy do listy(obr. 3)
-			if (findCollision(pocket, bandPoint, list, selected)) {
-				listPoints.add(bandPoint);		
-			} else {
-				return null;
+			double dx = (selected.x - pocket.x) / length;
+			double dy = (selected.y - pocket.y) / length;
+			
+			double x = pocket.x + ((diameter + length) * dx);
+			double y = pocket.y + ((diameter + length) * dy);
+			
+			pointTarget.x = x;
+			pointTarget.y = y;
+			double rightAngle = 1.57;
+			
+			double angle = findAngle(white, pointTarget, pocket);
+			System.out.println("kat: " + 57 * angle);
+			
+			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
+			System.out.println("kolizja: " + collision);
+			
+			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
+			System.out.println("kolizja2: " + collision2);
+			
+			if (collision2) {
+				System.out.println("Error list");
+				System.out.println(list);
 			}
-		}			
-		return listPoints;
+			
+			System.out.println(list);
+			
+			System.out.println("rightAngle = " + rightAngle);
+			System.out.println("angle orginal =" + angle);
+			listPoints.add(pointTarget);
+//			if (angle < rightAngle   || collision2 == false || collision == false) {
+//				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
+//				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
+//			}	
+			
+			if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list, selected) == false) {
+				bandPoint = find(pointTarget, white, pocket, idPocket + 1);
+				
+				//Jesli zwroci true znaczy ze nie ma kolizji wiec moze dodac sobie punkt bandy do listy(obr. 3)
+				if (findCollision(pocket, bandPoint, list, selected)) {
+					listPoints.add(bandPoint);		
+				} else {
+					return null;
+				}
+			}	
+			
+			System.out.println(listPoints);
+			return listPoints;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -107,7 +133,7 @@ public class HitService {
 	public boolean findCollision(Point pocket, Point target, List<Ball> listBall, Point selectedBall) {
 		//kolizja selected z target(obr. 1)
 		for (Ball ball : listBall) {
-			if (ball.getPoint() != selectedBall) {
+			if (!isPointInRange(ball.getPoint(), selectedBall, diameter / 2)) {
 				double angle = findAngleOfCollision(target, ball.getPoint(), pocket);
 				angle *= 57;
 				if (angle < 185 && angle > 176)
@@ -117,6 +143,14 @@ public class HitService {
 		return true;
 	}
 	
+	public boolean isPointInRange(Point point, Point point2, double tolerance) {
+		if (Math.abs(point2.x - point.x) < tolerance && Math.abs(point2.y - point.y) < tolerance) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * Znajduje kolizje
 	 * @param white Pozycja bialej
@@ -124,10 +158,10 @@ public class HitService {
 	 * @param listBall Lista wszystkich bill
 	 * @return false jesli znajdzie kolizje
 	 */
-	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
+	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall, Point selected) {
 
 		for (Ball ball : listBall) {
-			if (ball.getPoint() != target) {
+			if (ball.getPoint() != selected) {
 				double angle = findAngleOfCollision(white, ball.getPoint(), target); // tu na logike powinna byc kolizja (obr. 2)
 				angle *= 57;
 				if (angle < 185 && angle > 176)
