@@ -63,6 +63,8 @@ public class KinectService {
 	private int maxBallRadius;
 	private int minWhiteBallDensity;
 
+	Mat actualFrame;;
+
 	private int status;
 	private List<Ball> history;
 
@@ -70,6 +72,7 @@ public class KinectService {
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
 		backgroundSubstractor = Video.createBackgroundSubtractorMOG2();
+		actualFrame = new Mat();
 	}
 
 	@PostConstruct
@@ -159,7 +162,7 @@ public class KinectService {
 	public void send(byte[] data, int height, int width) {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
-
+		this.actualFrame = frame.clone();
 		// updateTable(frame);
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
@@ -328,14 +331,9 @@ public class KinectService {
 	 * @return CalibrationParams contains new values
 	 */
 	public CalibrationParams automaticCalibration(CalibrationParams calibrationParams) {
-		 Mat frame = new Mat(this.kinect.getColorWidth(),
-		 this.kinect.getColorHeight(), CvType.CV_8UC4);
-		 frame.put(0, 0, this.kinect.getColorFrame());
-
-		//Mat frame = Imgcodecs.imread(this.filename);
-
+		Mat frame = this.actualFrame.clone();
 		Mat circles = new Mat();
-		Imgproc.cvtColor(frame.clone(), frame, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
 		Imgproc.medianBlur(frame, frame, 9);
 		Imgproc.HoughCircles(frame, circles, Imgproc.HOUGH_GRADIENT, 1.0, 32, 20.0, 25.0, 20, 40);
 		List<Point> pockets = new ArrayList<Point>();
@@ -346,8 +344,16 @@ public class KinectService {
 				radius = c[2];
 			pockets.add(new Point(circles.get(0, i)));
 		}
-		radius /= 2;
+		radius = Math.floor(radius / 2);
+		if (pockets.size() != 6)
+			return null;
+
+		for (int index = 0; index < pockets.size(); index++) {
+			pockets.get(index).x = Math.floor(pockets.get(index).x);
+			pockets.get(index).y = Math.floor(pockets.get(index).y);
+		}
 		pockets.sort((p1, p2) -> Double.compare(p1.x, p2.x));
+		System.out.println(pockets);
 		if (pockets.get(0).y < pockets.get(1).y) {
 			calibrationParams.setLeftUpperCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y + radius));
 			calibrationParams.setLeftBottomCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y - radius));

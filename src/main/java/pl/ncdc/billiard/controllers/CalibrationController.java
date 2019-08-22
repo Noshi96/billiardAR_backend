@@ -45,7 +45,7 @@ public class CalibrationController {
 	}
 	
 	@GetMapping("/automatic")
-	public CalibrationParams automatiCalibration() {
-		return this.calibrationService.automaticCalibration();
+	public void automatiCalibration() {
+		this.calibrationService.automaticCalibration();
 	}
 }
