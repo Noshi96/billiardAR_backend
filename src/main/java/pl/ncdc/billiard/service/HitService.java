@@ -75,12 +75,32 @@ public class HitService {
 		pointTarget.x = x;
 		pointTarget.y = y;
 		double rightAngle = 1.57;
+		
+		double angle = findAngle(white, pointTarget, pocket);
+		System.out.println("kat: " + 57 * angle);
+		
+		boolean collision = findCollisionSecond(white, pointTarget, list);
+		System.out.println("kolizja: " + collision);
+		
+		boolean collision2 = findCollision(pocket, pointTarget, list);
+		System.out.println("kolizja2: " + collision2);
+		
+		if (collision2) {
+			System.out.println("Error list");
+			System.out.println(list);
+		}
+		
+		System.out.println(list);
 
+		System.out.println("rightAngle = " + rightAngle);
+		System.out.println("angle orginal =" + angle);
 		listPoints.add(pointTarget);
-		if (findAngle(white, pointTarget, pocket) < rightAngle   || findCollision(pocket, pointTarget, list) == false || findCollisionSecond(white, pointTarget, list) == false) {
-			
+		if (angle < rightAngle   || collision2 == false || collision == false) {
+			System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
 			listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
 		}			
+		
+		System.out.println(listPoints);
 		return listPoints;
 	}
 
