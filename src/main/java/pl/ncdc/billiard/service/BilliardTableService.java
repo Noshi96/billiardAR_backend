@@ -75,4 +75,8 @@ public class BilliardTableService {
 			}
 		}
 	}
+
+	public void setSelectedChallenge(int selectedChallenge) {
+		table.setSelectedChallenge(selectedChallenge);
+	}
 }

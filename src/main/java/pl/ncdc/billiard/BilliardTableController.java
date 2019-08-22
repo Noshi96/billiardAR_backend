@@ -101,7 +101,12 @@ public class BilliardTableController {
 		if (points == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
-	}   
-      
+	}
+
+	// Will be removed later
+	@PutMapping("/setChallenge/{selectedChallenge}")
+	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
+		tableService.setSelectedChallenge(selectedChallenge);
+	}
 }
 
