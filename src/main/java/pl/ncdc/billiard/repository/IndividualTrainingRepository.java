@@ -1,12 +1,11 @@
 package pl.ncdc.billiard.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import pl.ncdc.billiard.entities.IndividualTrainingEntity;
+import pl.ncdc.billiard.models.DifficultyLevel;
 
-import pl.ncdc.billiard.models.IndividualTraining;
+import java.util.List;
 
-@Repository
-public interface IndividualTrainingRepository extends JpaRepository<IndividualTraining, Long>{
-
+public interface IndividualTrainingRepository extends JpaRepository<IndividualTrainingEntity, Long> {
+    List<IndividualTrainingEntity> findAllByDifficultyLevel(DifficultyLevel difficultyLevel);
 }
-

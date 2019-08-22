@@ -5,7 +5,6 @@ import java.util.List;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,16 +12,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import pl.ncdc.billiard.commands.IndividualTrainingCommand;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
-import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
@@ -106,7 +101,12 @@ public class BilliardTableController {
 		if (points == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
-	}   
-      
+	}
+
+	// Will be removed later
+	@PutMapping("/setChallenge/{selectedChallenge}")
+	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
+		tableService.setSelectedChallenge(selectedChallenge);
+	}
 }
 

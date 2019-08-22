@@ -1,14 +1,12 @@
 package pl.ncdc.billiard.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.opencv.core.Point;
 import org.springframework.stereotype.Component;
-
 import pl.ncdc.billiard.service.NewPoint;
+
+import java.util.List;
 
 @Component
 @Data
@@ -38,6 +36,8 @@ public class BilliardTable {
 	private String difficultyLevel;
 
 	private List<Point> disturbPoints;
+
+	private int selectedChallenge = 0;
 
 	public BilliardTable() {
 	}
