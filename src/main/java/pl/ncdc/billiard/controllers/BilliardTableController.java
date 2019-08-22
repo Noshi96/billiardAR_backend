@@ -6,6 +6,7 @@ import org.opencv.core.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,27 @@ public class BilliardTableController {
 		this.simpMessagingTemplate = simpMessagingTemplate;
 		this.hiddenPlacesService = hiddenPlacesService;
 	}
+	
+	
+	@GetMapping("")
+	public BilliardTable getTable() {
+		return tableService.getTable();
+	}
+
+	@Scheduled(fixedRate = 500)
+	public void tableLive() {
+		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+	}
+	
+	@PutMapping("/ball")
+	public void selectBall(@RequestBody Point point) {
+		tableService.selectBall(point);
+	}
+
+	@PutMapping("/pocket/{pocketId}")
+	public void selectPocket(@PathVariable Long pocketId) {
+		tableService.selectPocket(pocketId);
+	}
 
 	@PutMapping("/setViewMode/{viewMode}")
 	public void setViewMode(@PathVariable int viewMode) {
@@ -58,21 +80,6 @@ public class BilliardTableController {
 	@PutMapping("/setChallenge/{selectedChallenge}")
 	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
 		tableService.setSelectedChallenge(selectedChallenge);
-	}
-
-	@GetMapping("")
-	public BilliardTable getTable() {
-		return tableService.getTable();
-	}
-
-	@PutMapping("/ball")
-	public void selectBall(@RequestBody Point point) {
-		tableService.selectBall(point);
-	}
-
-	@PutMapping("/pocket/{pocketId}")
-	public void selectPocket(@PathVariable Long pocketId) {
-		tableService.selectPocket(pocketId);
 	}
 
 	@PutMapping("/hit")
