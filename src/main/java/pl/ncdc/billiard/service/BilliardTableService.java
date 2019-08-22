@@ -43,10 +43,11 @@ public class BilliardTableService {
 		// calculate new area size
 		int width = (int) (rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2;
 		int height = (int) (leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2;
+		
 		this.table.setWidth(width);
 		this.table.setHeight(height);
-		// this.table.setBallRadius(calibrationParams.getBallDiameter());
-		this.table.setBallRadius(13);
+		
+		this.table.setBallRadius(calibrationParams.getBallDiameter()/2);
 
 		// add pockets
 		List<Pocket> pockets = new ArrayList<Pocket>();

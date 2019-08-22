@@ -1,6 +1,5 @@
 package pl.ncdc.billiard.controllers;
 
-import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,12 +33,19 @@ public class CalibrationController {
 
 	@PutMapping
 	public void updateCalibration(@RequestBody CalibrationParams calibrationParams) {
-		calibrationParams.setBallDiameter(20);
-		calibrationParams.setLeftUpperCorner(new Point(442, 292));
-		calibrationParams.setRightUpperCorner(new Point(1611, 308));
-		calibrationParams.setRightBottomCorner(new Point(1603, 889));
-		calibrationParams.setLeftBottomCorner(new Point(436, 880));
 		calibrationParams = calibrationService.save(calibrationParams);
 		simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
+	}
+
+	@GetMapping("/reset")
+	public CalibrationParams resetToDefault() {
+		CalibrationParams calibrationParams = this.calibrationService.resetToDefault();
+		simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
+		return calibrationParams;
+	}
+	
+	@GetMapping("/automatic")
+	public CalibrationParams automatiCalibration() {
+		return this.calibrationService.automaticCalibration();
 	}
 }

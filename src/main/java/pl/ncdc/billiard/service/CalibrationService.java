@@ -59,10 +59,23 @@ public class CalibrationService {
         } else {
             CalibrationParams defaultCalibrationParams = CalibrationParams.getDefaultCalibrationParams();
             pl.ncdc.billiard.entities.CalibrationParams entity = calibrationParamsMapper.toEntity(defaultCalibrationParams);
-
             calibrationParamsRepository.save(entity);
 
             return entity;
         }
     }
+
+    public CalibrationParams resetToDefault() {
+		pl.ncdc.billiard.entities.CalibrationParams calibrationParamsEntity = getCalibrationParamsEntity();
+		calibrationParamsMapper.updateEntityFromModelIgnoreId(CalibrationParams.getDefaultCalibrationParams(), calibrationParamsEntity);
+		calibrationParamsRepository.save(calibrationParamsEntity);
+		return calibrationParamsMapper.toModel(calibrationParamsEntity);
+	}
+
+	public CalibrationParams automaticCalibration() {
+		CalibrationParams calibrationParams = this.kinectService.automaticCalibration(getCalibrationParams());
+		this.billiardTableService.updateCalibration(calibrationParams);
+		this.kinectService.updateCalibration(calibrationParams);
+		return calibrationParams;
+	}
 }
