@@ -187,7 +187,7 @@ public class IndividualTrainingService {
 		
 		
 		/**
-		 * !!! nie powinno byc += w 214?, 198;;
+		 * 
 		 * @param billiardTable
 		 * @return Pobiera aktualne dane ze stolu i wpisuje do obiektu treningu
 		 */
@@ -195,9 +195,9 @@ public class IndividualTrainingService {
 	    	
 	    	int idPocket = billiardTable.getSelectedPocket().getId();
 	    	String positionOfWhiteBall = Double.valueOf(billiardTable.getWhiteBall().getPoint().x).toString() + "," +
-	    			Double.valueOf(billiardTable.getWhiteBall().getPoint().y).toString();;
+	    			Double.valueOf(billiardTable.getWhiteBall().getPoint().y).toString();
 	    	String positionOfSelectedBall = Double.valueOf(billiardTable.getSelectedBall().getPoint().x).toString() + "," +
-	    			Double.valueOf(billiardTable.getSelectedBall().getPoint().y).toString();;
+	    			Double.valueOf(billiardTable.getSelectedBall().getPoint().y).toString();
 	    	
 	    	String difficultyLevel = billiardTable.getDifficultyLevel();
 	    	
@@ -211,7 +211,7 @@ public class IndividualTrainingService {
 	    	String positionOfDisturbBalls = "";
 	    	
 	    	for (int x = 0; x < disturbPoints.size(); x++) {
-	    		positionOfDisturbBalls = Double.valueOf(disturbPoints.get(x).x).toString() + Double.valueOf(disturbPoints.get(x).y).toString();
+	    		positionOfDisturbBalls += Double.valueOf(disturbPoints.get(x).x).toString() + Double.valueOf(disturbPoints.get(x).y).toString();
 	    	}
 	    	
 	    	IndividualTraining individualTraining = new IndividualTraining(difficultyLevel, positionOfWhiteBall, positionOfSelectedBall, positionOfDisturbBalls, positionOfRectangle, idPocket);
