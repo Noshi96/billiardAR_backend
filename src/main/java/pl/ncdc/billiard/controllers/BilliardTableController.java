@@ -17,8 +17,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
+import pl.ncdc.billiard.service.HiddenPlacesService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
@@ -35,15 +37,17 @@ public class BilliardTableController {
 	private final KinectService kinectService;
 	private final IndividualTrainingService individualTrainingService;
 	private final SimpMessagingTemplate simpMessagingTemplate;
+	private final HiddenPlacesService hiddenPlacesService;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
 			KinectService kinectService, IndividualTrainingService individualTrainingService,
-			SimpMessagingTemplate simpMessagingTemplate) {
+			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService) {
 		this.tableService = tableService;
 		this.hitService = hitService;
 		this.kinectService = kinectService;
 		this.individualTrainingService = individualTrainingService;
 		this.simpMessagingTemplate = simpMessagingTemplate;
+		this.hiddenPlacesService = hiddenPlacesService;
 	}
 
 	@PutMapping("/setViewMode/{viewMode}")
@@ -98,5 +102,67 @@ public class BilliardTableController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
 	}
+	
+	@PutMapping("/bestPocket")
+	public int findBestPocket() {
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		Point selected = tableService.getTable().getSelectedBall().getPoint();
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		List<Pocket> listPocket = tableService.getTable().getPockets();
+		
+		if (white == null || selected == null) {
+			return -1;
+		}
+		
+		return hitService.findBestPocket(white, selected, listPocket, listBall, idPocket);
+		
+	}
+	
+	@PutMapping("/hiddenPlaces")
+	public List<Point> showHiddenPlaces(){
+		
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		
+		return hiddenPlacesService.showHiddenPlaces(white, listBall);	
+	}
+	
+	@PutMapping("/getInfo")
+	public Informations getHitInfo() {
+		
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		Point selected = tableService.getTable().getSelectedBall().getPoint();
+		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		
+		if (white == null || selected == null || pocket == null) {
+			return null;
+		}
+		
+		return hitService.getHitInfo(white, selected, pocket, listBall, idPocket);
+			
+	}
+	
+//	@PutMapping("/kalibracja")
+//	public void Kalibracja(@RequestBody List<Point> list) {
+//		if (list != null || list.size() != 4) {
+//			int leftMargin = (int) list.get(0).x;
+//			int topMargin = (int) list.get(0).y;
+//			int height = (int) (list.get(1).x - list.get(0).x);
+//			int width = (int) (list.get(1).y - list.get(0).y);
+//
+//			if (leftMargin < 1 || topMargin < 1 || width < 1 || height < 1)
+//				return;
+//
+//			kinectService.setLeft_margin(leftMargin);
+//			kinectService.setTop_margin(topMargin);
+//			kinectService.setAreaHeight(height);
+//			kinectService.setAreaWidth(width);
+//
+//			this.kinectService.saveProperties();
+//		}
+//	}
 
 }

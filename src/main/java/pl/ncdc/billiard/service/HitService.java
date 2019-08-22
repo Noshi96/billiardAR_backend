@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
@@ -14,8 +15,10 @@ import pl.ncdc.billiard.models.Pocket;
 @Service
 public class HitService {
 
-	double diameter = 26;
+	@Autowired
+	MathService mathService;
 	
+	double diameter = 20; // do zmiany
 
 	/**
 	 * 
@@ -171,7 +174,7 @@ public class HitService {
 
 		return true;
 	}
-	
+
 	/**
 	 *
 	 * @param listPocket Lista z pozycjami kazdej luzy
@@ -180,18 +183,19 @@ public class HitService {
 	 */
 	public List<NewPoint> allPossibleHits(List<Pocket> listPocket, List<Ball> listBall, Ball white, int idPocket) {
 		List<NewPoint> list = new ArrayList<NewPoint>();
-		
+
 		Point target = new Point();
 		Point band = new Point();
 		for (Ball ball : listBall)
 			for (Pocket pocket : listPocket) {
-				target = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall, idPocket).get(0);
-				band = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall, idPocket).get(1);
-				
+				target = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall, idPocket)
+						.get(0);
+				band = findHittingPoint(white.getPoint(), ball.getPoint(), pocket.getPoint(), listBall, idPocket)
+						.get(1);
+
 				if (band == null) {
 					list.add(new NewPoint(target, pocket.getPoint(), null));
-				}
-				else {
+				} else {
 					list.add(new NewPoint(target, pocket.getPoint(), band));
 				}
 			}
@@ -240,7 +244,7 @@ public class HitService {
 
 			whiteBallNew.y = bandPos + (bandPos - whiteBallNew.y);
 
-			List<Double> abList = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y);
+			List<Double> abList = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y);
 			a = abList.get(0);
 			b = abList.get(1);
 			result.y = bandPos;
@@ -251,16 +255,16 @@ public class HitService {
 
 			whiteBallNew.x = bandPos + (bandPos - whiteBallNew.x);
 
-			a = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(0);
-			b = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(1);
+			a = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(0);
+			b = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(1);
 			result.x = bandPos;
 			result.y = (int) (a * result.x) + (int) (b);
 
 		} else if (idBand == 3) {
 
 			whiteBallNew.y = -whiteBallNew.y;
-			a = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(0);
-			b = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(1);
+			a = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(0);
+			b = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y).get(1);
 			result.y = bandPos;
 			result.x = (int) ((result.y / a) - (b / a));
 
@@ -268,7 +272,7 @@ public class HitService {
 
 			whiteBallNew.x = -whiteBallNew.x;
 
-			List<Double> abList = abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y);
+			List<Double> abList = mathService.abOfFunction(whiteBallNew.x, whiteBallNew.y, targetBallNew.x, targetBallNew.y);
 			a = abList.get(0);
 			b = abList.get(1);
 
@@ -281,7 +285,6 @@ public class HitService {
 		return result;
 	}
 
-	
 	/**
 	 * Metoda znajduje dwa mozliwe do wykonania odbicia od bandy, po czym wybiera
 	 * bardziej optymalne
@@ -297,7 +300,7 @@ public class HitService {
 		int rightBand = 1190;
 		int upperBand = 620;
 		int lowerBand = 0;
-		int idBand;
+
 		// 1-gora, 2-prawa, 3-dol, 4-lewy
 
 		Point firstPoint = new Point();
@@ -366,12 +369,12 @@ public class HitService {
 		double angleFirstBandDifference;
 		double angleSecondBandDifference;
 
-		angleFirstBandTarget = findAngle(white, firstPoint, target);
-		angleFirstBandPocket = findAngle(white, firstPoint, pocket);
+		angleFirstBandTarget = mathService.findAngle(white, firstPoint, target);
+		angleFirstBandPocket = mathService.findAngle(white, firstPoint, pocket);
 		angleFirstBandDifference = Math.abs(angleFirstBandTarget - angleFirstBandPocket);
 
-		angleSecondBandTarget = findAngle(white, secondPoint, target);
-		angleSecondBandPocket = findAngle(white, secondPoint, pocket);
+		angleSecondBandTarget = mathService.findAngle(white, secondPoint, target);
+		angleSecondBandPocket = mathService.findAngle(white, secondPoint, pocket);
 		angleSecondBandDifference = Math.abs(angleSecondBandTarget - angleSecondBandPocket);
 
 		if (angleFirstBandDifference < angleSecondBandDifference) {
@@ -532,17 +535,105 @@ public class HitService {
 	}
 	
 
-	
-//	public Point whiteBallRotation(Point white, Point selected, Point pocket) {
-//		
-//		
-//		
-//		
-//		
-//		
-//		return null;
-//		
+//	public Informations getHitInfo(Point white, Point selected, Point pocket, List<Ball> list, int idPocket) {
+//		Informations hitInfo = new Informations();
+//		List<Point> hitPoints = findHittingPoint(white, selected, pocket, list, idPocket);
+//		double hitAngle, distanceWhiteSelected, distanceWhitePocket, totalDistance, distanceDifficultyBoundary = 50; // zmienic
+//																														// granice
+//		int difficultyLevel = 2;
+//		double unitConverter = 10; // pixel na cm
+//		;
+//
+//		if (hitPoints == null) {
+//			return null;
+//		}
+//
+//		else if (hitPoints.get(1) == null) {
+//
+//			hitAngle = mathService.findAngle(white, hitPoints.get(0), pocket) * 57;
+//
+//			distanceWhiteSelected = mathService.findDistance(white, selected); // tu jeszcze zamiana na cm
+//			distanceWhitePocket = mathService.findDistance(white, pocket);
+//			totalDistance = distanceWhitePocket + distanceWhiteSelected;
+//
+//			if (hitAngle > 140 && totalDistance < distanceDifficultyBoundary) {
+//				difficultyLevel = 1;
+//			} else if (hitAngle < 140) {
+//				difficultyLevel = 2;
+//
+//			}
+//
+//			hitInfo.setHitAngle(hitAngle);
+//			hitInfo.setDistanceWhiteSelected(distanceWhiteSelected);
+//			hitInfo.setDistanceWhitePocket(distanceWhitePocket);
+//			hitInfo.setDifficultyLevel(difficultyLevel);
+//		}
+//
+//		else {
+//
+//			Point bandPoint = new Point();
+//			bandPoint = hitPoints.get(1);
+//			hitAngle = mathService.findAngle(white, bandPoint, selected) * 57;
+//			distanceWhiteSelected = mathService.findDistance(white, bandPoint) + mathService.findDistance(bandPoint, selected);
+//			distanceWhitePocket = mathService.findDistance(white, bandPoint) + mathService.findDistance(bandPoint, pocket);
+//			totalDistance = distanceWhitePocket + distanceWhiteSelected;
+//
+//			if (hitAngle > 140 && totalDistance < distanceDifficultyBoundary) {
+//				difficultyLevel = 2;
+//			} else if (hitAngle < 140) {
+//				difficultyLevel = 3;
+//			}
+//
+//			hitInfo.setHitAngle(hitAngle);
+//			hitInfo.setDistanceWhiteSelected(distanceWhiteSelected);
+//			hitInfo.setDistanceWhitePocket(distanceWhitePocket);
+//			hitInfo.setDifficultyLevel(difficultyLevel);
+//
+//		}
+//
+//		// poziom trudnosci -> latwy -> proste uderzenie, latwy kat i dystans
+//		// ->sredni -> proste uderzenie, ciezki kat i dystans / uderzenie od bandy ale
+//		// latwy kat i dystans
+//		// -> trudny -> uderzenie od bandy, ciezki kat i dystans
+//
+//		return hitInfo;
+//
+//	}
+
+//	public int findBestPocket(Point white, Point selected, List<Pocket> listPocket, List<Ball> balls, int idPocket) {
+//
+//		int idPocketBest = -1;
+//		double angle = 0;
+//		double distanceWhiteSelected, distanceWhitePocket, totalDistance, distanceDifficultyBoundary = 50, angleCompare; // zmienic
+//																															// granice
+//
+//		// List<Point> listPoint = findHittingPoint(white, selected, listPocket, balls,
+//		// idPocket);
+//		for (int x = 0; x < listPocket.size(); x++) {
+//			Point pocketPoint = listPocket.get(x).getPoint();
+//			List<Point> listPoint = findHittingPoint(white, selected, pocketPoint, balls, idPocket);
+//
+//			if (listPoint.get(1) == null) {
+//				Point targetPoint = listPoint.get(0);
+//
+//				distanceWhiteSelected = mathService.findDistance(white, selected); // tu jeszcze zamiana na cm
+//				distanceWhitePocket = mathService.findDistance(white, pocketPoint);
+//				totalDistance = distanceWhitePocket + distanceWhiteSelected;
+//				angleCompare = mathService.findAngle(white, targetPoint, pocketPoint);
+//				if (angleCompare > angle) {
+//					angle = angleCompare;
+////					if (findAngle) {
+////
+////					}
+//					idPocketBest = x;
+//
+//				}
+//			}
+//		}
+//
+//		return idPocketBest;
 //	}
 
 
+	
 }
