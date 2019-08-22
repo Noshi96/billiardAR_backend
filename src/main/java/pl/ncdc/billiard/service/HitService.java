@@ -60,48 +60,52 @@ public class HitService {
 	 */
 	public List<Point> findHittingPoint(Point white, Point selected, Point pocket, List<Ball> list, int idPocket) {
 
-		Point pointTarget = new Point();
-		List<Point> listPoints = new ArrayList<Point>();
-
-		double length = Math.sqrt(
-				(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
-
-		double dx = (selected.x - pocket.x) / length;
-		double dy = (selected.y - pocket.y) / length;
-
-		double x = pocket.x + ((diameter + length) * dx);
-		double y = pocket.y + ((diameter + length) * dy);
-
-		pointTarget.x = x;
-		pointTarget.y = y;
-		double rightAngle = 1.57;
-		
-		double angle = findAngle(white, pointTarget, pocket);
-		System.out.println("kat: " + 57 * angle);
-		
-		boolean collision = findCollisionSecond(white, pointTarget, list);
-		System.out.println("kolizja: " + collision);
-		
-		boolean collision2 = findCollision(pocket, pointTarget, list);
-		System.out.println("kolizja2: " + collision2);
-		
-		if (collision2) {
-			System.out.println("Error list");
+		if (selected != null) {
+			Point pointTarget = new Point();
+			List<Point> listPoints = new ArrayList<Point>();
+			
+			double length = Math.sqrt(
+					(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
+			
+			double dx = (selected.x - pocket.x) / length;
+			double dy = (selected.y - pocket.y) / length;
+			
+			double x = pocket.x + ((diameter + length) * dx);
+			double y = pocket.y + ((diameter + length) * dy);
+			
+			pointTarget.x = x;
+			pointTarget.y = y;
+			double rightAngle = 1.57;
+			
+			double angle = findAngle(white, pointTarget, pocket);
+			System.out.println("kat: " + 57 * angle);
+			
+			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
+			System.out.println("kolizja: " + collision);
+			
+			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
+			System.out.println("kolizja2: " + collision2);
+			
+			if (collision2) {
+				System.out.println("Error list");
+				System.out.println(list);
+			}
+			
 			System.out.println(list);
+			
+			System.out.println("rightAngle = " + rightAngle);
+			System.out.println("angle orginal =" + angle);
+			listPoints.add(pointTarget);
+			if (angle < rightAngle   || collision2 == false || collision == false) {
+				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
+				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
+			}			
+			
+			System.out.println(listPoints);
+			return listPoints;
+		} else {
+			return null;
 		}
-		
-		System.out.println(list);
-
-		System.out.println("rightAngle = " + rightAngle);
-		System.out.println("angle orginal =" + angle);
-		listPoints.add(pointTarget);
-		if (angle < rightAngle   || collision2 == false || collision == false) {
-			System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
-			listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
-		}			
-		
-		System.out.println(listPoints);
-		return listPoints;
 	}
 
 	/**
@@ -112,18 +116,25 @@ public class HitService {
 	 * @param listBall	Lista wszystkich bili na stole
 	 * @return Zwraca TRUE jezeli na drodze wyznaczonej bili do luzy NIE STOI inna bila
 	 */
-	public boolean findCollision(Point pocket, Point target, List<Ball> listBall) {
-
+	public boolean findCollision(Point pocket, Point target, List<Ball> listBall, Point selectedBall) {
+		//kolizja selected z target(obr. 1)
 		for (Ball ball : listBall) {
-			if (ball.getPoint() != target) {
+			if (!isPointInRange(ball.getPoint(), selectedBall, diameter / 2)) {
 				double angle = findAngleOfCollision(target, ball.getPoint(), pocket);
 				angle *= 57;
-				if (angle < 190 && angle > 160)
+				if (angle < 185 && angle > 176)
 					return false;
 			}
 		}
-
 		return true;
+	}
+	
+	public boolean isPointInRange(Point point, Point point2, double tolerance) {
+		if (Math.abs(point2.x - point.x) < tolerance && Math.abs(point2.y - point.y) < tolerance) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -133,13 +144,13 @@ public class HitService {
 	 * @param listBall Lista wszystkich bill
 	 * @return false jesli znajdzie kolizje
 	 */
-	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall) {
+	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall, Point selected) {
 
 		for (Ball ball : listBall) {
-			if (ball.getPoint() != target) {
-				double angle = findAngleOfCollision(white, ball.getPoint(), target);
+			if (ball.getPoint() != selected) {
+				double angle = findAngleOfCollision(white, ball.getPoint(), target); // tu na logike powinna byc kolizja (obr. 2)
 				angle *= 57;
-				if (angle < 190 && angle > 170)
+				if (angle < 185 && angle > 176)
 					return false;
 			}
 		}
@@ -269,8 +280,8 @@ public class HitService {
 	public Point find(Point target, Point white, Point pocket, int idPocket) {
 
 		int leftBand = 0;
-		int rightBand = 1168;
-		int upperBand = 584;
+		int rightBand = 1190;
+		int upperBand = 620;
 		int lowerBand = 0;
 		int idBand;
 		// 1-gora, 2-prawa, 3-dol, 4-lewy
@@ -281,55 +292,55 @@ public class HitService {
 		if (idPocket == 1) {
 			// prawa dol
 
-			firstPoint = bandHitingPoint(white, target, lowerBand, 3);
-			secondPoint = bandHitingPoint(white, target, rightBand, 2);
+			firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
+			secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
 		} else if (idPocket == 2) {
 			// zalezy
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
-				secondPoint = bandHitingPoint(white, target, rightBand, 2);
+				firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
+				secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
-				secondPoint = bandHitingPoint(white, target, leftBand, 4);
+				firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
+				secondPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
 
 			}
 
 		} else if (idPocket == 3) {
 			// lewa, dol
-			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, lowerBand, 3);
+			firstPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
+			secondPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
 
 		} else if (idPocket == 4) {
 			// lewa, gora
-			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, upperBand, 1);
+			firstPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
+			secondPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
 
 		} else if (idPocket == 5) {
 			// zalezy
 
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
-				secondPoint = bandHitingPoint(white, target, rightBand, 2);
+				firstPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
+				secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
-				secondPoint = bandHitingPoint(white, target, leftBand, 4);
+				firstPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
+				secondPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
 
 			}
 
 		} else if (idPocket == 6) {
 			// prawa, gora
-			firstPoint = bandHitingPoint(white, target, rightBand, 2);
-			secondPoint = bandHitingPoint(white, target, upperBand, 1);
+			firstPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
+			secondPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
 
 		}
 

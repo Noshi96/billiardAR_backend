@@ -75,7 +75,7 @@ public class BilliardTableService {
 			}
 		}
 	}
-
+	
 	public void setViewMode(int viewMode) {
 		table.setSelectedViewMode(viewMode);
 	}
