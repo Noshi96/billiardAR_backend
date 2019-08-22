@@ -68,7 +68,7 @@ public class BilliardTableController {
 	
 	@Scheduled(fixedRate = 500)
 	public void drawingLive() {
-		simpMessagingTemplate.convertAndSend("/table/draw", poolDrawerService.drawImage());
+		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
 	
 	@PutMapping("/ball")
