@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.commands.IndividualTrainingCommand;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
@@ -64,10 +65,58 @@ public class BilliardTableController {
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
 		int idPocket = tableService.getTable().getSelectedPocket().getId();
-		if (white == null || selected == null || pocket == null)
+		if (white == null || selected == null || pocket == null) {
 			return null;
-
+		}
 		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(), tableService.getTable().getBalls(), idPocket);
+	}
+	
+	@PutMapping("/getInfo")
+	public Informations getHitInfo() {
+		
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		Point selected = tableService.getTable().getSelectedBall().getPoint();
+		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		
+		if (white == null || selected == null || pocket == null) {
+			return null;
+		}
+		
+		return hitService.getHitInfo(white, selected, pocket, listBall, idPocket);
+		
+		
+	}
+	
+	
+	@PutMapping("/bestPocket")
+	public int findBestPocket() {
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		Point selected = tableService.getTable().getSelectedBall().getPoint();
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		List<Pocket> listPocket = tableService.getTable().getPockets();
+		
+		if (white == null || selected == null) {
+			return -1;
+		}
+		
+		return hitService.findBestPocket(white, selected, listPocket, listBall, idPocket);
+		
+	}
+	
+	
+	@PutMapping("/hiddenPlaces")
+	public List<Point> showHiddenPlaces(){
+		
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		List<Ball> listBall = tableService.getTable().getBalls();
+		
+		return hitService.showHiddenPlaces(white, listBall);
+		
+		
+		
 	}
 
 	@PutMapping("/kalibracja")
