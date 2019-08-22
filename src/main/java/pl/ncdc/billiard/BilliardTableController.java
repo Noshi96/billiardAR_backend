@@ -18,10 +18,12 @@ import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
+import pl.ncdc.billiard.service.HiddenPlacesService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.NewPoint;
+import pl.ncdc.billiard.service.HiddenPlacesService;
 
 @RestController
 @RequestMapping("/table")
@@ -37,6 +39,9 @@ public class BilliardTableController {
 
 	@Autowired
 	KinectService kinectService;
+	
+	@Autowired
+	HiddenPlacesService hiddenPlacesService;
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
@@ -113,7 +118,7 @@ public class BilliardTableController {
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
 		
-		return hitService.showHiddenPlaces(white, listBall);
+		return hiddenPlacesService.showHiddenPlaces(white, listBall);
 		
 		
 		
