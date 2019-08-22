@@ -26,6 +26,7 @@ import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.NewPoint;
+import pl.ncdc.billiard.service.PoolDrawerService;
 
 @RestController
 @RequestMapping("/table")
@@ -39,16 +40,19 @@ public class BilliardTableController {
 	private final IndividualTrainingService individualTrainingService;
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final HiddenPlacesService hiddenPlacesService;
+	private final PoolDrawerService poolDrawerService;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
 			KinectService kinectService, IndividualTrainingService individualTrainingService,
-			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService) {
+			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService,
+			PoolDrawerService poolDrawerService) {
 		this.tableService = tableService;
 		this.hitService = hitService;
 		this.kinectService = kinectService;
 		this.individualTrainingService = individualTrainingService;
 		this.simpMessagingTemplate = simpMessagingTemplate;
 		this.hiddenPlacesService = hiddenPlacesService;
+		this.poolDrawerService = poolDrawerService;
 	}
 	
 	
@@ -60,6 +64,11 @@ public class BilliardTableController {
 	@Scheduled(fixedRate = 500)
 	public void tableLive() {
 		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+	}
+	
+	@Scheduled(fixedRate = 500)
+	public void drawingLive() {
+		simpMessagingTemplate.convertAndSend("/table/draw", poolDrawerService.drawImage());
 	}
 	
 	@PutMapping("/ball")

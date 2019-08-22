@@ -10,7 +10,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/table", "/calibration");
+        config.enableSimpleBroker("/table", "/calibration", "/draw");
         config.setApplicationDestinationPrefixes("/app");
     }
 
