@@ -2,8 +2,10 @@ package pl.ncdc.billiard.service;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.Pocket;
 
 @Service
 public class PoolDrawerService {
@@ -37,35 +40,42 @@ public class PoolDrawerService {
 	
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
+	
+	int ballRadius = 1; 
+	int ballLineThickness = 2;
+	int selectedPocketLineThickness = 4;
 	// koniec zmiennych do pliku
 	
 	
 	public byte[] drawImage(BilliardTable table)
 	{
+		ballRadius = table.getBallRadius();
 		
 		
 		
-		
-//		Mat poolTableArea = new Mat(projectorMaxHeight,projectorMaxWidth, CvType.CV_8UC3);
+		//Mat poolTableArea = new Mat(projectorMaxHeight,projectorMaxWidth, CvType.CV_8UC3);
+		//Mat poolPlayZoneMat = new Mat(table.getHeight(),table.getWidth(), CvType.CV_8UC3);
 		Mat poolPlayZoneMat = new Mat(kinectHeight,kinectWidth, CvType.CV_8UC3);
 		
-		examp(poolPlayZoneMat);
+		//examp(poolPlayZoneMat);
+		
+		drawBalls(poolPlayZoneMat, table.getBalls());
+		drawWhiteBall(poolPlayZoneMat, table.getWhiteBall());
+		drawSelected(poolPlayZoneMat, table.getSelectedBall(), table.getSelectedPocket());
 		
 		
-		
-		
-		//Drawing a Circle
-		Imgproc.circle (
-			poolPlayZoneMat,          //Matrix obj of the image
-			new Point(0, 0),    //Center of the circle
-			100,                    //Radius
-			new Scalar(0, 0, 255),  //Scalar object for color
-			10                      //Thickness of the circle
-		);
+//		//Drawing a Circle
+//		Imgproc.circle (
+//			poolPlayZoneMat,          //Matrix obj of the image
+//			new Point(0, 0),    //Center of the circle
+//			100,                    //Radius
+//			new Scalar(0, 0, 255),  //Scalar object for color
+//			10                      //Thickness of the circle
+//		);
 		
 
 	    
-//	    // Drawing a Rectangle
+		// obramowanie obszaru rysowania
 	    Imgproc.rectangle (
 			poolPlayZoneMat,          //Matrix obj of the image
 		    new Point(0, 0),        //p1
@@ -132,6 +142,70 @@ public class PoolDrawerService {
 			5                      //Thickness of the circle
 		);
 	}
+	
+	public void drawBalls(Mat mat, List<Ball> balls) {
+		//rysowaie bil
+		for(Ball ball: balls) {
+			// rysowanie okregu
+			Imgproc.circle (
+				mat,          //Matrix obj of the image
+				ball.getPoint(),    //Center of the circle
+				ballRadius,                    //Radius
+				new Scalar(255, 255, 0),  //Scalar object for color
+				ballLineThickness                      //Thickness of the circle
+			);
+			
+			// rysowanie napisu id
+			// Adding Text
+		    Imgproc.putText (
+				mat,                          // Matrix obj of the image
+				Integer.toString(ball.getId()),          // Text to be added
+				ball.getPoint(),               // point
+				Core.FONT_HERSHEY_SIMPLEX ,      // front face
+				0.3,                               // front scale
+				new Scalar(255, 255, 255),             // Scalar object for color
+				2                                // Thickness
+		    );
+		}
+	} // end of drawBalls
+	
+	public void drawWhiteBall(Mat mat, Ball whiteBall) {
+		// rysowanie okregu
+		Imgproc.circle (
+			mat,          //Matrix obj of the image
+			whiteBall.getPoint(),    //Center of the circle
+			ballRadius * 4,                    //Radius
+			new Scalar(255, 255, 255),  //Scalar object for color
+			ballLineThickness                      //Thickness of the circle
+		);
+
+	} // end of drawBalls
+	
+	
+	public void drawSelected(Mat mat, Ball selectedBall, Pocket selectedPocket) {
+	    // rysowanie wybranej zaznaczonej bili
+		if ( selectedBall != null) {
+			Imgproc.circle (
+				mat,          //Matrix obj of the image
+				selectedBall.getPoint(),    //Center of the circle
+				ballRadius * 2,                    //Radius
+				new Scalar(255, 0, 0),  //Scalar object for color
+				ballLineThickness                      //Thickness of the circle
+			);
+		}
+		
+	    // rysowanie obramowania zaznaczonego pocketu
+	    if ( selectedPocket != null) {
+	    	Imgproc.circle (
+				mat,
+				selectedPocket.getPoint(),
+				ballRadius * 4,
+				new Scalar(255, 0, 0),
+				selectedPocketLineThickness
+			);
+	    }
+	  } // end of drawSelected();
+
 	
 
 }
