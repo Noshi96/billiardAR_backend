@@ -63,7 +63,7 @@ public class HitService {
 		if (selected != null) {
 			Point pointTarget = new Point();
 			List<Point> listPoints = new ArrayList<Point>();
-			
+			Point bandPoint = new Point();
 			double length = Math.sqrt(
 					(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
 			
@@ -96,10 +96,21 @@ public class HitService {
 			System.out.println("rightAngle = " + rightAngle);
 			System.out.println("angle orginal =" + angle);
 			listPoints.add(pointTarget);
-			if (angle < rightAngle   || collision2 == false || collision == false) {
-				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
-				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
-			}			
+//			if (angle < rightAngle   || collision2 == false || collision == false) {
+//				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
+//				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
+//			}	
+			
+			if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list, selected) == false) {
+				bandPoint = find(pointTarget, white, pocket, idPocket + 1);
+				
+				//Jesli zwroci true znaczy ze nie ma kolizji wiec moze dodac sobie punkt bandy do listy(obr. 3)
+				if (findCollision(pocket, bandPoint, list, selected)) {
+					listPoints.add(bandPoint);		
+				} else {
+					return null;
+				}
+			}	
 			
 			System.out.println(listPoints);
 			return listPoints;
