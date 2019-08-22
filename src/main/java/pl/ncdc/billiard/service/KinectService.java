@@ -1,20 +1,15 @@
 package pl.ncdc.billiard.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
 
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -46,9 +41,11 @@ import pl.ncdc.billiard.models.CalibrationParams;
 public class KinectService {
 
 	@Autowired
-	protected BilliardTable table;
+	private BilliardTable table;
 	@Autowired
-	protected SimpMessagingTemplate simpMessagingTemplate;
+	private HistoryService historyService;
+	@Autowired
+	private SimpMessagingTemplate simpMessagingTemplate;
 
 	private Kinect kinect;
 
@@ -66,7 +63,6 @@ public class KinectService {
 	Mat actualFrame;;
 
 	private int status;
-	private List<Ball> history;
 
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
@@ -163,12 +159,11 @@ public class KinectService {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
 		this.actualFrame = frame.clone();
-		// updateTable(frame);
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
 		// this.table.setBalls(updateHipstory(newList));
-
-		this.table.setBalls(newList);
+		this.table.setBalls(this.historyService.updateHistory(newList, maxBallRadius));
+		//this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		// if calibrate
