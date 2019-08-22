@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.16, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: hot_bilard
 -- ------------------------------------------------------
--- Server version	8.0.16
+-- Server version	8.0.17
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
- SET NAMES utf8 ;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -16,22 +16,88 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Dumping data for table `ball`
+-- Table structure for table `calibration_params`
 --
 
-LOCK TABLES `ball` WRITE;
-/*!40000 ALTER TABLE `ball` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ball` ENABLE KEYS */;
+DROP TABLE IF EXISTS `calibration_params`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `calibration_params` (
+  `id` bigint(20) NOT NULL,
+  `ball_diameter` int(11) NOT NULL,
+  `left_bottom_corner` geometry DEFAULT NULL,
+  `left_upper_corner` geometry DEFAULT NULL,
+  `preset_name` varchar(255) DEFAULT NULL,
+  `right_bottom_corner` geometry DEFAULT NULL,
+  `right_upper_corner` geometry DEFAULT NULL,
+  `left_bottom_cornerx` double NOT NULL,
+  `left_bottom_cornery` double NOT NULL,
+  `left_upper_cornerx` double NOT NULL,
+  `left_upper_cornery` double NOT NULL,
+  `right_bottom_cornerx` double NOT NULL,
+  `right_bottom_cornery` double NOT NULL,
+  `right_upper_cornerx` double NOT NULL,
+  `right_upper_cornery` double NOT NULL,
+  `table_size_in_cm` geometry DEFAULT NULL,
+  `white_ball_density` int(11) NOT NULL,
+  `left_bottom_corner_projector` geometry DEFAULT NULL,
+  `left_upper_corner_projector` geometry DEFAULT NULL,
+  `right_bottom_corner_projector` geometry DEFAULT NULL,
+  `right_upper_corner_projector` geometry DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `calibration_params`
+--
+
+LOCK TABLES `calibration_params` WRITE;
+/*!40000 ALTER TABLE `calibration_params` DISABLE KEYS */;
+INSERT INTO `calibration_params` VALUES (1,20,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\04@\0\0\0\0\0\‡ê@','Default',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\‡ê@',0,0,0,0,0,0,0,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿o@\0\0\0\0\0¿_@',375000,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\‡ê@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\‡ê@');
+/*!40000 ALTER TABLE `calibration_params` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping data for table `hit`
+-- Table structure for table `hibernate_sequence`
 --
 
-LOCK TABLES `hit` WRITE;
-/*!40000 ALTER TABLE `hit` DISABLE KEYS */;
-/*!40000 ALTER TABLE `hit` ENABLE KEYS */;
+DROP TABLE IF EXISTS `hibernate_sequence`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hibernate_sequence` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hibernate_sequence`
+--
+
+LOCK TABLES `hibernate_sequence` WRITE;
+/*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
+INSERT INTO `hibernate_sequence` VALUES (2);
+/*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `individual_training`
+--
+
+DROP TABLE IF EXISTS `individual_training`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `individual_training` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `difficulty_level` int(11) DEFAULT NULL,
+  `disturb_balls_positions` geometry DEFAULT NULL,
+  `pocket_id` int(11) NOT NULL,
+  `rectangle_position` geometry DEFAULT NULL,
+  `selected_ball_position` geometry DEFAULT NULL,
+  `white_ball_position` geometry DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `individual_training`
@@ -39,27 +105,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `individual_training` WRITE;
 /*!40000 ALTER TABLE `individual_training` DISABLE KEYS */;
-INSERT INTO `individual_training` VALUES (1,'2','2,5,10,4','4,5','2,3','10,20'),(2,'3','5,6,12,14','5,10','60,30','21,46,11,86'),(3,'1','21,10,4,12','12,64','20,10','21,55,33,12'),(4,'1','2,3,4,5','10,20','50,40','11,22,33,44,77,123'),(5,'1','12,20,30,40','50,40','70,40',''),(6,'1','50,350,200,500','100,350','200,200',''),(7,'1','850,400,1100,550','900,400','850,150',''),(8,'2','950,150,1190,400','1100,250','750,150','950,250'),(9,'3','1,1,250,250','100,200','400,400','300,350'),(10,'3','1,1,250,250','300,200','1050,500','659,350');
+INSERT INTO `individual_training` VALUES (1,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0$@\0\0\0\0\0\04@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@\0\0\0\0\0\0\0\0\0$@\0\0\0\0\0\0@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@'),(2,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\05@\0\0\0\0\0\0G@\0\0\0\0\0\0\0\0\0&@\0\0\0\0\0ÄU@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@\0\0\0\0\0\0\0\0\0(@\0\0\0\0\0\0,@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0$@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0N@\0\0\0\0\0\0>@'),(3,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\05@\0\0\0\0\0ÄK@\0\0\0\0\0\0\0\0Ä@@\0\0\0\0\0\0(@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\05@\0\0\0\0\0\0$@\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0(@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0(@\0\0\0\0\0\0P@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\04@\0\0\0\0\0\0$@'),(4,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&@\0\0\0\0\0\06@\0\0\0\0\0\0\0\0Ä@@\0\0\0\0\0\0F@\0\0\0\0\0\0\0\0@S@\0\0\0\0\0¿^@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@\0\0\0\0\0\0\0\0\0@\0\0\0\0\0\0@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0$@\0\0\0\0\0\04@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0I@\0\0\0\0\0\0D@'),(5,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0(@\0\0\0\0\0\04@\0\0\0\0\0\0\0\0\0>@\0\0\0\0\0\0D@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0I@\0\0\0\0\0\0D@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0ÄQ@\0\0\0\0\0\0D@'),(6,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0I@\0\0\0\0\0\‡u@\0\0\0\0\0\0\0\0\0i@\0\0\0\0\0@@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0Y@\0\0\0\0\0\‡u@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0i@\0\0\0\0\0\0i@'),(7,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0êä@\0\0\0\0\0\0y@\0\0\0\0\0\0\0\00ë@\0\0\0\0\00Å@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0 å@\0\0\0\0\0\0y@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0êä@\0\0\0\0\0¿b@'),(8,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0∞ç@\0\0\0\0\0@o@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0∞ç@\0\0\0\0\0¿b@\0\0\0\0\0\0\0\0òí@\0\0\0\0\0\0y@',_binary '\0\0\0\0\0\0\0\0\0\0\0\00ë@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0pá@\0\0\0\0\0¿b@'),(9,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0¿r@\0\0\0\0\0\‡u@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0Y@\0\0\0\0\0\0i@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0\0y@'),(10,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0òÑ@\0\0\0\0\0\‡u@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿r@\0\0\0\0\0\0i@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0hê@\0\0\0\0\0@@'),(11,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@Z@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@o@\0\0\0\0\0\‡z@'),(12,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0†~@\0\0\0\0\0\0t@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0Äl@\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä|@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äk@\0\0\0\0\0\0t@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿á@\0\0\0\0\0\0y@'),(13,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`u@\0\0\0\0\0\0y@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0\0y@\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0¿Ç@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äk@\0\0\0\0\0hÄ@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Ä@\0\0\0\0\0Ä\\@'),(14,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`u@\0\0\0\0\0\–q@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä\\@\0\0\0\0\0\0\0\0HÉ@\0\0\0\0\0\–q@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Ä@\0\0\0\0\0`e@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0\0y@'),(15,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\‡u@\0\0\0\0\0Äq@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä\\@\0\0\0\0\0\0\0\0òÉ@\0\0\0\0\0\–q@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@Ä@\0\0\0\0\0†d@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äf@\0\0\0\0\0`x@');
 /*!40000 ALTER TABLE `individual_training` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `pocket`
---
-
-LOCK TABLES `pocket` WRITE;
-/*!40000 ALTER TABLE `pocket` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pocket` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `trening`
---
-
-LOCK TABLES `trening` WRITE;
-/*!40000 ALTER TABLE `trening` DISABLE KEYS */;
-INSERT INTO `trening` VALUES (1,'2','3,4','6,7','10,10','4,5'),(2,'3','5,7','3,4','10,23,63,67','3,4');
-/*!40000 ALTER TABLE `trening` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -71,4 +118,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-14 14:42:21
+-- Dump completed on 2019-08-22 11:05:12
