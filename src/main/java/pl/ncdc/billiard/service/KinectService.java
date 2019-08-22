@@ -161,7 +161,6 @@ public class KinectService {
 		this.actualFrame = frame.clone();
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
-		// this.table.setBalls(updateHipstory(newList));
 		this.table.setBalls(this.historyService.updateHistory(newList, maxBallRadius));
 		//this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
@@ -172,24 +171,6 @@ public class KinectService {
 		} else if (this.status == 2) {
 			generateMask(frame);
 		}
-	}
-
-	private List<Ball> updateHipstory(List<Ball> list) {
-		Point point;
-		List<Ball> newList = new ArrayList<Ball>();
-		if (this.table.getBalls() == null || this.table.getBalls().size() == 0)
-			return list;
-		for (Ball ball : this.table.getBalls()) {
-			point = this.table.findBallByPoint(ball.getPoint());
-			if (point == null)
-				newList.add(ball);
-			else {
-				ball.getPoint().x = (ball.getPoint().x + point.x) / 2;
-				ball.getPoint().y = (ball.getPoint().y + point.y) / 2;
-				newList.add(ball);
-			}
-		}
-		return newList;
 	}
 
 	/**

@@ -12,49 +12,54 @@ import pl.ncdc.billiard.models.Ball;
 public class HistoryService {
 
 	private List<List<Ball>> history;
-	private int maxHistoryLength;
+	private final static int maxHistoryLength = 30;
 
 	public HistoryService() {
 		this.history = new ArrayList<List<Ball>>();
-		this.maxHistoryLength = 30;
 	}
 
 	public List<Ball> updateHistory(List<Ball> list, int radius) {
+
 		if (list == null)
 			if (history.size() == 0)
 				return null;
 			else
 				return history.get(history.size() - 1);
 
-		List<Ball> newList = new ArrayList<Ball>();
-		// deep copy of list
 		for (Ball ball : list) {
-			newList.add(new Ball(ball.getId(), ball.getPoint()));
-		}
+			// prepare save to history
+			Point origin = new Point(ball.getPoint().x, ball.getPoint().y);
+			int detected = 1;
 
-		for (Ball ball : newList) {
-			int detected = 0;
 			for (List<Ball> prev : this.history) {
+
 				Point point = findBallByPoint(ball.getPoint(), prev, radius);
+
 				if (point != null) {
-					ball.getPoint().x += ball.getPoint().x;
-					ball.getPoint().y += ball.getPoint().y;
+					ball.getPoint().x = ball.getPoint().x + point.x;
+					ball.getPoint().y = ball.getPoint().y + point.y;
 					detected++;
 				}
 			}
-			if (detected > 0) {
-				ball.getPoint().x = ball.getPoint().x / detected;
-				ball.getPoint().y = ball.getPoint().y / detected;
-			}
+
+			ball.getPoint().x = ball.getPoint().x / detected;
+			ball.getPoint().y = ball.getPoint().y / detected;
+
+			double dx = ball.getPoint().x - origin.x;
+			double dy = ball.getPoint().y - origin.y;
+
+			if (Math.abs(dx) > radius / 3)
+				ball.getPoint().x = origin.x + (Math.abs(dx) / dx) * (radius / 3);
+			if (Math.abs(dy) > radius / 3)
+				ball.getPoint().y = origin.y + (Math.abs(dy) / dy) * (radius / 3);
 		}
 
-		// fill history
+		if (this.history.size() > maxHistoryLength)
+			this.history.remove(0);
+		// save to history history
 		this.history.add(list);
 
-		if (this.history.size() > this.maxHistoryLength)
-			this.history.remove(0);
-
-		return newList;
+		return list;
 	}
 
 	private Point findBallByPoint(Point point, List<Ball> list, int radius) {
