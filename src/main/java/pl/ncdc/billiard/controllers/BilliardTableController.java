@@ -18,14 +18,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
-import pl.ncdc.billiard.models.Informations;
+import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HiddenPlacesService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
-import pl.ncdc.billiard.service.NewPoint;
 import pl.ncdc.billiard.service.PoolDrawerService;
 
 @RestController
@@ -54,8 +53,8 @@ public class BilliardTableController {
 		this.hiddenPlacesService = hiddenPlacesService;
 		this.poolDrawerService = poolDrawerService;
 	}
-	
-	
+
+
 	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
@@ -65,12 +64,12 @@ public class BilliardTableController {
 	public void tableLive() {
 		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
-	
+
 	@Scheduled(fixedRate = 2000)
 	public void drawingLive() {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
-	
+
 	@PutMapping("/ball")
 	public void selectBall(@RequestBody Point point) {
 		tableService.selectBall(point);
@@ -84,11 +83,6 @@ public class BilliardTableController {
 	@PutMapping("/setViewMode/{viewMode}")
 	public void setViewMode(@PathVariable int viewMode) {
 		tableService.setViewMode(viewMode);
-	}
-
-	@PutMapping("/setChallenge/{selectedChallenge}")
-	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
-		tableService.setSelectedChallenge(selectedChallenge);
 	}
 
 	@PutMapping("/hit")
@@ -118,66 +112,28 @@ public class BilliardTableController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return points;
 	}
-	
+
 	@PutMapping("/bestPocket")
 	public int findBestPocket() {
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		Point selected = tableService.getTable().getSelectedBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
 		List<Pocket> listPocket = tableService.getTable().getPockets();
-		
+
 		if (white == null || selected == null) {
 			return -1;
 		}
-		
+
 		return hitService.findBestPocket(white, selected, listPocket, listBall);
-		
+
 	}
-	
+
 	@PutMapping("/hiddenPlaces")
 	public List<Point> showHiddenPlaces(){
-		
-		Point white = tableService.getTable().getWhiteBall().getPoint();
-		List<Ball> listBall = tableService.getTable().getBalls();
-		
-		return hiddenPlacesService.showHiddenPlaces(white, listBall);	
-	}
-	
-	@PutMapping("/getInfo")
-	public Informations getHitInfo() {
-		
-		Point white = tableService.getTable().getWhiteBall().getPoint();
-		Point selected = tableService.getTable().getSelectedBall().getPoint();
-		Point pocket = tableService.getTable().getSelectedPocket().getPoint();
-		int idPocket = tableService.getTable().getSelectedPocket().getId();
-		List<Ball> listBall = tableService.getTable().getBalls();
-		
-		if (white == null || selected == null || pocket == null) {
-			return null;
-		}
-		
-		return hitService.getHitInfo(white, selected, pocket, listBall, idPocket);
-			
-	}
-	
-//	@PutMapping("/kalibracja")
-//	public void Kalibracja(@RequestBody List<Point> list) {
-//		if (list != null || list.size() != 4) {
-//			int leftMargin = (int) list.get(0).x;
-//			int topMargin = (int) list.get(0).y;
-//			int height = (int) (list.get(1).x - list.get(0).x);
-//			int width = (int) (list.get(1).y - list.get(0).y);
-//
-//			if (leftMargin < 1 || topMargin < 1 || width < 1 || height < 1)
-//				return;
-//
-//			kinectService.setLeft_margin(leftMargin);
-//			kinectService.setTop_margin(topMargin);
-//			kinectService.setAreaHeight(height);
-//			kinectService.setAreaWidth(width);
-//
-//			this.kinectService.saveProperties();
-//		}
-//	}
 
+		Point white = tableService.getTable().getWhiteBall().getPoint();
+		List<Ball> listBall = tableService.getTable().getBalls();
+
+		return hiddenPlacesService.showHiddenPlaces(white, listBall);
+	}
 }

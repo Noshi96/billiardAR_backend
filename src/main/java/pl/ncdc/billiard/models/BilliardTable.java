@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import pl.ncdc.billiard.service.NewPoint;
+import pl.ncdc.billiard.models.NewPoint;
 
 @Component
 @Data
@@ -53,12 +53,12 @@ public class BilliardTable {
 	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
 	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
 	private int selectedChallenge = 0;
-	
-	
-	
-	// odwrocone bandy
-	public BilliardTable() {
-		//balls = new ArrayList<>();
+
+
+
+    // odwrocone bandy
+    public BilliardTable() {
+        //balls = new ArrayList<>();
 //		pockets = new ArrayList<Pocket>();
 //		pockets.add(new Pocket(0, new Point(0, 620)));
 //		pockets.add(new Pocket(1, new Point(1190 / 2, 620)));
@@ -67,23 +67,23 @@ public class BilliardTable {
 //		pockets.add(new Pocket(4, new Point(1190 / 2, 0)));
 //		pockets.add(new Pocket(5, new Point(1190, 0)));
 
-		balls = new ArrayList<>();
-		balls.add(new Ball(0, new Point(1000,800))); // ostatnie true- jest biala
-		balls.add(new Ball(1, new Point(55,222))); // true - jest selected
-		balls.add(new Ball(2, new Point(400,29) ));
-		balls.add(new Ball(3, new Point(111,99)));
-		balls.add(new Ball(4, new Point(417,29) ));		
-		balls.add(new Ball(5, new Point(1190/2, 620/2)));
-		//balls.add(new Ball(6, new Point(800,450)));
-		//balls.add(new Ball(2, false, new Point(111,99), false));
-		//balls.add(new Ball(2, false, new Point(111,99), false));
-		this.setWhiteBall(balls.get(3));
-		this.setSelectedBall(this.balls.get(5));
-		//this.setSelectedPocket(this.pockets.get(5));
-	}
-	
-	
-	
+        balls = new ArrayList<>();
+        balls.add(new Ball(0, new Point(1000,800))); // ostatnie true- jest biala
+        balls.add(new Ball(1, new Point(55,222))); // true - jest selected
+        balls.add(new Ball(2, new Point(400,29) ));
+        balls.add(new Ball(3, new Point(111,99)));
+        balls.add(new Ball(4, new Point(417,29) ));
+        balls.add(new Ball(5, new Point(1190/2, 620/2)));
+        //balls.add(new Ball(6, new Point(800,450)));
+        //balls.add(new Ball(2, false, new Point(111,99), false));
+        //balls.add(new Ball(2, false, new Point(111,99), false));
+        this.setWhiteBall(balls.get(3));
+        this.setSelectedBall(this.balls.get(5));
+        //this.setSelectedPocket(this.pockets.get(5));
+    }
+
+
+
 
 	public int getSelectedViewMode() {
 		return selectedViewMode;

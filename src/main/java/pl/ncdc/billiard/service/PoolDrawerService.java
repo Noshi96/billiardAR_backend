@@ -203,7 +203,7 @@ public class PoolDrawerService {
 	
 	public void drawTrajectory(Mat mat, BilliardTable table, List<Point> hitPoints){
 		if( hitPoints.size() == 1 ){
-			// jeden punkt oznacza, ze jest prosta droga do ³uzy
+			// jeden punkt oznacza, ze jest prosta droga do luzy
 			List<MatOfPoint> listOfPoints = new ArrayList();
 			
 			listOfPoints.add(

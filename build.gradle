@@ -31,6 +31,8 @@ dependencies {
 	implementation 'org.mapstruct:mapstruct:1.3.0.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
 
+	implementation 'org.apache.commons:commons-lang3'
+
 	implementation fileTree(dir: 'lib', include: ['*.jar'])
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -49,6 +51,7 @@ bootRun {
 
 task copyResources(type: Copy) {
 	from "$buildDir/resources/main"
+	exclude "static"
 	into "$buildDir/libs/src/main/resources"
 }
 

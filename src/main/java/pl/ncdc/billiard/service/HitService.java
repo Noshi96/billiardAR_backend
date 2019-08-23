@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Informations;
+import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
@@ -384,9 +385,9 @@ public class HitService {
 		}
 
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param start
 	 * @param end
 	 * @return
@@ -397,9 +398,9 @@ public class HitService {
 		return length;
 
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param white
 	 * @param selected
 	 * @param pocket
@@ -429,34 +430,34 @@ public class HitService {
 				difficultyLevel = 1;
 			} else if (hitAngle < 140) {
 				difficultyLevel = 2;
-				
+
 			}
 
 			hitInfo.setHitAngle(hitAngle);
 			hitInfo.setDistanceWhiteSelected(distanceWhiteSelected);
 			hitInfo.setDistanceWhitePocket(distanceWhitePocket);
 			hitInfo.setDifficultyLevel(difficultyLevel);
-		} 
-		
+		}
+
 		else {
-			
+
 			Point bandPoint = new Point();
 			bandPoint = hitPoints.get(1);
 			hitAngle = findAngle(white, bandPoint, selected) * 57;
 			distanceWhiteSelected = findDistance(white, bandPoint) + findDistance(bandPoint, selected);
 			distanceWhitePocket = findDistance(white, bandPoint) + findDistance(bandPoint, pocket);
-			
+
 			if(hitAngle > 140) {
 				difficultyLevel = 2;
 			}else if(hitAngle < 140) {
 				difficultyLevel = 3;
 			}
-			
+
 			hitInfo.setHitAngle(hitAngle);
 			hitInfo.setDistanceWhiteSelected(distanceWhiteSelected);
 			hitInfo.setDistanceWhitePocket(distanceWhitePocket);
 			hitInfo.setDifficultyLevel(difficultyLevel);
-			
+
 		}
 
 		// poziom trudnosci -> latwy -> proste uderzenie, latwy kat i dystans
@@ -467,9 +468,9 @@ public class HitService {
 		return hitInfo;
 
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param white
 	 * @param selected
 	 * @param listPocket
@@ -478,47 +479,47 @@ public class HitService {
 	 * @return
 	 */
 	public int findBestPocket(Point white, Point selected, List<Pocket> listPocket, List<Ball> balls) {
-		
+
 		int idPocketBest = -1;
 		double angle = 0, angleCompare;
 		//List<Point> listPoint = findHittingPoint(white, selected, listPocket, balls, idPocket);
 		for( int x = 0; x < listPocket.size(); x++) {
 			Point pocketPoint = listPocket.get(x).getPoint();
 			List<Point> listPoint = findHittingPoint(white, selected, pocketPoint, balls, listPocket.get(x).getId());
-			
-			
+
+
 			if(listPoint.size() == 1) {
 				Point targetPoint = listPoint.get(0);
 				angleCompare = findAngle(white, targetPoint, pocketPoint);
-				
+
 				if(angleCompare > angle) {
 					angleCompare = angle;
 					idPocketBest = x;
 				}
 			}
 		}
-		
-		
+
+
 		return idPocketBest;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param white
 	 * @param listBall
 	 * @return
 	 */
 	public List<Point> showHiddenPlaces(Point white, List<Ball> listBall){
 		List<Point> hiddenPointsList = new ArrayList<Point>();
-		
-		
+
+
 		Point hiddenPoint = new Point();
-		
+
 		//petla
 		for (int i = 0; i < listBall.size(); i++) {
-			
+
 		Point ballPoint = listBall.get(i).getPoint();
-		
+
 		double length = findDistance(white, ballPoint);
 		double dx = (white.x - ballPoint.x) / length;
 		double dy = (white.y - ballPoint.y) / length;
@@ -528,14 +529,14 @@ public class HitService {
 
 		hiddenPoint.x = x;
 		hiddenPoint.y = y;
-	
+
 		hiddenPointsList.add(hiddenPoint);
-		
+
 		}
 		return hiddenPointsList;
-		
+
 	}
-	
+
 
 //	public Informations getHitInfo(Point white, Point selected, Point pocket, List<Ball> list, int idPocket) {
 //		Informations hitInfo = new Informations();
@@ -637,5 +638,5 @@ public class HitService {
 //	}
 
 
-	
+
 }
