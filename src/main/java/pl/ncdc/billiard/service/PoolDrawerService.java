@@ -184,6 +184,14 @@ public class PoolDrawerService {
 	
 	
 	public void drawViewMode22(Mat mat, BilliardTable table) {
+		Point white = table.getWhiteBall().getPoint();
+		List<Ball> listBall = table.getBalls();
+		
+		List<Point> hiddenPointsList =  hiddenPlacesService.showHiddenPlaces(white, listBall);
+		
+		//System.out.println("HDEIN PONTY: " + hiddenPointsList);
+		
+		drawHiddenPlaces(mat, table, hiddenPointsList);
 		
 		drawBalls(mat, table.getBalls());
 		drawWhiteBall(mat, table.getWhiteBall());
@@ -240,98 +248,41 @@ public class PoolDrawerService {
 	    }
 	}
 	
-	public void drawHiddenPlaces(Mat mat, BilliardTable table, List<Point> hitPoints){
-		if( hitPoints.size() == 1 ){
-
-			Point white = table.getWhiteBall().getPoint();
-			List<Ball> listBall = table.getBalls();
+	public void drawHiddenPlaces(Mat mat, BilliardTable table, List<Point> hiddenPointsList){
+		
+		
+		for ( int i = 0; i < hiddenPointsList.size(); i = i +4 ) {
+			List<MatOfPoint> points = new ArrayList<>();
 			
-			System.out.println(hiddenPlacesService.showHiddenPlaces(white, listBall));
-			
-			
-			
-			List<MatOfPoint> listOfPoints = new ArrayList();
-			
-			listOfPoints.add(
-				new MatOfPoint(
-					table.getWhiteBall().getPoint(),
-			        hitPoints.get(0),
-			        table.getSelectedPocket().getPoint()
+	        points.add(
+        		new MatOfPoint(
+    				hiddenPointsList.get(i),
+    				hiddenPointsList.get(i + 1),
+    				hiddenPointsList.get(i + 2),
+    				hiddenPointsList.get(i + 3)
 				)
-			);
-					
-
-	      // rysowanie trajektorii
-	      Imgproc.polylines(
-	         mat,
-	         listOfPoints,
-	         false, // is Closed
-	         new Scalar(0, 255, 255),
-	         trajectoryLineThickness
-	      );
-	    } 
-	    else if ( hitPoints.size() == 2){
-	    	// dwa punkty oznaczaja, ze najpierw jest odbicie od bandy [1] a pozniej do bili [0].
-			List<MatOfPoint> listOfPoints = new ArrayList();
+    		);
+	        
+	        
+	      Imgproc.fillPoly(mat,
+	          points,
+	          new Scalar( 0, 0, 255 )
+          );
 			
-			listOfPoints.add(
-				new MatOfPoint(
-					table.getWhiteBall().getPoint(),
-			        hitPoints.get(1),
-			        hitPoints.get(0),
-			        table.getSelectedPocket().getPoint()
-				)
-			);
-					
-			// rysowanie trajektorii
-			Imgproc.polylines(
-				mat,
-				listOfPoints,
-				false, // is Closed
-				new Scalar(0, 255, 255),
-				trajectoryLineThickness
-			);
-	    }
+		}
+		
 	}
 
-	
+		
+		
+		
+		
+
+			
 	
 //	List<Point> listPoints = new ArrayList<Point>();
 
-	
 
-//	  fetchHittingPoint(){
-//		    this.tableService.fetchHittingPoint().then ( response => {
-//		      // reset pobranych punktow
-//		      this.hitPoints = [];
-//
-//		      if(response[0] === undefined){
-//		        // nie zostaly wrocone w odpowiedzi zadne wspolrzedne. blad?
-//		        console.log("fetchHittingPoint(); response[0] is unfefined");
-//		        return;
-//		      } 
-//		      else {
-//		        // w odpowiedzi zostal poday pierwszy punkt
-//		        response[0] = this.scalePosToView(response[0]);
-//		        this.hitPoints.push(
-//		          new Point(response[0].x, response[0].y)
-//		        );
-//		      }
-//		      
-//		      if(response[1] !== undefined){
-//		        // drugi punkt wspolrzednych istnieje.
-//		        response[1] = this.scalePosToView(response[1]);
-//		        this.hitPoints.push(
-//		          new Point(response[1].x, response[1].y)
-//		        );
-//		      }
-//		    
-//		      this.drawTrajectory(this.hitPoints);
-//		    }).catch(err => {
-//		      this.drawSelected();
-//		    });
-//		  }
-	
 	
 	
 	

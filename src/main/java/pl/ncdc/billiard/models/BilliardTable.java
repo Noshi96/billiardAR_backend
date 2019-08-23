@@ -48,7 +48,7 @@ public class BilliardTable {
 	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1
 	// - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje
 	// trajektorie
-	private int selectedViewMode = 1;
+	private int selectedViewMode = 22;
 
 	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
 	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
