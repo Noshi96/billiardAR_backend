@@ -18,11 +18,11 @@ public class HitService {
 
 	@Autowired
 	MathService mathService;
-	
+
 	double diameter = 20; // do zmiany
 
 	/**
-	 * 
+	 *
 	 * @param white Pozycja bialej bili
 	 * @param target Pozycja Virtualnej bili
 	 * @param pocket Pozycja luzy
@@ -37,7 +37,7 @@ public class HitService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param white Pozycja bialek bili
 	 * @param target Pozycja Virtualnej bili
 	 * @param pocket Pozycja luzy
@@ -51,9 +51,9 @@ public class HitService {
 
 		return Math.acos(((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param white Pozycja bialej bli
 	 * @param selected Pozycja zaznaczonej bili
 	 * @param pocket Pozycja luzy
@@ -73,52 +73,52 @@ public class HitService {
 			Point bandPoint = new Point();
 			double length = Math.sqrt(
 					(selected.x - pocket.x) * (selected.x - pocket.x) + (selected.y - pocket.y) * (selected.y - pocket.y));
-			
+
 			double dx = (selected.x - pocket.x) / length;
 			double dy = (selected.y - pocket.y) / length;
-			
+
 			double x = pocket.x + ((diameter + length) * dx);
 			double y = pocket.y + ((diameter + length) * dy);
-			
+
 			pointTarget.x = x;
 			pointTarget.y = y;
 			double rightAngle = 1.57;
-			
+
 			double angle = findAngle(white, pointTarget, pocket);
 			System.out.println("kat: " + 57 * angle);
-			
+
 			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
 			System.out.println("kolizja: " + collision);
-			
+
 			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
 			System.out.println("kolizja2: " + collision2);
-			
+
 			if (collision2) {
 				System.out.println("Error list");
 				System.out.println(list);
 			}
-			
+
 			System.out.println(list);
-			
+
 			System.out.println("rightAngle = " + rightAngle);
 			System.out.println("angle orginal =" + angle);
 			listPoints.add(pointTarget);
 //			if (angle < rightAngle   || collision2 == false || collision == false) {
 //				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
-//				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));		
-//			}	
-			
+//				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));
+//			}
+
 			if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list, selected) == false) {
 				bandPoint = find(pointTarget, white, pocket, idPocket + 1);
-				
+
 				//Jesli zwroci true znaczy ze nie ma kolizji wiec moze dodac sobie punkt bandy do listy(obr. 3)
 				if (findCollision(pocket, bandPoint, list, selected)) {
-					listPoints.add(bandPoint);		
+					listPoints.add(bandPoint);
 				} else {
 					return null;
 				}
-			}	
-			
+			}
+
 			System.out.println(listPoints);
 			return listPoints;
 		} else {
@@ -146,7 +146,7 @@ public class HitService {
 		}
 		return true;
 	}
-	
+
 	public boolean isPointInRange(Point point, Point point2, double tolerance) {
 		if (Math.abs(point2.x - point.x) < tolerance && Math.abs(point2.y - point.y) < tolerance) {
 			return true;
@@ -154,7 +154,7 @@ public class HitService {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Znajduje kolizje
 	 * @param white Pozycja bialej
@@ -213,17 +213,17 @@ public class HitService {
 	 * @return Zwraca wspolczynniki funkcji y = ax + b dla dwoch punktow podanych w parametrze
 	 */
 	public List<Double> abOfFunction(double xBallWhite, double yBallWhite, double xBallSelected,
-			double yBallSelected) {
+									 double yBallSelected) {
 		List<Double> listOfAB = new ArrayList<>();
 		double a = (yBallSelected - yBallWhite) / (xBallSelected - xBallWhite);
 		double b = yBallSelected - a * xBallSelected;
-		
+
 
 		listOfAB.add(a);
 		listOfAB.add(b);
 		return listOfAB;
 	}
-	
+
 	/**
 	 * Zwraca punkt odbicia od bandy
 	 * @param whiteBall Pozycja bialej bili
@@ -518,19 +518,19 @@ public class HitService {
 		//petla
 		for (int i = 0; i < listBall.size(); i++) {
 
-		Point ballPoint = listBall.get(i).getPoint();
+			Point ballPoint = listBall.get(i).getPoint();
 
-		double length = findDistance(white, ballPoint);
-		double dx = (white.x - ballPoint.x) / length;
-		double dy = (white.y - ballPoint.y) / length;
+			double length = findDistance(white, ballPoint);
+			double dx = (white.x - ballPoint.x) / length;
+			double dy = (white.y - ballPoint.y) / length;
 
-		double x = ballPoint.x + ((diameter + length) * dx);
-		double y = ballPoint.y + ((diameter + length) * dy);
+			double x = ballPoint.x + ((diameter + length) * dx);
+			double y = ballPoint.y + ((diameter + length) * dy);
 
-		hiddenPoint.x = x;
-		hiddenPoint.y = y;
+			hiddenPoint.x = x;
+			hiddenPoint.y = y;
 
-		hiddenPointsList.add(hiddenPoint);
+			hiddenPointsList.add(hiddenPoint);
 
 		}
 		return hiddenPointsList;
