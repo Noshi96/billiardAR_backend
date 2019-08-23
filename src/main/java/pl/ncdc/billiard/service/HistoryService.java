@@ -14,8 +14,8 @@ public class HistoryService {
 	/** List of previously detected balls **/
 	private List<List<Ball>> history;
 	/** How many previous states will be stored **/
-	private final static int maxHistoryLength = 60;
-	private final static double corretionRate = 0.75;
+	private final static int maxHistoryLength = 300;
+	private final static double corretionRate = 0.1;
 
 	public HistoryService() {
 		this.history = new ArrayList<List<Ball>>();
@@ -63,19 +63,16 @@ public class HistoryService {
 			double dx = ball.getPoint().x - avg.x;
 			double dy = ball.getPoint().y - avg.y;
 
-			// ball.getPoint().x = origin.x + 0.25 * dx;
-			// ball.getPoint().y = origin.y + 0.25 * dy;
-			// System.out.println("DX: " + dx + "| DY: " + dy);
+			if (Math.abs(dx) < radius / 2)
+				ball.getPoint().x = avg.x;// + dx * corretionRate;
+			else if (Math.abs(dx) < radius)
+				ball.getPoint().x = avg.x + dx * corretionRate * 2;
 
-			if (Math.abs(dx) < radius)
-				ball.getPoint().x = avg.x;
-			else
-				ball.getPoint().x -= dx * corretionRate;
-			if (Math.abs(dy) < radius)
-				ball.getPoint().y = avg.y;
-			else
-				ball.getPoint().y -= dy * corretionRate;
-
+			if (Math.abs(dy) < radius / 2)
+				ball.getPoint().y = avg.y;// + dy * corretionRate;
+			else if (Math.abs(dy) < radius)
+				ball.getPoint().y = avg.y + dy * corretionRate * 2;
+			// newList.add(new Ball(0, ball.getPoint()));
 		}
 		// save to history history
 		this.history.add(newList);
