@@ -18,7 +18,7 @@ public class HistoryService {
 	/** How much current position should change new calculated position **/
 	private final static double corretionRate = 0.1;
 	/** Number of frames to search disappearing balls **/
-	private final static int historyScanLimit = 12;
+	private final static int historyScanLimit = 30;
 
 	public HistoryService() {
 		this.history = new ArrayList<List<Ball>>();
@@ -86,26 +86,23 @@ public class HistoryService {
 
 	public List<Ball> findMissingBalls(List<Ball> list, int radius) {
 
-		List<Ball> detected = new ArrayList<Ball>();
-
 		int lastIndex = this.history.size() - historyScanLimit;
 		if (lastIndex < 0)
 			lastIndex = 0;
 
 		for (int index = lastIndex; index < this.history.size(); index++) {
-			for (Ball ball : detected) {
-				if (findBallByPoint(ball.getPoint(), list, radius) != null)
-					break;
-				int count = 0;
-				for (int i = index; i < this.history.size(); i++)
-					if (findBallByPoint(ball.getPoint(), this.history.get(i), radius) != null)
-						count++;
-				if (count > historyScanLimit / 2)
-					list.add(ball);
+			for (Ball ball : this.history.get(index)) {
+				if (findBallByPoint(ball.getPoint(), list, radius) == null) {
+					int count = 0;
+					for (int i = index; i < this.history.size(); i++)
+						if (findBallByPoint(ball.getPoint(), this.history.get(i), radius) != null)
+							count++;
+					if (count > historyScanLimit / 6)
+						list.add(ball);
+				}
 			}
 
 		}
-
 		return list;
 	}
 

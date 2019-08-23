@@ -7,6 +7,7 @@ import org.opencv.core.Point;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service

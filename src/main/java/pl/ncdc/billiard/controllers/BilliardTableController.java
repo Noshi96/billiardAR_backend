@@ -17,12 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HitService;
 import pl.ncdc.billiard.service.IndividualTrainingService;
 import pl.ncdc.billiard.service.KinectService;
-import pl.ncdc.billiard.service.NewPoint;
 
 @RestController
 @RequestMapping("/table")

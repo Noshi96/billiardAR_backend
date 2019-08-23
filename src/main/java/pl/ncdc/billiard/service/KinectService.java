@@ -161,7 +161,9 @@ public class KinectService {
 		this.actualFrame = frame.clone();
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
-		this.table.setBalls(this.historyService.updateHistory(newList, maxBallRadius));
+		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
+		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
+		this.table.setBalls(newList);
 		//this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 

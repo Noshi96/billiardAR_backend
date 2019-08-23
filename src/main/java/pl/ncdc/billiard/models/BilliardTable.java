@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import pl.ncdc.billiard.service.NewPoint;
+import pl.ncdc.billiard.models.NewPoint;
 
 @Component
 @Data
