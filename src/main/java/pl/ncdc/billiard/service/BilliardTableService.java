@@ -57,8 +57,8 @@ public class BilliardTableService {
 		Point rightTop = calibrationParams.getRightUpperCorner();
 
 		// calculate new area size
-		int width = (int) (rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2;
-		int height = (int) (leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2;
+		int width = (int) Math.abs((rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2);
+		int height = (int) Math.abs((leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2);
 		
 		this.table.setWidth(width);
 		this.table.setHeight(height);

@@ -48,7 +48,7 @@ public class BilliardTable {
 	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1
 	// - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje
 	// trajektorie
-	private int selectedViewMode = 0;
+	private int selectedViewMode = 1;
 
 	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
 	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
@@ -59,13 +59,13 @@ public class BilliardTable {
 	// odwrocone bandy
 	public BilliardTable() {
 		//balls = new ArrayList<>();
-		pockets = new ArrayList<Pocket>();
-		pockets.add(new Pocket(0, new Point(0, 620)));
-		pockets.add(new Pocket(1, new Point(1190 / 2, 620)));
-		pockets.add(new Pocket(2, new Point(1190, 620)));
-		pockets.add(new Pocket(3, new Point(0, 0)));
-		pockets.add(new Pocket(4, new Point(1190 / 2, 0)));
-		pockets.add(new Pocket(5, new Point(1190, 0)));
+//		pockets = new ArrayList<Pocket>();
+//		pockets.add(new Pocket(0, new Point(0, 620)));
+//		pockets.add(new Pocket(1, new Point(1190 / 2, 620)));
+//		pockets.add(new Pocket(2, new Point(1190, 620)));
+//		pockets.add(new Pocket(3, new Point(0, 0)));
+//		pockets.add(new Pocket(4, new Point(1190 / 2, 0)));
+//		pockets.add(new Pocket(5, new Point(1190, 0)));
 
 		balls = new ArrayList<>();
 		balls.add(new Ball(0, new Point(1000,800))); // ostatnie true- jest biala
@@ -79,7 +79,7 @@ public class BilliardTable {
 		//balls.add(new Ball(2, false, new Point(111,99), false));
 		this.setWhiteBall(balls.get(3));
 		this.setSelectedBall(this.balls.get(5));
-		this.setSelectedPocket(this.pockets.get(5));
+		//this.setSelectedPocket(this.pockets.get(5));
 	}
 	
 	

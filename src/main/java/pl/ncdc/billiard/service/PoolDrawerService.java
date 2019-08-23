@@ -1,5 +1,6 @@
 package pl.ncdc.billiard.service;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import pl.ncdc.billiard.controllers.BilliardTableController;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
@@ -26,8 +29,12 @@ import pl.ncdc.billiard.models.Pocket;
 @Service
 public class PoolDrawerService {
 
+	
 	@Autowired
-	BilliardTableService billiardTableService;
+	HitService hitService;
+	
+	@Autowired
+	HiddenPlacesService hiddenPlacesService;
 	
 	@Value("${kinectService.mask}")
 	private String filename;
@@ -38,89 +45,88 @@ public class PoolDrawerService {
 	int kinectHeight = 600;
 	int kinectWidth = 1200;
 	
+	boolean displayBallId = false;
+	boolean displayPockets = false;
+	
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
 	
-	int ballRadius = 1; 
+	int ballRadius = 5;
+	int whiteBallRadius = 20;
+	int pocketRadius = 50;
+	
 	int ballLineThickness = 2;
+	int pocketLineThickness = 5;
+	int trajectoryLineThickness = 2;
+	int playZoneBorderThickness = 1;
 	int selectedPocketLineThickness = 4;
 	// koniec zmiennych do pliku
+	
+	List<Point> hitPoints;
+
 	
 	
 	public byte[] drawImage(BilliardTable table)
 	{
-		ballRadius = table.getBallRadius();
 		
+		kinectHeight = table.getHeight();
+		kinectWidth = table.getWidth();
 		
-		
+		//ballRadius = table.getBallRadius();	
 		//Mat poolTableArea = new Mat(projectorMaxHeight,projectorMaxWidth, CvType.CV_8UC3);
 		//Mat poolPlayZoneMat = new Mat(table.getHeight(),table.getWidth(), CvType.CV_8UC3);
+		
+		//kinectHeight = table.getHeight();
+		//kinectWidth = table.getWidth();
+		
+		
 		Mat poolPlayZoneMat = new Mat(kinectHeight,kinectWidth, CvType.CV_8UC3);
-		
-		//examp(poolPlayZoneMat);
-		
-		drawBalls(poolPlayZoneMat, table.getBalls());
-		drawWhiteBall(poolPlayZoneMat, table.getWhiteBall());
-		drawSelected(poolPlayZoneMat, table.getSelectedBall(), table.getSelectedPocket());
+		drawPlayZoneBorder(poolPlayZoneMat);
 		
 		
-//		//Drawing a Circle
-//		Imgproc.circle (
-//			poolPlayZoneMat,          //Matrix obj of the image
-//			new Point(0, 0),    //Center of the circle
-//			100,                    //Radius
-//			new Scalar(0, 0, 255),  //Scalar object for color
-//			10                      //Thickness of the circle
-//		);
+		if(table.getSelectedChallenge() == 0){
+			// rysuje tryby tylko jesli nie ma zaznaczonego challenge'u
+			switch(table.getSelectedViewMode()){
+				case 0: drawViewMode0(poolPlayZoneMat, table); break;
+				case 1: drawViewMode1(poolPlayZoneMat, table); break;
+				case 22: drawViewMode22(poolPlayZoneMat, table); break;
+				
+				//case 2: this.drawViewMode2(); break;
+			}
+		}
+		else{
+			// tryb challenge'u zostal wybrany.
+			//this.fetchTrainingById(this.table.selectedChallenge);
+		}
+		
+		
+		
+		
+		
+		
 		
 
-	    
-		// obramowanie obszaru rysowania
-	    Imgproc.rectangle (
-			poolPlayZoneMat,          //Matrix obj of the image
-		    new Point(0, 0),        //p1
-		    new Point(kinectWidth-1, kinectHeight-1),       //p2
-		    new Scalar(0, 255, 255),     //Scalar object for color
-		    1                          //Thickness of the line
-	    );
-	    
-//	    MatOfPoint2f src = new MatOfPoint2f(
-//	    		new Point(0,0),
-//	    		new Point(projectorMaxWidth, 0),
-//	    		new Point(projectorMaxWidth,projectorMaxHeight),
-//	    		new Point(0, projectorMaxHeight)
-//	    		);
-	    
 	    MatOfPoint2f sourceMat = new MatOfPoint2f(
-	    		new Point(0,0),
-	    		new Point(kinectWidth, 0),
-	    		new Point(kinectWidth, kinectHeight),
-	    		new Point(0, kinectHeight)
-	    		);
-	    
-//	    // example streching
-//	    MatOfPoint2f dst = new MatOfPoint2f(
-//	    		new Point( 105, 122),
-//	    		new Point( projectorMaxWidth, 0),
-//	    		new Point( projectorMaxWidth - 305, projectorMaxHeight - 322),
-//	    		new Point( 105, projectorMaxHeight - 122)
-//	    		);
-	    
+    		new Point(0,0),
+    		new Point(kinectWidth, 0),
+    		new Point(kinectWidth, kinectHeight),
+    		new Point(0, kinectHeight)
+		);
 	    
 	    MatOfPoint2f destinationMat = new MatOfPoint2f(
-	    		new Point( 105, 122),
-	    		new Point( projectorMaxWidth - 105, 122),
-	    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
-	    		new Point( 105, projectorMaxHeight - 122)
-	    		);
+    		new Point( 105, 122),
+    		new Point( projectorMaxWidth - 105, 122),
+    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
+    		new Point( 105, projectorMaxHeight - 122)
+		);
 	    
-	    Mat xd = Imgproc.getPerspectiveTransform(sourceMat, destinationMat);
-	    
+	    Mat xd = Imgproc.getPerspectiveTransform(sourceMat, destinationMat);  
 	    Imgproc.warpPerspective(
-	    		poolPlayZoneMat,
-	    		poolPlayZoneMat,
-	    		xd,
-	    		new Size(projectorMaxWidth,projectorMaxHeight));
+    		poolPlayZoneMat,
+    		poolPlayZoneMat,
+    		xd,
+    		new Size(projectorMaxWidth,projectorMaxHeight)
+		);
 	    //get perspective transform
 	      
 	      
@@ -130,7 +136,241 @@ public class PoolDrawerService {
 		Base64.Encoder encoder = Base64.getEncoder();
 		
 		return encoder.encode(matOfByte.toArray());
+	} // end of drawImage(args);
+		
+		
+	
+	
+	public void drawViewMode0(Mat mat, BilliardTable table) {
+		drawBalls(mat, table.getBalls());
+		drawWhiteBall(mat, table.getWhiteBall());
+		if(displayPockets) {
+			drawPockets(mat, table.getPockets());
+		}
 	}
+	
+	public void drawViewMode1(Mat mat, BilliardTable table) {
+		System.out.println("elo");
+		drawWhiteBall(mat, table.getWhiteBall());
+		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
+		drawPockets(mat, table.getPockets());
+
+		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
+			//drawTrajectory();
+			//System.out.println("elo");
+			Ball white = table.getWhiteBall();
+			Ball selected = table.getSelectedBall();
+			Pocket pocket = table.getSelectedPocket();
+			int idPocket = table.getSelectedPocket().getId();
+			if (white == null || selected == null || pocket == null)
+				return;
+			
+			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
+					table.getBalls(), idPocket);
+			
+			drawTrajectory(mat, table, hitPoints);
+			
+
+			
+			System.out.println("hit points: " + hitPoints);
+			
+		//console.log(this.hittingPoint);
+		//this.drawTrajectory(this.hittingPoint);
+		} else {
+		  //this.drawBalls();
+		}
+
+	}
+	
+	
+	public void drawViewMode22(Mat mat, BilliardTable table) {
+		
+		drawBalls(mat, table.getBalls());
+		drawWhiteBall(mat, table.getWhiteBall());
+		if(displayPockets) {
+			drawPockets(mat, table.getPockets());
+		}
+	}
+	
+	
+	public void drawTrajectory(Mat mat, BilliardTable table, List<Point> hitPoints){
+		if( hitPoints.size() == 1 ){
+			// jeden punkt oznacza, ze jest prosta droga do ³uzy
+			List<MatOfPoint> listOfPoints = new ArrayList();
+			
+			listOfPoints.add(
+				new MatOfPoint(
+					table.getWhiteBall().getPoint(),
+			        hitPoints.get(0),
+			        table.getSelectedPocket().getPoint()
+				)
+			);
+					
+
+	      // rysowanie trajektorii
+	      Imgproc.polylines(
+	         mat,
+	         listOfPoints,
+	         false, // is Closed
+	         new Scalar(0, 255, 255),
+	         trajectoryLineThickness
+	      );
+	    } 
+	    else if ( hitPoints.size() == 2){
+	    	// dwa punkty oznaczaja, ze najpierw jest odbicie od bandy [1] a pozniej do bili [0].
+			List<MatOfPoint> listOfPoints = new ArrayList();
+			
+			listOfPoints.add(
+				new MatOfPoint(
+					table.getWhiteBall().getPoint(),
+			        hitPoints.get(1),
+			        hitPoints.get(0),
+			        table.getSelectedPocket().getPoint()
+				)
+			);
+					
+			// rysowanie trajektorii
+			Imgproc.polylines(
+				mat,
+				listOfPoints,
+				false, // is Closed
+				new Scalar(0, 255, 255),
+				trajectoryLineThickness
+			);
+	    }
+	}
+	
+	public void drawHiddenPlaces(Mat mat, BilliardTable table, List<Point> hitPoints){
+		if( hitPoints.size() == 1 ){
+
+			Point white = table.getWhiteBall().getPoint();
+			List<Ball> listBall = table.getBalls();
+			
+			System.out.println(hiddenPlacesService.showHiddenPlaces(white, listBall));
+			
+			
+			
+			List<MatOfPoint> listOfPoints = new ArrayList();
+			
+			listOfPoints.add(
+				new MatOfPoint(
+					table.getWhiteBall().getPoint(),
+			        hitPoints.get(0),
+			        table.getSelectedPocket().getPoint()
+				)
+			);
+					
+
+	      // rysowanie trajektorii
+	      Imgproc.polylines(
+	         mat,
+	         listOfPoints,
+	         false, // is Closed
+	         new Scalar(0, 255, 255),
+	         trajectoryLineThickness
+	      );
+	    } 
+	    else if ( hitPoints.size() == 2){
+	    	// dwa punkty oznaczaja, ze najpierw jest odbicie od bandy [1] a pozniej do bili [0].
+			List<MatOfPoint> listOfPoints = new ArrayList();
+			
+			listOfPoints.add(
+				new MatOfPoint(
+					table.getWhiteBall().getPoint(),
+			        hitPoints.get(1),
+			        hitPoints.get(0),
+			        table.getSelectedPocket().getPoint()
+				)
+			);
+					
+			// rysowanie trajektorii
+			Imgproc.polylines(
+				mat,
+				listOfPoints,
+				false, // is Closed
+				new Scalar(0, 255, 255),
+				trajectoryLineThickness
+			);
+	    }
+	}
+
+	
+	
+//	List<Point> listPoints = new ArrayList<Point>();
+
+	
+
+//	  fetchHittingPoint(){
+//		    this.tableService.fetchHittingPoint().then ( response => {
+//		      // reset pobranych punktow
+//		      this.hitPoints = [];
+//
+//		      if(response[0] === undefined){
+//		        // nie zostaly wrocone w odpowiedzi zadne wspolrzedne. blad?
+//		        console.log("fetchHittingPoint(); response[0] is unfefined");
+//		        return;
+//		      } 
+//		      else {
+//		        // w odpowiedzi zostal poday pierwszy punkt
+//		        response[0] = this.scalePosToView(response[0]);
+//		        this.hitPoints.push(
+//		          new Point(response[0].x, response[0].y)
+//		        );
+//		      }
+//		      
+//		      if(response[1] !== undefined){
+//		        // drugi punkt wspolrzednych istnieje.
+//		        response[1] = this.scalePosToView(response[1]);
+//		        this.hitPoints.push(
+//		          new Point(response[1].x, response[1].y)
+//		        );
+//		      }
+//		    
+//		      this.drawTrajectory(this.hitPoints);
+//		    }).catch(err => {
+//		      this.drawSelected();
+//		    });
+//		  }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public void examp(Mat mat) {
 		//Drawing a Circle
@@ -148,37 +388,69 @@ public class PoolDrawerService {
 		for(Ball ball: balls) {
 			// rysowanie okregu
 			Imgproc.circle (
-				mat,          //Matrix obj of the image
-				ball.getPoint(),    //Center of the circle
-				ballRadius,                    //Radius
-				new Scalar(255, 255, 0),  //Scalar object for color
-				ballLineThickness                      //Thickness of the circle
+				mat,
+				ball.getPoint(),
+				ballRadius,
+				new Scalar(255, 255, 0),
+				ballLineThickness
 			);
 			
 			// rysowanie napisu id
-			// Adding Text
-		    Imgproc.putText (
-				mat,                          // Matrix obj of the image
-				Integer.toString(ball.getId()),          // Text to be added
-				ball.getPoint(),               // point
-				Core.FONT_HERSHEY_SIMPLEX ,      // front face
-				0.3,                               // front scale
-				new Scalar(255, 255, 255),             // Scalar object for color
-				2                                // Thickness
-		    );
+			if( displayBallId ) {
+			    Imgproc.putText (
+					mat,
+					Integer.toString(ball.getId()),
+					ball.getPoint(),
+					Core.FONT_HERSHEY_SIMPLEX,	// front face
+					0.3,						// front scale
+					new Scalar(255, 255, 255),	// Scalar object for color
+					2							// Thickness
+			    );
+			}
 		}
 	} // end of drawBalls
 	
 	public void drawWhiteBall(Mat mat, Ball whiteBall) {
 		// rysowanie okregu
 		Imgproc.circle (
-			mat,          //Matrix obj of the image
-			whiteBall.getPoint(),    //Center of the circle
-			ballRadius * 4,                    //Radius
-			new Scalar(255, 255, 255),  //Scalar object for color
-			ballLineThickness                      //Thickness of the circle
+			mat,
+			whiteBall.getPoint(),
+			whiteBallRadius,
+			new Scalar(255, 255, 255),
+			ballLineThickness
+		);
+		
+		Imgproc.circle (
+			mat,
+			whiteBall.getPoint(),
+			whiteBallRadius + ballLineThickness,
+			new Scalar(0, 255, 255),
+			ballLineThickness
+		);
+		
+		Imgproc.circle (
+			mat,
+			whiteBall.getPoint(),
+			whiteBallRadius + ballLineThickness * 2,
+			new Scalar(255, 255, 255),
+			ballLineThickness
 		);
 
+	} // end of drawBalls(args);
+	
+	
+	public void drawPockets(Mat mat, List<Pocket> pockets) {
+		//rysowaie bil
+		for( Pocket pocket: pockets ){
+			// rysowanie okregu
+			Imgproc.circle (
+				mat,
+				pocket.getPoint(),
+				pocketRadius,
+				new Scalar(255, 255, 0),
+				pocketLineThickness
+			);
+		}
 	} // end of drawBalls
 	
 	
@@ -194,7 +466,7 @@ public class PoolDrawerService {
 			);
 		}
 		
-	    // rysowanie obramowania zaznaczonego pocketu
+		// rysowanie obramowania zaznaczonego pocketu
 	    if ( selectedPocket != null) {
 	    	Imgproc.circle (
 				mat,
@@ -204,8 +476,16 @@ public class PoolDrawerService {
 				selectedPocketLineThickness
 			);
 	    }
-	  } // end of drawSelected();
+	} // end of drawSelected(args);
 
-	
-
+	public void drawPlayZoneBorder(Mat mat) {
+		// obramowanie obszaru rysowania
+	    Imgproc.rectangle (
+			mat,
+		    new Point(0, 0),
+		    new Point(kinectWidth-1, kinectHeight-1),
+		    new Scalar(0, 255, 255),
+		    playZoneBorderThickness
+	    );
+	} // end of drawPlayZoneBorder(args);
 }
