@@ -13,6 +13,8 @@ public class HistoryService {
 
 	/** List of previously detected balls **/
 	private List<List<Ball>> history;
+	/** List of previously detected white balls **/
+	private List<Ball> whiteHistory;
 	/** How many previous states will be stored **/
 	private final static int maxHistoryLength = 300;
 	/** How much current position should change new calculated position **/
@@ -22,6 +24,57 @@ public class HistoryService {
 
 	public HistoryService() {
 		this.history = new ArrayList<List<Ball>>();
+		this.whiteHistory = new ArrayList<Ball>();
+	}
+
+	/**
+	 * Try to calculate new position of white ball;
+	 * 
+	 * @param whiteBall
+	 * @param radius
+	 * @return new position of white ball
+	 */
+	public Ball updateHistory(Ball whiteBall, int radius) {
+
+		if (whiteBall == null)
+			if (this.whiteHistory.size() == 0)
+				return null;
+			else {
+				this.whiteHistory.add(whiteBall);
+				return this.whiteHistory.get(this.whiteHistory.size() - 2);
+			}
+
+		Point avg = new Point();
+		int detected = 1;
+
+		for (Ball ball : this.whiteHistory) {
+			if (ball != null) {
+				avg.x += ball.getPoint().x;
+				avg.y += ball.getPoint().y;
+				detected++;
+			}
+		}
+
+		avg.x /= detected;
+		avg.y /= detected;
+
+		double dx = whiteBall.getPoint().x - avg.x;
+		double dy = whiteBall.getPoint().y - avg.y;
+
+		if (Math.abs(dx) < radius / 2)
+			whiteBall.getPoint().x = avg.x;
+		else if (Math.abs(dx) < radius)
+			whiteBall.getPoint().x = avg.x + dx * corretionRate * 2;
+
+		if (Math.abs(dy) < radius / 2)
+			whiteBall.getPoint().y = avg.y;
+		else if (Math.abs(dy) < radius)
+			whiteBall.getPoint().y = avg.y + dy * corretionRate * 2;
+
+		this.whiteHistory.add(whiteBall);
+		if (this.whiteHistory.size() > maxHistoryLength)
+			this.whiteHistory.remove(0);
+		return whiteBall;
 	}
 
 	/**

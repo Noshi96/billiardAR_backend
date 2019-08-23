@@ -164,7 +164,7 @@ public class KinectService {
 		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
 		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
 		this.table.setBalls(newList);
-		//this.table.setBalls(newList);
+		// this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		// if calibrate
@@ -209,6 +209,7 @@ public class KinectService {
 		Ball whiteBall = whiteBallDetection(frame, circles, this.maxBallRadius);
 		if (whiteBall != null)
 			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
+		whiteBall = this.historyService.updateHistory(whiteBall, this.maxBallRadius);
 		this.table.setWhiteBall(whiteBall);
 
 		for (int x = 0; x < circles.cols(); x++) {
