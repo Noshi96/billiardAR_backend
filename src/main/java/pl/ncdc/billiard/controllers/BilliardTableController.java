@@ -123,7 +123,6 @@ public class BilliardTableController {
 	public int findBestPocket() {
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		Point selected = tableService.getTable().getSelectedBall().getPoint();
-		int idPocket = tableService.getTable().getSelectedPocket().getId();
 		List<Ball> listBall = tableService.getTable().getBalls();
 		List<Pocket> listPocket = tableService.getTable().getPockets();
 		
@@ -131,7 +130,7 @@ public class BilliardTableController {
 			return -1;
 		}
 		
-		return hitService.findBestPocket(white, selected, listPocket, listBall, idPocket);
+		return hitService.findBestPocket(white, selected, listPocket, listBall);
 		
 	}
 	

@@ -41,19 +41,19 @@ public class HiddenPlacesService {
 			Point ballPosShift = new Point();
 			Point ballNegShift = new Point();
 
-			double whitePosShiftVar = white.x + radius * Math.sqrt((1 / (1 + bWhite)));
+			double whitePosShiftVar = white.x + radius * Math.sqrt((1 / (1 +  Math.pow(aWhite,2))));
 			whitePosShift.x = whitePosShiftVar;
 			whitePosShift.y = aWhite * whitePosShiftVar + bWhite;
 
-			double whiteNegShiftVar = white.x - radius * Math.sqrt((1 / (1 + bWhite)));
+			double whiteNegShiftVar = white.x - radius * Math.sqrt((1 / (1 + Math.pow(aWhite,2))));
 			whiteNegShift.x = whiteNegShiftVar;
 			whiteNegShift.y = aWhite * whiteNegShiftVar + bWhite;
 
-			double ballPosShiftVar = ballPoint.x + radius * Math.sqrt((1 / (1 + bBall)));
+			double ballPosShiftVar = ballPoint.x + radius * Math.sqrt((1 / (1 + Math.pow(aBall,2))));
 			ballPosShift.x = ballPosShiftVar;
 			ballPosShift.y = aBall * ballPosShiftVar + bBall;
 
-			double ballNegShiftVar = ballPoint.x + radius * Math.sqrt((1 / (1 + bBall)));
+			double ballNegShiftVar = ballPoint.x - radius * Math.sqrt((1 / (1 +  Math.pow(aBall,2))));
 			ballNegShift.x = ballNegShiftVar;
 			ballNegShift.y = aBall * ballNegShiftVar + bBall;
 
@@ -63,8 +63,8 @@ public class HiddenPlacesService {
 			double dx = (ballNegShift.x - whitePosShift.x) / lengthFirst;
 			double dy = (ballNegShift.y - whitePosShift.y) / lengthFirst;
 
-			double x = whitePosShift.x + ((diameter * 3 + lengthFirst) * dx);
-			double y = whitePosShift.y + ((diameter * 3 + lengthFirst) * dy);
+			double x = whitePosShift.x + ((diameter * 10 + lengthFirst) * dx);
+			double y = whitePosShift.y + ((diameter * 10 + lengthFirst) * dy);
 
 			Point pointTargetFirst = new Point();
 			pointTargetFirst.x = x;
@@ -76,17 +76,17 @@ public class HiddenPlacesService {
 			double dxSec = (ballPosShift.x - whiteNegShift.x) / lengthSecond;
 			double dySec = (ballPosShift.y - whiteNegShift.y) / lengthSecond;
 
-			double xSec = whiteNegShift.x + ((diameter * 3 + lengthSecond) * dxSec);
-			double ySec = whiteNegShift.y + ((diameter * 3 + lengthSecond) * dySec);
+			double xSec = whiteNegShift.x + ((diameter * 10 + lengthSecond) * dxSec);
+			double ySec = whiteNegShift.y + ((diameter * 10 + lengthSecond) * dySec);
 
 			Point pointTargetSecond = new Point();
 			pointTargetSecond.x = xSec;
 			pointTargetSecond.y = ySec;
 
-			hiddenPointsList.add(ballPosShift);
+			hiddenPointsList.add(ballNegShift);
 			hiddenPointsList.add(pointTargetFirst);
 			hiddenPointsList.add(pointTargetSecond);
-			hiddenPointsList.add(ballNegShift);
+			hiddenPointsList.add(ballPosShift);
 			
 
 		}
