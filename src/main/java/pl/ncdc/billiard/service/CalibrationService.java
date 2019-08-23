@@ -67,12 +67,8 @@ public class CalibrationService {
 		}
 	}
 
-	public CalibrationParams resetToDefault() {
-		pl.ncdc.billiard.entities.CalibrationParams calibrationParamsEntity = getCalibrationParamsEntity();
-		calibrationParamsMapper.updateEntityFromModelIgnoreId(CalibrationParams.getDefaultCalibrationParams(),
-				calibrationParamsEntity);
-		calibrationParamsRepository.save(calibrationParamsEntity);
-		return calibrationParamsMapper.toModel(calibrationParamsEntity);
+    public CalibrationParams resetToDefault() {
+		return save(CalibrationParams.getDefaultCalibrationParams());
 	}
 
 	public void automaticCalibration() {
