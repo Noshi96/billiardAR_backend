@@ -10,7 +10,7 @@ import pl.ncdc.billiard.models.Ball;
 
 @Service
 public class MathService {
-	
+
 	public double diameter = 20; // do zmiany
 
 	public double findDistance(Point start, Point end) {
@@ -65,7 +65,7 @@ public class MathService {
 		return Math.acos(((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)));
 
 	}
-	
+
 
 	public List<Double> abOfFunction(double xBallWhite, double yBallWhite, double xBallSelected, double yBallSelected) {
 		List<Double> listOfAB = new ArrayList<>();
@@ -76,10 +76,10 @@ public class MathService {
 		listOfAB.add(b);
 		return listOfAB;
 	}
-	
-	
 
-	
-	
-	
+
+
+
+
+
 }
