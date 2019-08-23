@@ -43,4 +43,9 @@ public class CalibrationController {
 		simpMessagingTemplate.convertAndSend("/calibration/live", calibrationParams);
 		return calibrationParams;
 	}
+	
+	@GetMapping("/automatic")
+	public void automatiCalibration() {
+		this.calibrationService.automaticCalibration();
+	}
 }

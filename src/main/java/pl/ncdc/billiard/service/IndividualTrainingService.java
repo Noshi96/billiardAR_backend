@@ -1,5 +1,10 @@
 package pl.ncdc.billiard.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
@@ -7,9 +12,6 @@ import pl.ncdc.billiard.mappers.IndividualTrainingMapper;
 import pl.ncdc.billiard.models.DifficultyLevel;
 import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.repository.IndividualTrainingRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class IndividualTrainingService {

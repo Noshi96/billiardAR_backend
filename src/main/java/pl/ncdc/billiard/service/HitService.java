@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.Informations;
+import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
@@ -477,20 +478,22 @@ public class HitService {
 	 * @param idPocket
 	 * @return
 	 */
-	public int findBestPocket(Point white, Point selected, List<Pocket> listPocket, List<Ball> balls, int idPocket) {
+	public int findBestPocket(Point white, Point selected, List<Pocket> listPocket, List<Ball> balls) {
 
 		int idPocketBest = -1;
-		double angle = 0;
+		double angle = 0, angleCompare;
 		//List<Point> listPoint = findHittingPoint(white, selected, listPocket, balls, idPocket);
 		for( int x = 0; x < listPocket.size(); x++) {
 			Point pocketPoint = listPocket.get(x).getPoint();
-			List<Point> listPoint = findHittingPoint(white, selected, pocketPoint, balls, idPocket);
+			List<Point> listPoint = findHittingPoint(white, selected, pocketPoint, balls, listPocket.get(x).getId());
 
 
-			if(listPoint.get(1) == null) {
+			if(listPoint.size() == 1) {
 				Point targetPoint = listPoint.get(0);
+				angleCompare = findAngle(white, targetPoint, pocketPoint);
 
-				if(findAngle(white, targetPoint, pocketPoint) > angle) {
+				if(angleCompare > angle) {
+					angleCompare = angle;
 					idPocketBest = x;
 				}
 			}
