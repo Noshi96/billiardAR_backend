@@ -15,7 +15,4 @@ public class Informations {
     private double hitAngle;
 
     private int difficultyLevel;
-
-    // temporally
-    private boolean isCalculated = false;
 }

@@ -33,12 +33,9 @@ public class InformationsService {
         Pocket selectedPocket = billiardTable.getSelectedPocket();
         List<Ball> listBall = billiardTable.getBalls();
 
-        Informations hitInfo = new Informations();
         if (whiteBall != null && selectedBall != null && selectedPocket != null) {
-            hitInfo = hitService.getHitInfo(whiteBall.getPoint(), selectedBall.getPoint(), selectedPocket.getPoint(), listBall, selectedPocket.getId());
-            hitInfo.setCalculated(true);
+            Informations hitInfo = hitService.getHitInfo(whiteBall.getPoint(), selectedBall.getPoint(), selectedPocket.getPoint(), listBall, selectedPocket.getId());
+            simpMessagingTemplate.convertAndSend("/informations", hitInfo);
         }
-
-        simpMessagingTemplate.convertAndSend("/informations", hitInfo);
     }
 }
