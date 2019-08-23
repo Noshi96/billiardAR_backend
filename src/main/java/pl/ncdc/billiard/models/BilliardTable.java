@@ -53,24 +53,9 @@ public class BilliardTable {
 	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
 	private int selectedChallenge = 0;
 
-	public int getSelectedViewMode() {
-		return selectedViewMode;
-	}
-
-	public void setSelectedViewMode(int selectedViewMode) {
-		this.selectedViewMode = selectedViewMode;
-	}
-
-	public int getSelectedChallenge() {
-		return selectedChallenge;
-	}
-
-	public void setSelectedChallenge(int selectedChallenge) {
-		this.selectedChallenge = selectedChallenge;
-	}
 	public BilliardTable() {
-		
 	}
+
 	/**
 	 * Search in Ball collection and try to find correct match
 	 * 
