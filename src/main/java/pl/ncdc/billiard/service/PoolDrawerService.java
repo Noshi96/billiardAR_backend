@@ -335,6 +335,10 @@ public class PoolDrawerService {
 	}
 	
 	public void drawBalls(Mat mat, List<Ball> balls) {
+		if( balls == null ) {
+			return;
+		}
+		
 		//rysowaie bil
 		for(Ball ball: balls) {
 			// rysowanie okregu
@@ -362,6 +366,10 @@ public class PoolDrawerService {
 	} // end of drawBalls
 	
 	public void drawWhiteBall(Mat mat, Ball whiteBall) {
+		if ( whiteBall == null ) {
+			return;
+		}
+		
 		// rysowanie okregu
 		Imgproc.circle (
 			mat,

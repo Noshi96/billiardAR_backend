@@ -19,7 +19,7 @@ public class Kinect extends J4KSDK {
 
 	@Override
 	public void onColorFrameEvent(byte[] data) {
-		kinectService.send(data, getColorHeight(), getColorWidth());
+		//kinectService.send(data, getColorHeight(), getColorWidth());
 	}
 
 	@Override

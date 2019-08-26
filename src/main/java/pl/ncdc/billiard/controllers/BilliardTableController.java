@@ -2,7 +2,9 @@ package pl.ncdc.billiard.controllers;
 
 import java.util.List;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -40,6 +42,8 @@ public class BilliardTableController {
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
+	
+	Mat frame;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
 			KinectService kinectService, IndividualTrainingService individualTrainingService,
@@ -62,7 +66,9 @@ public class BilliardTableController {
 
 	@Scheduled(fixedRate = 2000)
 	public void tableLive() {
-		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+		//simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
+		frame  = Imgcodecs.imread("C:\\Users\\Koala\\Documents\\pooltablebackend\\src\\main\\resources\\table.jpg", Imgcodecs.CV_LOAD_IMAGE_COLOR);
+		kinectService.send(frame);
 	}
 
 	@Scheduled(fixedRate = 2000)
@@ -70,6 +76,10 @@ public class BilliardTableController {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
 
+
+
+	
+	
 	@PutMapping("/ball")
 	public void selectBall(@RequestBody Point point) {
 		tableService.selectBall(point);
