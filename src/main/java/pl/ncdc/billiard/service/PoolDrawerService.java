@@ -2,9 +2,7 @@ package pl.ncdc.billiard.service;
 
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import pl.ncdc.billiard.controllers.BilliardTableController;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Pocket;
@@ -150,7 +147,6 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewMode1(Mat mat, BilliardTable table) {
-		System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -335,6 +331,10 @@ public class PoolDrawerService {
 	}
 	
 	public void drawBalls(Mat mat, List<Ball> balls) {
+		if( balls == null ) {
+			return;
+		}
+		
 		//rysowaie bil
 		for(Ball ball: balls) {
 			// rysowanie okregu
@@ -362,6 +362,10 @@ public class PoolDrawerService {
 	} // end of drawBalls
 	
 	public void drawWhiteBall(Mat mat, Ball whiteBall) {
+		if ( whiteBall == null ) {
+			return;
+		}
+		
 		// rysowanie okregu
 		Imgproc.circle (
 			mat,

@@ -2,6 +2,7 @@ package pl.ncdc.billiard.controllers;
 
 import java.util.List;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,6 +42,8 @@ public class BilliardTableController {
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
 
+	Mat frame;
+
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
 			KinectService kinectService, IndividualTrainingService individualTrainingService,
 			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService,
@@ -53,7 +56,6 @@ public class BilliardTableController {
 		this.hiddenPlacesService = hiddenPlacesService;
 		this.poolDrawerService = poolDrawerService;
 	}
-
 
 	@GetMapping("")
 	public BilliardTable getTable() {
@@ -129,7 +131,7 @@ public class BilliardTableController {
 	}
 
 	@PutMapping("/hiddenPlaces")
-	public List<Point> showHiddenPlaces(){
+	public List<Point> showHiddenPlaces() {
 
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
