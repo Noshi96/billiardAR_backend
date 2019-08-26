@@ -7,18 +7,15 @@ import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
-import org.opencv.video.BackgroundSubtractor;
-import org.opencv.video.Video;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -49,10 +46,6 @@ public class KinectService {
 
 	private Kinect kinect;
 
-	@Value("${kinectService.mask}")
-	private String filename;
-	private Mat mask;
-	private BackgroundSubtractor backgroundSubstractor;
 	private Mat perspectiveTransform;
 
 	// kalibracja
@@ -67,7 +60,6 @@ public class KinectService {
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
-		backgroundSubstractor = Video.createBackgroundSubtractorMOG2();
 		actualFrame = new Mat();
 	}
 
@@ -75,29 +67,6 @@ public class KinectService {
 	private void init() {
 		this.kinect.start(Kinect.COLOR);
 		this.status = 0;
-	}
-
-	/**
-	 * Read mask image from a file, apply perspective transform and convert to a
-	 * gray scale. Set mask to a backgroundSubstractor
-	 */
-	public void prepareMask() {
-
-		// read mask
-		this.mask = Imgcodecs.imread(this.filename);
-		if (this.mask == null) {
-			System.out.println("File '" + this.filename + "' cannot be found.");
-			System.out.println("Create new mask");
-			this.mask = new Mat(this.table.getWidth(), this.table.getHeight(), CvType.CV_8UC4);
-		}
-		// wrap mask
-		Imgproc.warpPerspective(this.mask, this.mask, this.perspectiveTransform,
-				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
-		// convert mask to gray
-		Imgproc.cvtColor(this.mask, this.mask, Imgproc.COLOR_BGR2GRAY);
-		// apply mask
-		backgroundSubstractor.apply(this.mask, this.mask, 1);
-
 	}
 
 	/**
@@ -142,9 +111,6 @@ public class KinectService {
 
 		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
 
-		// apply new calibration to mask image
-		this.prepareMask();
-
 		this.kinect.start(Kinect.COLOR);
 	}
 
@@ -175,7 +141,7 @@ public class KinectService {
 		if (this.status == 1) {
 			this.simpMessagingTemplate.convertAndSend("/calibrate/live", frame);
 		} else if (this.status == 2) {
-			generateMask(frame);
+			//generateMask(frame); //<-
 		}
 	}
 
@@ -219,19 +185,24 @@ public class KinectService {
 	 */
 	private List<Ball> updateTable(Mat frame) {
 		Mat circles = new Mat();
-		Mat gray = new Mat();
-
+		Mat Lab = new Mat();
+		
 		// wrap image
 		Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
-		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
-		// create and apply mask
-		// this.mask = new Mat();
-		this.backgroundSubstractor.apply(gray, this.mask, 0);
+		
+        Imgproc.cvtColor(frame, Lab, Imgproc.COLOR_BGR2Lab);
+        
+        List<Mat> channelList = new ArrayList<Mat>(3);
+		Core.split(Lab, channelList);
+		Mat channelL = new Mat();
+
+		channelList.get(1).copyTo(channelL);
+		
 		// apply blur
-		Imgproc.medianBlur(this.mask, this.mask, 9);
+		Imgproc.medianBlur(channelL, channelL, 5);
 		// show(mask);
-		Imgproc.HoughCircles(this.mask, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
+		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
@@ -250,17 +221,6 @@ public class KinectService {
 			}
 		}
 		return list;
-	}
-
-	/**
-	 * Receive frame from Kinect device and compute a foreground mask. Increase a
-	 * BallDetecting algorithm effectiveness
-	 * 
-	 * @param frame
-	 */
-	private void generateMask(Mat frame) {
-		Imgcodecs.imwrite(this.filename, frame);
-		this.prepareMask();
 	}
 
 	/**
