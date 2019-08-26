@@ -16,7 +16,7 @@ public class HistoryService {
 	/** List of previously detected white balls **/
 	private List<Ball> whiteHistory;
 	/** How many previous states will be stored **/
-	private final static int maxHistoryLength = 300;
+	private final static int maxHistoryLength = 200;
 	/** How much current position should change new calculated position **/
 	private final static double corretionRate = 0.1;
 	/** Number of frames to search disappearing balls **/
@@ -34,14 +34,15 @@ public class HistoryService {
 	 * @param radius
 	 * @return new position of white ball
 	 */
-	public Ball updateHistory(Ball whiteBall, int radius) {
+	public void updateHistory(Ball whiteBall, int radius) {
 
 		if (whiteBall == null)
 			if (this.whiteHistory.size() == 0)
-				return null;
+				return;
 			else {
 				this.whiteHistory.add(whiteBall);
-				return this.whiteHistory.get(this.whiteHistory.size() - 2);
+				whiteBall = this.whiteHistory.get(this.whiteHistory.size() - 2);
+				return;
 			}
 
 		Point avg = new Point();
@@ -74,7 +75,6 @@ public class HistoryService {
 		this.whiteHistory.add(whiteBall);
 		if (this.whiteHistory.size() > maxHistoryLength)
 			this.whiteHistory.remove(0);
-		return whiteBall;
 	}
 
 	/**
@@ -85,14 +85,13 @@ public class HistoryService {
 	 * @param radius
 	 * @return
 	 */
-	public List<Ball> updateHistory(List<Ball> list, int radius) {
+	public void updateHistory(List<Ball> list, int radius) {
 
-		if (list == null)
-			if (history.size() == 0)
-				return null;
-			else
-				return history.get(history.size() - 1);
-
+		if (list == null) {
+			if (history.size() > 0)
+				list = history.get(history.size() - 1);
+			return;
+		}
 		List<Ball> newList = new ArrayList<Ball>();
 
 		for (Ball ball : list) {
@@ -104,11 +103,10 @@ public class HistoryService {
 
 			for (List<Ball> prev : this.history) {
 
-				Point point = findBallByPoint(ball.getPoint(), prev, radius);
-
-				if (point != null) {
-					avg.x += point.x;
-					avg.y += point.y;
+				Ball ball2 = findBallByPoint(ball.getPoint(), prev, radius);
+				if (ball2 != null) {
+					avg.x += ball2.getPoint().x;
+					avg.y += ball2.getPoint().y;
 					detected++;
 				}
 			}
@@ -134,7 +132,6 @@ public class HistoryService {
 		this.history.add(newList);
 		if (this.history.size() > maxHistoryLength)
 			this.history.remove(0);
-		return list;
 	}
 
 	public List<Ball> findMissingBalls(List<Ball> list, int radius) {
@@ -159,10 +156,10 @@ public class HistoryService {
 		return list;
 	}
 
-	private Point findBallByPoint(Point point, List<Ball> list, int radius) {
+	public Ball findBallByPoint(Point point, List<Ball> list, int radius) {
 		for (Ball ball : list) {
 			if (Math.abs(point.x - ball.getPoint().x) < radius && Math.abs(point.y - ball.getPoint().y) < radius)
-				return ball.getPoint();
+				return ball;
 		}
 		return null;
 	}
