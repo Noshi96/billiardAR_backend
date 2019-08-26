@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -66,9 +65,7 @@ public class BilliardTableController {
 
 	@Scheduled(fixedRate = 2000)
 	public void tableLive() {
-		//simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
-		frame  = Imgcodecs.imread("C:\\Users\\Koala\\Documents\\pooltablebackend\\src\\main\\resources\\table.jpg", Imgcodecs.CV_LOAD_IMAGE_COLOR);
-		kinectService.send(frame);
+		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
 
 	@Scheduled(fixedRate = 2000)

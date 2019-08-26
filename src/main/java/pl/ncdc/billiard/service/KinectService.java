@@ -155,30 +155,9 @@ public class KinectService {
 	 * @param height number of rows - image <b>HEIGHT</b>
 	 * @param width  number of columns - image <b>WIDTH</b>
 	 */
-//	public void send(byte[] data, int height, int width) {
-//		Mat frame = new Mat(height, width, CvType.CV_8UC4);
-//		frame.put(0, 0, data);
-//		this.actualFrame = frame.clone();
-//		// send table by web socket
-//		List<Ball> newList = updateTable(frame);
-//		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
-//		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
-//		this.table.setBalls(newList);
-//		//this.table.setBalls(newList);
-//		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
-//
-//		// if calibrate
-//		if (this.status == 1) {
-//			this.simpMessagingTemplate.convertAndSend("/calibrate/live", frame);
-//		} else if (this.status == 2) {
-//			generateMask(frame);
-//		}
-//	}
-
-	// podmienione pod mocka
-	public void send(Mat frame) {
-		//Mat frame = new Mat(height, width, CvType.CV_8UC4);
-		//frame.put(0, 0, data);
+	public void send(byte[] data, int height, int width) {
+		Mat frame = new Mat(height, width, CvType.CV_8UC4);
+		frame.put(0, 0, data);
 		this.actualFrame = frame.clone();
 		// send table by web socket
 		List<Ball> newList = updateTable(frame);
@@ -195,10 +174,7 @@ public class KinectService {
 			generateMask(frame);
 		}
 	}
-	
-	
-	
-	
+
 	/**
 	 * Prepare image to use <i>HoughCircles</i> algorithm: converts an image to gray
 	 * scale, cut unnecessary part of an image and apply mask to remove background.
