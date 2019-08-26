@@ -156,15 +156,19 @@ public class KinectService {
 	 * @param width  number of columns - image <b>WIDTH</b>
 	 */
 	public void send(byte[] data, int height, int width) {
+
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
 		this.actualFrame = frame.clone();
-		// send table by web socket
+
 		List<Ball> newList = updateTable(frame);
-		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
-		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
+		this.historyService.updateHistory(newList, this.maxBallRadius);
+		this.historyService.findMissingBalls(newList, this.maxBallRadius);
+		this.historyService.updateHistory(this.table.getWhiteBall(), maxBallRadius);
+		removeFalseWhite(newList);
+		sort(newList);
+
 		this.table.setBalls(newList);
-		//this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		// if calibrate
@@ -173,6 +177,32 @@ public class KinectService {
 		} else if (this.status == 2) {
 			generateMask(frame);
 		}
+	}
+
+	/**
+	 * Sort ball list by x position. Set its id's
+	 * 
+	 * @param list list to sort
+	 */
+	private void sort(List<Ball> list) {
+		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o2.getPoint().x));
+		for (int i = 1; i < list.size(); i++)
+			list.get(i).setId(i);
+	}
+
+	/**
+	 * Remove false ball from list if detected as white
+	 * 
+	 * @param list
+	 */
+	private void removeFalseWhite(List<Ball> list) {
+		Ball whiteBall = this.table.getWhiteBall();
+		if (whiteBall == null)
+			return;
+		Ball inList = this.historyService.findBallByPoint(whiteBall.getPoint(), list, this.maxBallRadius);
+		if (inList == null)
+			return;
+		list.remove(inList);
 	}
 
 	/**
@@ -219,10 +249,6 @@ public class KinectService {
 				list.add(new Ball(0, point));
 			}
 		}
-		// sort balls by X
-		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o1.getPoint().x));
-		for (int i = 1; i < list.size(); i++)
-			list.get(i).setId(i);
 		return list;
 	}
 
@@ -273,6 +299,10 @@ public class KinectService {
 	 * @return Function return Ball pointed to the White Ball
 	 */
 	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
+		/** Actual detected white ball **/
+		Ball white = null;
+		/** White pixels density of actual white ball **/
+		double actualDensity = this.minWhiteBallDensity;
 		// for each circle
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
@@ -295,11 +325,13 @@ public class KinectService {
 				}
 			}
 			// current ball accept criteria
-			if (rectSum > this.minWhiteBallDensity)
-				return new Ball(0, new Point(c[0], c[1]));
+			if (rectSum > actualDensity) {
+				white = new Ball(0, new Point(c[0], c[1]));
+				actualDensity = rectSum;
+			}
 		}
 		// white ball not detected
-		return null;
+		return white;
 	}
 
 	/**
