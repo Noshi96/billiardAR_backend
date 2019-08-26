@@ -41,7 +41,7 @@ public class BilliardTableController {
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
-	
+
 	Mat frame;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
@@ -56,7 +56,6 @@ public class BilliardTableController {
 		this.hiddenPlacesService = hiddenPlacesService;
 		this.poolDrawerService = poolDrawerService;
 	}
-
 
 	@GetMapping("")
 	public BilliardTable getTable() {
@@ -73,10 +72,6 @@ public class BilliardTableController {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
 
-
-
-	
-	
 	@PutMapping("/ball")
 	public void selectBall(@RequestBody Point point) {
 		tableService.selectBall(point);
@@ -136,7 +131,7 @@ public class BilliardTableController {
 	}
 
 	@PutMapping("/hiddenPlaces")
-	public List<Point> showHiddenPlaces(){
+	public List<Point> showHiddenPlaces() {
 
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
