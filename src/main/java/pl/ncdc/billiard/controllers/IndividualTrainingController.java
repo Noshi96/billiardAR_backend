@@ -45,6 +45,16 @@ public class IndividualTrainingController {
 		return new ResponseEntity<IndividualTraining>(individualTraining, HttpStatus.OK);
 	}
 
+	@GetMapping("/getInPixelById/{id}")
+	public ResponseEntity<IndividualTraining> getInPixelById(@PathVariable Long id) {
+		IndividualTraining individualTraining = individualTrainingService.getInPixelById(id);
+		if (individualTraining == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<IndividualTraining>(individualTraining, HttpStatus.OK);
+	}
+
+
 	@GetMapping("/getByDifficultyLevel/{difficultyLevel}")
 	public List<IndividualTraining> getByDifficultyLevel(@PathVariable DifficultyLevel difficultyLevel) {
 		return individualTrainingService.getAllByDifficultyLevel(difficultyLevel);
