@@ -7,18 +7,15 @@ import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
-import org.opencv.video.BackgroundSubtractor;
-import org.opencv.video.Video;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -49,10 +46,6 @@ public class KinectService {
 
 	private Kinect kinect;
 
-	@Value("${kinectService.mask}")
-	private String filename;
-	private Mat mask;
-	private BackgroundSubtractor backgroundSubstractor;
 	private Mat perspectiveTransform;
 
 	// kalibracja
@@ -67,37 +60,14 @@ public class KinectService {
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
-		backgroundSubstractor = Video.createBackgroundSubtractorMOG2();
-		actualFrame = new Mat();
+		this.actualFrame = new Mat();
+		this.perspectiveTransform = new Mat();
 	}
 
 	@PostConstruct
 	private void init() {
 		this.kinect.start(Kinect.COLOR);
 		this.status = 0;
-	}
-
-	/**
-	 * Read mask image from a file, apply perspective transform and convert to a
-	 * gray scale. Set mask to a backgroundSubstractor
-	 */
-	public void prepareMask() {
-
-		// read mask
-		this.mask = Imgcodecs.imread(this.filename);
-		if (this.mask == null) {
-			System.out.println("File '" + this.filename + "' cannot be found.");
-			System.out.println("Create new mask");
-			this.mask = new Mat(this.table.getWidth(), this.table.getHeight(), CvType.CV_8UC4);
-		}
-		// wrap mask
-		Imgproc.warpPerspective(this.mask, this.mask, this.perspectiveTransform,
-				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
-		// convert mask to gray
-		Imgproc.cvtColor(this.mask, this.mask, Imgproc.COLOR_BGR2GRAY);
-		// apply mask
-		backgroundSubstractor.apply(this.mask, this.mask, 1);
-
 	}
 
 	/**
@@ -140,11 +110,12 @@ public class KinectService {
 
 		Mat dst = Converters.vector_Point2f_to_Mat(pts);
 
+		this.perspectiveTransform.release();
 		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
 
-		// apply new calibration to mask image
-		this.prepareMask();
-
+		src.release();
+		dst.release();
+		
 		this.kinect.start(Kinect.COLOR);
 	}
 
@@ -155,50 +126,55 @@ public class KinectService {
 	 * @param height number of rows - image <b>HEIGHT</b>
 	 * @param width  number of columns - image <b>WIDTH</b>
 	 */
-//	public void send(byte[] data, int height, int width) {
-//		Mat frame = new Mat(height, width, CvType.CV_8UC4);
-//		frame.put(0, 0, data);
-//		this.actualFrame = frame.clone();
-//		// send table by web socket
-//		List<Ball> newList = updateTable(frame);
-//		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
-//		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
-//		this.table.setBalls(newList);
-//		//this.table.setBalls(newList);
-//		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
-//
-//		// if calibrate
-//		if (this.status == 1) {
-//			this.simpMessagingTemplate.convertAndSend("/calibrate/live", frame);
-//		} else if (this.status == 2) {
-//			generateMask(frame);
-//		}
-//	}
+	public void send(byte[] data, int height, int width) {
 
-	// podmienione pod mocka
-	public void send(Mat frame) {
-		//Mat frame = new Mat(height, width, CvType.CV_8UC4);
-		//frame.put(0, 0, data);
+		Mat frame = new Mat(height, width, CvType.CV_8UC4);
+		frame.put(0, 0, data);
+		
+		this.actualFrame.release();
 		this.actualFrame = frame.clone();
-		// send table by web socket
-		List<Ball> newList = updateTable(frame);
-		newList = this.historyService.updateHistory(newList, this.maxBallRadius);
-		newList = this.historyService.findMissingBalls(newList, this.maxBallRadius);
-		this.table.setBalls(newList);
-		//this.table.setBalls(newList);
-		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
-		// if calibrate
-		if (this.status == 1) {
-			this.simpMessagingTemplate.convertAndSend("/calibrate/live", frame);
-		} else if (this.status == 2) {
-			generateMask(frame);
-		}
+		List<Ball> newList = updateTable(frame);
+		
+		this.historyService.updateHistory(newList, this.maxBallRadius);
+		this.historyService.findMissingBalls(newList, this.maxBallRadius);
+		this.historyService.updateHistory(this.table.getWhiteBall(), maxBallRadius);
+		removeFalseWhite(newList);
+		sort(newList);
+
+		this.table.setBalls(newList);
+		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
+		
+		frame.release();
+
 	}
-	
-	
-	
-	
+
+	/**
+	 * Sort ball list by x position. Set its id's
+	 * 
+	 * @param list list to sort
+	 */
+	private void sort(List<Ball> list) {
+		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o2.getPoint().x));
+		for (int i = 1; i < list.size(); i++)
+			list.get(i).setId(i);
+	}
+
+	/**
+	 * Remove false ball from list if detected as white
+	 * 
+	 * @param list
+	 */
+	private void removeFalseWhite(List<Ball> list) {
+		Ball whiteBall = this.table.getWhiteBall();
+		if (whiteBall == null)
+			return;
+		Ball inList = this.historyService.findBallByPoint(whiteBall.getPoint(), list, this.maxBallRadius);
+		if (inList == null)
+			return;
+		list.remove(inList);
+	}
+
 	/**
 	 * Prepare image to use <i>HoughCircles</i> algorithm: converts an image to gray
 	 * scale, cut unnecessary part of an image and apply mask to remove background.
@@ -213,19 +189,24 @@ public class KinectService {
 	 */
 	private List<Ball> updateTable(Mat frame) {
 		Mat circles = new Mat();
-		Mat gray = new Mat();
-
+		Mat Lab = new Mat();
+		
 		// wrap image
 		Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
-		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
-		// create and apply mask
-		// this.mask = new Mat();
-		this.backgroundSubstractor.apply(gray, this.mask, 0);
+		
+        Imgproc.cvtColor(frame, Lab, Imgproc.COLOR_BGR2Lab);
+        
+        List<Mat> channelList = new ArrayList<Mat>(3);
+		Core.split(Lab, channelList);
+		Mat channelL = new Mat();
+
+		channelList.get(1).copyTo(channelL);
+		
 		// apply blur
-		Imgproc.medianBlur(this.mask, this.mask, 9);
+		Imgproc.medianBlur(channelL, channelL, 5);
 		// show(mask);
-		Imgproc.HoughCircles(this.mask, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
+		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
@@ -243,22 +224,12 @@ public class KinectService {
 				list.add(new Ball(0, point));
 			}
 		}
-		// sort balls by X
-		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o1.getPoint().x));
-		for (int i = 1; i < list.size(); i++)
-			list.get(i).setId(i);
+		
+		circles.release();
+		Lab.release();
+		channelL.release();
+		
 		return list;
-	}
-
-	/**
-	 * Receive frame from Kinect device and compute a foreground mask. Increase a
-	 * BallDetecting algorithm effectiveness
-	 * 
-	 * @param frame
-	 */
-	private void generateMask(Mat frame) {
-		Imgcodecs.imwrite(this.filename, frame);
-		this.prepareMask();
 	}
 
 	/**
@@ -297,6 +268,10 @@ public class KinectService {
 	 * @return Function return Ball pointed to the White Ball
 	 */
 	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
+		/** Actual detected white ball **/
+		Ball white = null;
+		/** White pixels density of actual white ball **/
+		double actualDensity = this.minWhiteBallDensity;
 		// for each circle
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
@@ -319,11 +294,13 @@ public class KinectService {
 				}
 			}
 			// current ball accept criteria
-			if (rectSum > this.minWhiteBallDensity)
-				return new Ball(0, new Point(c[0], c[1]));
+			if (rectSum > actualDensity) {
+				white = new Ball(0, new Point(c[0], c[1]));
+				actualDensity = rectSum;
+			}
 		}
 		// white ball not detected
-		return null;
+		return white;
 	}
 
 	/**
@@ -355,7 +332,7 @@ public class KinectService {
 			pockets.get(index).y = Math.floor(pockets.get(index).y);
 		}
 		pockets.sort((p1, p2) -> Double.compare(p1.x, p2.x));
-		System.out.println(pockets);
+		
 		if (pockets.get(0).y < pockets.get(1).y) {
 			calibrationParams.setLeftUpperCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y + radius));
 			calibrationParams.setLeftBottomCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y - radius));
@@ -370,7 +347,9 @@ public class KinectService {
 			calibrationParams.setRightUpperCorner(new Point(pockets.get(4).x - radius, pockets.get(4).y + radius));
 			calibrationParams.setRightBottomCorner(new Point(pockets.get(5).x - radius, pockets.get(5).y - radius));
 		}
-
+		frame.release();
+		circles.release();
+		
 		return calibrationParams;
 	}
 }

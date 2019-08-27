@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -42,7 +41,7 @@ public class BilliardTableController {
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
-	
+
 	Mat frame;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
@@ -58,7 +57,6 @@ public class BilliardTableController {
 		this.poolDrawerService = poolDrawerService;
 	}
 
-
 	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
@@ -66,20 +64,14 @@ public class BilliardTableController {
 
 	@Scheduled(fixedRate = 2000)
 	public void tableLive() {
-		//simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
-		frame  = Imgcodecs.imread("C:\\Users\\Koala\\Documents\\pooltablebackend\\src\\main\\resources\\table.jpg", Imgcodecs.CV_LOAD_IMAGE_COLOR);
-		kinectService.send(frame);
+		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
 
-	@Scheduled(fixedRate = 2000)
+	@Scheduled(fixedRate = 50)
 	public void drawingLive() {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
 
-
-
-	
-	
 	@PutMapping("/ball")
 	public void selectBall(@RequestBody Point point) {
 		tableService.selectBall(point);
@@ -140,7 +132,7 @@ public class BilliardTableController {
 	}
 
 	@PutMapping("/hiddenPlaces")
-	public List<Point> showHiddenPlaces(){
+	public List<Point> showHiddenPlaces() {
 
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
