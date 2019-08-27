@@ -194,6 +194,11 @@ public class PoolDrawerService {
 	
 	
 	public void drawViewMode22(Mat mat, BilliardTable table) {
+		if ( table.getWhiteBall() == null ) {
+			return;
+			// error bo nie ma bialej bili.
+		}
+		
 		Point white = table.getWhiteBall().getPoint();
 		List<Ball> listBall = table.getBalls();
 		
