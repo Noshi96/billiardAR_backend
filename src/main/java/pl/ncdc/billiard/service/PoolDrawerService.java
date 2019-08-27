@@ -135,14 +135,21 @@ public class PoolDrawerService {
     		new Size(projectorMaxWidth,projectorMaxHeight)
 		);
 	    //get perspective transform
-	      
-	      
-		
+
+	    
+	    
 		MatOfByte matOfByte = new MatOfByte();
 		Imgcodecs.imencode(".png", poolPlayZoneMat, matOfByte);
 		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] data = encoder.encode(matOfByte.toArray());
 		
-		return encoder.encode(matOfByte.toArray());
+		xd.release();
+	    destinationMat.release();
+	    sourceMat.release();
+	    poolPlayZoneMat.release();
+	    matOfByte.release();
+		
+		return data;
 	} // end of drawImage(args);
 		
 		

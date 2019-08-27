@@ -67,7 +67,7 @@ public class BilliardTableController {
 		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
 
-	@Scheduled(fixedRate = 33)
+	@Scheduled(fixedRate = 50)
 	public void drawingLive() {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}

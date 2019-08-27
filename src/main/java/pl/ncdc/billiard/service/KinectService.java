@@ -60,7 +60,8 @@ public class KinectService {
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
 		this.kinect = kinect;
-		actualFrame = new Mat();
+		this.actualFrame = new Mat();
+		this.perspectiveTransform = new Mat();
 	}
 
 	@PostConstruct
@@ -109,8 +110,12 @@ public class KinectService {
 
 		Mat dst = Converters.vector_Point2f_to_Mat(pts);
 
+		this.perspectiveTransform.release();
 		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
 
+		src.release();
+		dst.release();
+		
 		this.kinect.start(Kinect.COLOR);
 	}
 
@@ -125,9 +130,12 @@ public class KinectService {
 
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
+		
+		this.actualFrame.release();
 		this.actualFrame = frame.clone();
 
 		List<Ball> newList = updateTable(frame);
+		
 		this.historyService.updateHistory(newList, this.maxBallRadius);
 		this.historyService.findMissingBalls(newList, this.maxBallRadius);
 		this.historyService.updateHistory(this.table.getWhiteBall(), maxBallRadius);
@@ -136,13 +144,9 @@ public class KinectService {
 
 		this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
+		
+		frame.release();
 
-		// if calibrate
-		if (this.status == 1) {
-			this.simpMessagingTemplate.convertAndSend("/calibrate/live", frame);
-		} else if (this.status == 2) {
-			//generateMask(frame); //<-
-		}
 	}
 
 	/**
@@ -220,6 +224,11 @@ public class KinectService {
 				list.add(new Ball(0, point));
 			}
 		}
+		
+		circles.release();
+		Lab.release();
+		channelL.release();
+		
 		return list;
 	}
 
@@ -323,7 +332,7 @@ public class KinectService {
 			pockets.get(index).y = Math.floor(pockets.get(index).y);
 		}
 		pockets.sort((p1, p2) -> Double.compare(p1.x, p2.x));
-		System.out.println(pockets);
+		
 		if (pockets.get(0).y < pockets.get(1).y) {
 			calibrationParams.setLeftUpperCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y + radius));
 			calibrationParams.setLeftBottomCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y - radius));
@@ -338,7 +347,9 @@ public class KinectService {
 			calibrationParams.setRightUpperCorner(new Point(pockets.get(4).x - radius, pockets.get(4).y + radius));
 			calibrationParams.setRightBottomCorner(new Point(pockets.get(5).x - radius, pockets.get(5).y - radius));
 		}
-
+		frame.release();
+		circles.release();
+		
 		return calibrationParams;
 	}
 }
