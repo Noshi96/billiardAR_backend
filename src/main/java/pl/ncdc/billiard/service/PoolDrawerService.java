@@ -374,7 +374,7 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewModeRotation(Mat mat, BilliardTable table) {
-		System.out.println("elo");
+		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -399,7 +399,7 @@ public class PoolDrawerService {
 			
 
 			
-			System.out.println("hit points: " + hitPoints);
+			//System.out.println("hit points: " + hitPoints);
 			
 		//console.log(this.hittingPoint);
 		//this.drawTrajectory(this.hittingPoint);
@@ -409,7 +409,7 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewModeZeroRotation(Mat mat, BilliardTable table) {
-		System.out.println("elo");
+		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -429,7 +429,7 @@ public class PoolDrawerService {
 			Point rotationZeroPoint = rotationService.whiteBallZeroRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
 			drawRotationZero(mat, table,  rotationZeroPoint, hitPoints, hitPoints.get(0));
 						
-			System.out.println("hit points: " + hitPoints);	
+			//System.out.println("hit points: " + hitPoints);	
 		} else {
 			
 		}
@@ -450,7 +450,7 @@ public class PoolDrawerService {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
-System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+//System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 		if((table.getSelectedBall() != null)){
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();
@@ -461,12 +461,12 @@ System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 			if (idPocket != -1) {
 				
 			
-			System.out.println("IDDD = " + idPocket);
+			//System.out.println("IDDD = " + idPocket);
 			if (white == null || selected == null) {
 				return ;
 			
 			}	
-			System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
+			//System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
 			
 			drawBestPocket(mat, table, listOfPockets, idPocket);
 			}

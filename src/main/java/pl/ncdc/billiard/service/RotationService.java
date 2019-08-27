@@ -44,8 +44,8 @@ public class RotationService {
 
 		mainLineY = (aBFactors.get(0) * mainLineX) + aBFactors.get(1);
 
-		System.out.println("A factor = " + aBFactors.get(0));
-		System.out.println("B factor = " + aBFactors.get(1));
+		//System.out.println("A factor = " + aBFactors.get(0));
+		//System.out.println("B factor = " + aBFactors.get(1));
 
 		findAngle = angle;
 
@@ -87,7 +87,7 @@ public class RotationService {
 			List<Double> listt = mathService.abOfFunction(targetPoint.x, targetPoint.y, pocket.x, pocket.y);
 			double a = listt.get(0);
 			double a2 = -1 / a;
-			System.out.println(a2);
+			//System.out.println(a2);
 
 			double b2 = 0;
 
@@ -109,11 +109,19 @@ public class RotationService {
 			}
 
 			if (angle > 92) {
+				if (targetPoint.y > pocket.y) {
+					xNew2 = targetPoint.x - 100;
+					yNew2 = a2 * xNew2 + b2;
+
+					secondOption.x = xNew2;
+					secondOption.y = yNew2;
+
+					return secondOption;
+				}
 				return newPoint;
 			}
 
 			else {
-
 				xNew2 = targetPoint.x - 100;
 				yNew2 = a2 * xNew2 + b2;
 
@@ -175,7 +183,7 @@ public class RotationService {
                 }
                 else{
                      xNew = targetPoint.x - 100;
-                    System.out.println("dupppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp");
+                    //System.out.println("dupppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp");
                      yNew = aBFactorsWhiteAndTarget.get(0) * xNew + aBFactorsWhiteAndTarget.get(1);
                 }
                 
@@ -199,26 +207,26 @@ public class RotationService {
 
                 mainLineY = (aBFactorsWhiteAndTarget.get(0) * mainLineX) + aBFactorsWhiteAndTarget.get(1);
 
-                System.out.println("A factor = " + aBFactorsWhiteAndTarget.get(0));
-                System.out.println("B factor = " + aBFactorsWhiteAndTarget.get(1));
+                //System.out.println("A factor = " + aBFactorsWhiteAndTarget.get(0));
+                //System.out.println("B factor = " + aBFactorsWhiteAndTarget.get(1));
 
 
-                System.out.println("New Point " + newPoint);
-                System.out.println("Target Point " + targetPoint);
+                //System.out.println("New Point " + newPoint);
+                //System.out.println("Target Point " + targetPoint);
 
 //                 if (angle > 90) {
 
-                System.out.println("Angle > 92  = " + angle);
-                System.out.println("Sprawdzenie k¹ta " + hitService.findAngle(newPoint, targetPoint, pocket) * 57.2957);
+                //System.out.println("Angle > 92  = " + angle);
+                //System.out.println("Sprawdzenie kata " + hitService.findAngle(newPoint, targetPoint, pocket) * 57.2957);
                 double angleHit = mathService.findAngle(white, targetPoint, selected) * 57;
                 double angleFollowRotation = angleFollowRotationFunction(angleHit);
-                System.out.println("Angle hitttttttttttttttttttttttttttttt" + angleHit);
+                //System.out.println("Angle hitttttttttttttttttttttttttttttt" + angleHit);
 
                     findAngle = -angleFollowRotation; // jesli kat mniejszy to -
                     
                     Point pointTest = fixedFollowRotation(white, selected, pocket, listBall, 3);
                     
-                    System.out.println("Punkt ktory obracamy o kat z wymodelowanej funkcji X = " + mainLineX + " Y = " + mainLineY);
+                  //  System.out.println("Punkt ktory obracamy o kat z wymodelowanej funkcji X = " + mainLineX + " Y = " + mainLineY);
 
 
 
@@ -229,12 +237,12 @@ public class RotationService {
 
                 returnedPoint.x = newX;
                 returnedPoint.y = newY;
-                System.out.println("Kat o ktory obracamy punkt na prostej " + findAngle);
-                System.out.println("returnedPoint " + returnedPoint);
-                System.out.println();
+               // System.out.println("Kat o ktory obracamy punkt na prostej " + findAngle);
+                //System.out.println("returnedPoint " + returnedPoint);
+                //System.out.println();
                 
                 List<Double> newFactors = mathService.abOfFunction(targetPoint.x, targetPoint.y, returnedPoint.x, returnedPoint.y);
-                System.out.println("Wspolczynniki najnowszej wynikowej prostej A = " + newFactors.get(0) + " B = " + newFactors.get(1));
+                //System.out.println("Wspolczynniki najnowszej wynikowej prostej A = " + newFactors.get(0) + " B = " + newFactors.get(1));
                 return returnedPoint;
 //                     } else {
 //
@@ -255,7 +263,7 @@ public class RotationService {
 //
 //                    System.out.println("Kat o ktory obracamy punkt na prostej " + findAngle);
 //                    System.out.println("Angle < 92 = " + angle);
-//                    System.out.println("Sprawdzenie k¹ta " + hitService.findAngle(secondOption, targetPoint, pocket) * 57.2957);
+//                    System.out.println("Sprawdzenie kata " + hitService.findAngle(secondOption, targetPoint, pocket) * 57.2957);
 //                    System.out.println("returnedPoint " + returnedPoint);
 //                    return returnedPoint;
 //                     }
@@ -313,9 +321,9 @@ public class RotationService {
 			angleOfWhiteTargetNew = (mathService.findAngle(white, targetPoint, newPoint) * 57);
 			checkAngle = (mathService.findAngle(newPoint, targetPoint, pocket) * 57); // Musi sie rownac 90
 			
-			System.out.println("-------------------------Spawdzenie kata stalego = " + checkAngle);
-			System.out.println("-------------------------Spawdzenie angleOfWhiteTargetNew = " + angleOfWhiteTargetNew);
-			System.out.println("-------------------------Point prostej prostopadlej " + newPoint);
+			//System.out.println("-------------------------Spawdzenie kata stalego = " + checkAngle);
+			//System.out.println("-------------------------Spawdzenie angleOfWhiteTargetNew = " + angleOfWhiteTargetNew);
+			//System.out.println("-------------------------Point prostej prostopadlej " + newPoint);
 			
 			 Point returnedPoint = new Point();
 		        double findAngle = 0;
@@ -338,14 +346,14 @@ public class RotationService {
 		                    
 			                if (angleOfWhiteTargetNew < 90) {
 			                    findAngle = -angleFollowRotation; // jesli kat mniejszy to -
-			                    System.out.println("11111111111111111111111111111111111111");
+			                    //System.out.println("11111111111111111111111111111111111111");
 			                } else {
 			                	if (pocket.y > targetPoint.y) {
 			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
 			                	} else {
 			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
 			                	}
-			                	System.out.println("22222222222222222222222222222222222222");
+			                	//System.out.println("22222222222222222222222222222222222222");
 			                }
 			                
 		                } else {
@@ -358,33 +366,33 @@ public class RotationService {
 			                	} else {
 			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
 			                	}
-			                    System.out.println("33333333333333333333333333333333333333");// Tu zmienilem na minus
+			                    //System.out.println("33333333333333333333333333333333333333");// Tu zmienilem na minus
 			                } else {
 			                	findAngle = -angleFollowRotation;
-			                	System.out.println("444444444444444444444444444444444444444"); // Tu zmienilem na minus
+			                	//System.out.println("444444444444444444444444444444444444444"); // Tu zmienilem na minus
 			                }
 		                }
 
 		                mainLineY = (aBFactorsWhiteAndTarget.get(0) * mainLineX) + aBFactorsWhiteAndTarget.get(1); // 
 
-		                System.out.println("A factor = " + aBFactorsWhiteAndTarget.get(0));
-		                System.out.println("B factor = " + aBFactorsWhiteAndTarget.get(1));
-
-		                System.out.println("New Point " + newPoint);
-		                System.out.println("Target Point " + targetPoint);
-
-		                System.out.println("Angle > 92  = " + angle);
-		                System.out.println("Sprawdzenie k¹ta " + hitService.findAngle(newPoint, targetPoint, pocket) * 57.2957);
-
-		                System.out.println("Angle hitttttttttttttttttttttttttttttt" + angleHit);
-
-		                System.out.println("angleOfWhiteTargetNew = " + angleOfWhiteTargetNew);
+//		                System.out.println("A factor = " + aBFactorsWhiteAndTarget.get(0));
+//		                System.out.println("B factor = " + aBFactorsWhiteAndTarget.get(1));
+//
+//		                System.out.println("New Point " + newPoint);
+//		                System.out.println("Target Point " + targetPoint);
+//
+//		                System.out.println("Angle > 92  = " + angle);
+//		                System.out.println("Sprawdzenie kata " + hitService.findAngle(newPoint, targetPoint, pocket) * 57.2957);
+//
+//		                System.out.println("Angle hitttttttttttttttttttttttttttttt" + angleHit);
+//
+//		                System.out.println("angleOfWhiteTargetNew = " + angleOfWhiteTargetNew);
 		                //t.x
 
 		                
 		                    //Point pointTest = fixeFollowRotation(white, selected, pocket, listBall, 3);
 		                    
-		                    System.out.println("Punkt ktory obracamy o kat z wymodelowanej funkcji X = " + mainLineX + " Y = " + mainLineY);
+		                    //System.out.println("Punkt ktory obracamy o kat z wymodelowanej funkcji X = " + mainLineX + " Y = " + mainLineY);
 
 
 
@@ -395,12 +403,12 @@ public class RotationService {
 
 		                returnedPoint.x = newX;
 		                returnedPoint.y = newY;
-		                System.out.println("Kat o ktory obracamy punkt na prostej " + findAngle);
-		                System.out.println("returnedPoint " + returnedPoint);
-		                System.out.println();
+		                //System.out.println("Kat o ktory obracamy punkt na prostej " + findAngle);
+		                //System.out.println("returnedPoint " + returnedPoint);
+		                //System.out.println();
 		                
 		                List<Double> newFactors = mathService.abOfFunction(targetPoint.x, targetPoint.y, returnedPoint.x, returnedPoint.y);
-		                System.out.println("Wspolczynniki najnowszej wynikowej prostej A = " + newFactors.get(0) + " B = " + newFactors.get(1));
+		                //System.out.println("Wspolczynniki najnowszej wynikowej prostej A = " + newFactors.get(0) + " B = " + newFactors.get(1));
 		                return returnedPoint;
 		            }
 		        } else {

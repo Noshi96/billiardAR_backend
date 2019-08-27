@@ -91,10 +91,10 @@ public class HitService {
 			//System.out.println("kat: " + 57 * angle);
 
 			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
-			System.out.println("kolizja: " + collision);
+			//System.out.println("kolizja: " + collision);
 
 			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
-			System.out.println("kolizja2: " + collision2);
+			//System.out.println("kolizja2: " + collision2);
 
 			if (collision2) {
 				//System.out.println("Error list");
@@ -495,7 +495,7 @@ public class HitService {
 
 
 			if (listPoint == null) {
-				System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoo");
+				//System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoo");
 			} else {
 				if(listPoint.size() == 1) {
 				Point targetPoint = listPoint.get(0);

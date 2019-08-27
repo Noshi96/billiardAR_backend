@@ -77,7 +77,7 @@ public class BilliardTable {
          //balls.add(new Ball(6, new Point(800,450)));
          //balls.add(new Ball(2, false, new Point(111,99), false));
          //balls.add(new Ball(2, false, new Point(111,99), false));
-         balls.add(new Ball(3, new Point(750,450)));
+         //balls.add(new Ball(3, new Point(750,450)));
          balls.add(new Ball(1, new Point(250,600))); // true - jest selected
         
          balls.add(new Ball(6, new Point(1,600))); // 
@@ -90,6 +90,7 @@ public class BilliardTable {
          balls.add(new Ball(8, new Point(600, 50)));
         
          this.setWhiteBall(balls.get(3));
+         //this.setWhiteBall( new Ball( 0,  new Point(750,450)));
          //this.setSelectedBall(this.balls.get(7));
          //this.setSelectedPocket(this.pockets.get(5));
      }
