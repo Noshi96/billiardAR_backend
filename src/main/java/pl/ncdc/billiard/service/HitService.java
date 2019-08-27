@@ -91,10 +91,10 @@ public class HitService {
 			//System.out.println("kat: " + 57 * angle);
 
 			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
-			//System.out.println("kolizja: " + collision);
+			System.out.println("kolizja: " + collision);
 
 			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
-			//System.out.println("kolizja2: " + collision2);
+			System.out.println("kolizja2: " + collision2);
 
 			if (collision2) {
 				//System.out.println("Error list");
@@ -143,7 +143,7 @@ public class HitService {
 			if (!isPointInRange(ball.getPoint(), selectedBall, diameter / 2)) {
 				double angle = findAngleOfCollision(target, ball.getPoint(), pocket);
 				angle *= 57;
-				if (angle < 185 && angle > 176)
+				if (angle < 185 && angle > 166) // Zrobic
 					return false;
 			}
 		}
@@ -165,14 +165,16 @@ public class HitService {
 	 * @param listBall Lista wszystkich bill
 	 * @return false jesli znajdzie kolizje
 	 */
+	
 	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall, Point selected) {
 
 		for (Ball ball : listBall) {
-			if (ball.getPoint() != selected) {
+			if (!isPointInRange(ball.getPoint(), selected, diameter*2)) {
 				double angle = findAngleOfCollision(white, ball.getPoint(), target); // tu na logike powinna byc kolizja (obr. 2)
 				angle *= 57;
-				if (angle < 185 && angle > 176)
+				if (angle < 185 && angle > 166) {
 					return false;
+				}
 			}
 		}
 
@@ -492,14 +494,18 @@ public class HitService {
 			List<Point> listPoint = findHittingPoint(white, selected, pocketPoint, balls, listPocket.get(x).getId());
 
 
-			if(listPoint.size() == 1) {
+			if (listPoint == null) {
+				System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoo");
+			} else {
+				if(listPoint.size() == 1) {
 				Point targetPoint = listPoint.get(0);
 				angleCompare = findAngle(white, targetPoint, pocketPoint);
 
 				if(angleCompare > angle) {
-					angleCompare = angle;
+					angle = angleCompare;
 					idPocketBest = x;
 				}
+			}
 			}
 		}
 

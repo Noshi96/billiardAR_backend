@@ -71,7 +71,7 @@ public class BilliardTable {
 
          balls.add(new Ball(2, new Point(400,29) ));
 
-         balls.add(new Ball(4, new Point(417,29) ));
+         balls.add(new Ball(4, new Point(417,629) ));
          balls.add(new Ball(5, new Point(600,450)));	// White ball WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
         
          //balls.add(new Ball(6, new Point(800,450)));
@@ -83,7 +83,11 @@ public class BilliardTable {
          balls.add(new Ball(6, new Point(1,600))); // 
         
          //Dximi - kat nie potej stronie
-         balls.add(new Ball(7, new Point(600,250)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
+         balls.add(new Ball(7, new Point(610,250)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
+         
+         balls.add(new Ball(8, new Point(476, 186)));
+         
+         balls.add(new Ball(8, new Point(600, 50)));
         
          this.setWhiteBall(balls.get(3));
          //this.setSelectedBall(this.balls.get(7));

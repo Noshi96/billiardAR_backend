@@ -98,6 +98,7 @@ public class PoolDrawerService {
 				case 22: drawViewMode22(poolPlayZoneMat, table); break;
 				case 32: drawViewModeRotation(poolPlayZoneMat, table); break;
 				case 33: drawViewModeZeroRotation(poolPlayZoneMat, table); break;
+				case 34: drawViewModeBestPocket(poolPlayZoneMat, table); break;
 				
 				//case 2: this.drawViewMode2(); break;
 			}
@@ -424,6 +425,46 @@ public class PoolDrawerService {
 			drawRotationZero(mat, table,  rotationZeroPoint, hitPoints, hitPoints.get(0));
 						
 			System.out.println("hit points: " + hitPoints);	
+		} else {
+			
+		}
+	}
+	
+	public void drawBestPocket(Mat mat, BilliardTable table, List<Pocket> listOfPockets, int idPocket) {
+				
+	    	Imgproc.circle (
+				mat,
+				listOfPockets.get(idPocket).getPoint(),
+				ballRadius * 4,
+				new Scalar(255, 0, 0),
+				selectedPocketLineThickness
+			);
+	}
+	
+	public void drawViewModeBestPocket(Mat mat, BilliardTable table) {
+		drawWhiteBall(mat, table.getWhiteBall());
+		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
+		drawPockets(mat, table.getPockets());
+System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+		if((table.getSelectedBall() != null)){
+			Ball white = table.getWhiteBall();
+			Ball selected = table.getSelectedBall();
+			List<Pocket> listOfPockets = table.getPockets();
+			List<Ball> listOfBallse = table.getBalls();
+			
+			int idPocket = hitService.findBestPocket(white.getPoint(), selected.getPoint(), listOfPockets, listOfBallse);
+			if (idPocket != -1) {
+				
+			
+			System.out.println("IDDD = " + idPocket);
+			if (white == null || selected == null) {
+				return ;
+			
+			}	
+			System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
+			
+			drawBestPocket(mat, table, listOfPockets, idPocket);
+			}
 		} else {
 			
 		}
