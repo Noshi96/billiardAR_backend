@@ -30,9 +30,11 @@ public class BilliardTableService {
 	}
 	
 	public void selectBall(Point point) {
-		// table.setSelectedBall(null);
-		table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
-		System.out.println(table.getSelectedBall().getPoint());
+		point = table.findBallByPoint(point);
+		if (point == null)
+			table.setSelectedBall(null);
+		else
+			table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
 	}
 	
 	public void selectPocket(Long pocketId) {
@@ -62,8 +64,8 @@ public class BilliardTableService {
 		
 		this.table.setWidth(width);
 		this.table.setHeight(height);
-		
-		this.table.setBallRadius(calibrationParams.getBallDiameter()/2);
+
+		this.table.setBallRadius(calibrationParams.getBallDiameter() / 2);
 
 		// add pockets
 		List<Pocket> pockets = new ArrayList<Pocket>();
@@ -82,7 +84,7 @@ public class BilliardTableService {
 
 		this.table.setPockets(pockets);
 	}
-	
+
 	public void setViewMode(int viewMode) {
 		table.setSelectedViewMode(viewMode);
 	}
