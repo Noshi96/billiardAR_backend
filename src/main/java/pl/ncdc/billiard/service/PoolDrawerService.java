@@ -150,7 +150,7 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewMode1(Mat mat, BilliardTable table) {
-		System.out.println("elo");
+		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
