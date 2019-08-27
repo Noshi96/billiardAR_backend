@@ -269,7 +269,11 @@ public class KinectService {
 	 * @param r       Radius of detected circles
 	 * @return Function return Ball pointed to the White Ball
 	 */
-	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
+	public Ball whiteBallDetection(Mat frame, Mat circles, int r) {
+		
+		Mat image = frame.clone();
+		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
+		
 		/** Actual detected white ball **/
 		Ball white = null;
 		
@@ -313,13 +317,14 @@ public class KinectService {
 		}
 		
 		whiteMask.release();
+		image.release();
 		
-		maxWhite = maxWhite / (Math.PI * r * r);
-		if (maxWhite > percentage) {
+		//maxWhite = maxWhite / (Math.PI * r * r);
+		//if (maxWhite > percentage) {
 			return white;
-		}
+		//}
 		
-		return null;
+		//return null;
 	}
 
 	/**
