@@ -340,7 +340,11 @@ public class RotationService {
 			                    findAngle = -angleFollowRotation; // jesli kat mniejszy to -
 			                    System.out.println("11111111111111111111111111111111111111");
 			                } else {
-			                	findAngle = -angleFollowRotation;
+			                	if (pocket.y > targetPoint.y) {
+			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                	} else {
+			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                	}
 			                	System.out.println("22222222222222222222222222222222222222");
 			                }
 			                
@@ -349,11 +353,15 @@ public class RotationService {
 		                    mainLineX = targetPoint.x - 1100;
 		                    
 			                if (angleOfWhiteTargetNew < 90) {
-			                    findAngle = angleFollowRotation; // jesli kat mniejszy to -
-			                    System.out.println("33333333333333333333333333333333333333");
+			                	if (pocket.y < targetPoint.y) {
+			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                	} else {
+			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                	}
+			                    System.out.println("33333333333333333333333333333333333333");// Tu zmienilem na minus
 			                } else {
-			                	findAngle = angleFollowRotation;
-			                	System.out.println("444444444444444444444444444444444444444");
+			                	findAngle = -angleFollowRotation;
+			                	System.out.println("444444444444444444444444444444444444444"); // Tu zmienilem na minus
 			                }
 		                }
 
