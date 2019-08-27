@@ -2,6 +2,7 @@ package pl.ncdc.billiard.controllers;
 
 import java.util.List;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,6 +42,8 @@ public class BilliardTableController {
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
 
+	Mat frame;
+
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
 			KinectService kinectService, IndividualTrainingService individualTrainingService,
 			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService,
@@ -54,7 +57,6 @@ public class BilliardTableController {
 		this.poolDrawerService = poolDrawerService;
 	}
 
-
 	@GetMapping("")
 	public BilliardTable getTable() {
 		return tableService.getTable();
@@ -65,7 +67,7 @@ public class BilliardTableController {
 		simpMessagingTemplate.convertAndSend("/table/live", tableService.getTable());
 	}
 
-	@Scheduled(fixedRate = 2000)
+	@Scheduled(fixedRate = 50)
 	public void drawingLive() {
 		simpMessagingTemplate.convertAndSend("/table/draw", tableService.drawPoolImage());
 	}
@@ -90,10 +92,11 @@ public class BilliardTableController {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
-		int idPocket = tableService.getTable().getSelectedPocket().getId();
 		if (white == null || selected == null || pocket == null)
 			return null;
-
+		
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		
 		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
 				tableService.getTable().getBalls(), idPocket);
 	}
@@ -129,7 +132,7 @@ public class BilliardTableController {
 	}
 
 	@PutMapping("/hiddenPlaces")
-	public List<Point> showHiddenPlaces(){
+	public List<Point> showHiddenPlaces() {
 
 		Point white = tableService.getTable().getWhiteBall().getPoint();
 		List<Ball> listBall = tableService.getTable().getBalls();
