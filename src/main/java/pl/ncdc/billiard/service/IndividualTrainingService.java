@@ -1,17 +1,17 @@
 package pl.ncdc.billiard.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 import pl.ncdc.billiard.mappers.IndividualTrainingMapper;
+import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.DifficultyLevel;
 import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.repository.IndividualTrainingRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class IndividualTrainingService {
@@ -19,11 +19,14 @@ public class IndividualTrainingService {
 
     private final IndividualTrainingRepository individualTrainingRepository;
 	private final IndividualTrainingMapper individualTrainingMapper;
+	private final BilliardTable billiardTable;
 
 	@Autowired
-	public IndividualTrainingService(IndividualTrainingRepository individualTrainingRepository, IndividualTrainingMapper individualTrainingMapper) {
+	public IndividualTrainingService(IndividualTrainingRepository individualTrainingRepository, IndividualTrainingMapper individualTrainingMapper,
+									 BilliardTable billiardTable) {
 		this.individualTrainingRepository = individualTrainingRepository;
 		this.individualTrainingMapper = individualTrainingMapper;
+		this.billiardTable = billiardTable;
 	}
 
 	public List<IndividualTraining> getAll() {
@@ -37,6 +40,16 @@ public class IndividualTrainingService {
 		}
 
 		return individualTrainingMapper.toModel(individualTrainingEntity);
+	}
+
+	public IndividualTraining getInPixelById(Long id) {
+		IndividualTraining individualTraining = getById(id);
+		if(individualTraining == null) {
+			return null;
+		}
+
+		Point viewport = new Point(billiardTable.getWidth(), billiardTable.getHeight());
+		return individualTrainingMapper.toInPixelModel(individualTraining, viewport);
 	}
 
 	public List<IndividualTraining> getAllByDifficultyLevel(DifficultyLevel difficultyLevel) {
