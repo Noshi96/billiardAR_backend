@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.controllers.BilliardTableController;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
@@ -54,7 +55,7 @@ public class PoolDrawerService {
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
 	
-	int ballRadius = 5;
+	int ballRadius = 15;
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
 	
@@ -66,6 +67,8 @@ public class PoolDrawerService {
 	// koniec zmiennych do pliku
 	
 	List<Point> hitPoints;
+
+	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 
 	
 	
@@ -119,10 +122,10 @@ public class PoolDrawerService {
 		);
 	    
 	    MatOfPoint2f destinationMat = new MatOfPoint2f(
-    		new Point( 105, 122),
-    		new Point( projectorMaxWidth - 105, 122),
-    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
-    		new Point( 105, projectorMaxHeight - 122)
+    		calibrationParams.getLeftUpperCornerProjector(),
+    		calibrationParams.getRightUpperCornerProjector(),
+    		calibrationParams.getRightBottomCornerProjector(),
+    		calibrationParams.getLeftBottomCornerProjector()
 		);
 	    
 	    Mat xd = Imgproc.getPerspectiveTransform(sourceMat, destinationMat);  
@@ -139,8 +142,15 @@ public class PoolDrawerService {
 		MatOfByte matOfByte = new MatOfByte();
 		Imgcodecs.imencode(".png", poolPlayZoneMat, matOfByte);
 		Base64.Encoder encoder = Base64.getEncoder();
-		
-		return encoder.encode(matOfByte.toArray());
+		byte[] data = encoder.encode(matOfByte.toArray());
+
+		xd.release();
+	    destinationMat.release();
+	    sourceMat.release();
+	    poolPlayZoneMat.release();
+	    matOfByte.release();
+
+		return data;
 	} // end of drawImage(args);
 		
 		
@@ -155,7 +165,7 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewMode1(Mat mat, BilliardTable table) {
-		System.out.println("elo");
+		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -178,7 +188,7 @@ public class PoolDrawerService {
 			
 
 			
-			System.out.println("hit points: " + hitPoints);
+			//System.out.println("hit points: " + hitPoints);
 			
 		//console.log(this.hittingPoint);
 		//this.drawTrajectory(this.hittingPoint);
@@ -481,6 +491,10 @@ public class PoolDrawerService {
 	}
 	
 	public void drawBalls(Mat mat, List<Ball> balls) {
+		if( balls == null ) {
+			return;
+		}
+		
 		//rysowaie bil
 		for(Ball ball: balls) {
 			// rysowanie okregu
@@ -492,6 +506,14 @@ public class PoolDrawerService {
 				ballLineThickness
 			);
 			
+			Imgproc.circle (
+				mat,
+				ball.getPoint(),
+				ballRadius + 4,
+				new Scalar(255, 255, 0),
+				ballLineThickness
+			);
+
 			// rysowanie napisu id
 			if( displayBallId ) {
 			    Imgproc.putText (
@@ -508,6 +530,10 @@ public class PoolDrawerService {
 	} // end of drawBalls
 	
 	public void drawWhiteBall(Mat mat, Ball whiteBall) {
+		if ( whiteBall == null ) {
+			return;
+		}
+		
 		// rysowanie okregu
 		Imgproc.circle (
 			mat,
@@ -585,4 +611,8 @@ public class PoolDrawerService {
 		    playZoneBorderThickness
 	    );
 	} // end of drawPlayZoneBorder(args);
+
+	public void updateCalibration(CalibrationParams calibrationParams) {
+		this.calibrationParams = calibrationParams;
+	}
 }
