@@ -202,7 +202,7 @@ public class KinectService {
 		// apply blur
 		Imgproc.medianBlur(channelL, channelL, 5);
 		// show(mask);
-		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 15.0, 10.0,
+		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();

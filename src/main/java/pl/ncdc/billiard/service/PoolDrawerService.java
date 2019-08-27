@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
@@ -48,7 +49,7 @@ public class PoolDrawerService {
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
 	
-	int ballRadius = 5;
+	int ballRadius = 15;
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
 	
@@ -60,6 +61,8 @@ public class PoolDrawerService {
 	// koniec zmiennych do pliku
 	
 	List<Point> hitPoints;
+	
+	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 
 	
 	
@@ -110,12 +113,19 @@ public class PoolDrawerService {
     		new Point(0, kinectHeight)
 		);
 	    
+//	    MatOfPoint2f destinationMat = new MatOfPoint2f(
+//    		new Point( 80, 80),
+//    		new Point( projectorMaxWidth - 105, 100),
+//    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
+//    		new Point( 105, projectorMaxHeight - 122)
+//		);
 	    MatOfPoint2f destinationMat = new MatOfPoint2f(
-    		new Point( 105, 122),
-    		new Point( projectorMaxWidth - 105, 122),
-    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
-    		new Point( 105, projectorMaxHeight - 122)
+    		calibrationParams.getLeftUpperCornerProjector(),
+    		calibrationParams.getRightUpperCornerProjector(),
+    		calibrationParams.getRightBottomCornerProjector(),
+    		calibrationParams.getLeftBottomCornerProjector()
 		);
+		    
 	    
 	    Mat xd = Imgproc.getPerspectiveTransform(sourceMat, destinationMat);  
 	    Imgproc.warpPerspective(
@@ -346,6 +356,14 @@ public class PoolDrawerService {
 				ballLineThickness
 			);
 			
+			Imgproc.circle (
+				mat,
+				ball.getPoint(),
+				ballRadius + 2,
+				new Scalar(255, 255, 0),
+				ballLineThickness
+			);
+			
 			// rysowanie napisu id
 			if( displayBallId ) {
 			    Imgproc.putText (
@@ -443,4 +461,8 @@ public class PoolDrawerService {
 		    playZoneBorderThickness
 	    );
 	} // end of drawPlayZoneBorder(args);
+	
+	public void updateCalibration(CalibrationParams calibrationParams) {
+		this.calibrationParams = calibrationParams;
+	}
 }
