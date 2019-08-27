@@ -172,7 +172,7 @@ public class PoolDrawerService {
 			
 
 			
-			System.out.println("hit points: " + hitPoints);
+			//System.out.println("hit points: " + hitPoints);
 			
 		//console.log(this.hittingPoint);
 		//this.drawTrajectory(this.hittingPoint);

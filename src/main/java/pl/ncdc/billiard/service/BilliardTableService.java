@@ -32,7 +32,7 @@ public class BilliardTableService {
 	public void selectBall(Point point) {
 		// table.setSelectedBall(null);
 		table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
-		System.out.println(table.getSelectedBall().getPoint());
+		//System.out.println(table.getSelectedBall().getPoint());
 	}
 	
 	public void selectPocket(Long pocketId) {

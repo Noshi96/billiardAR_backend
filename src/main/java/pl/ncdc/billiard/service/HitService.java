@@ -97,8 +97,8 @@ public class HitService {
 			//System.out.println("kolizja2: " + collision2);
 
 			if (collision2) {
-				System.out.println("Error list");
-				System.out.println(list);
+				//System.out.println("Error list");
+				//System.out.println(list);
 			}
 
 			//System.out.println(list);
@@ -422,7 +422,8 @@ public class HitService {
 			// failure
 		}
 
-		else if (hitPoints.get(1) == null) {
+		//else if (hitPoints.get(1) == null) {
+		else if (hitPoints.size() == 1) {
 
 			hitAngle = findAngle(white, hitPoints.get(0), pocket) * 57;
 
