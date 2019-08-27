@@ -48,7 +48,7 @@ public class BilliardTable {
 	// display: 0 - rysuje okregi wokol wszystkich bil, odpowiednio oznacza biala, 1
 	// - obrysowuje tylko biala bile, zaznaczona bile oraz zaznaczona luze i rysuje
 	// trajektorie
-	private int selectedViewMode = 22;
+	private int selectedViewMode = 32;
 
 	// okresla wybranie poziomu challange. 0 - zaden, normalna ryzgrywka i
 	// zczytywanie bil; 0<int - okresla id poziomu do zaladowania
@@ -69,16 +69,25 @@ public class BilliardTable {
 
         balls = new ArrayList<>();
         balls.add(new Ball(0, new Point(1000,800))); // ostatnie true- jest biala
-        balls.add(new Ball(1, new Point(55,222))); // true - jest selected
+
         balls.add(new Ball(2, new Point(400,29) ));
-        balls.add(new Ball(3, new Point(111,99)));
+
         balls.add(new Ball(4, new Point(417,29) ));
-        balls.add(new Ball(5, new Point(1190/2, 620/2)));
+        balls.add(new Ball(5, new Point(850,100)));	// White ball WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+        
         //balls.add(new Ball(6, new Point(800,450)));
         //balls.add(new Ball(2, false, new Point(111,99), false));
         //balls.add(new Ball(2, false, new Point(111,99), false));
+        balls.add(new Ball(3, new Point(750,450)));
+        balls.add(new Ball(1, new Point(250,600))); // true - jest selected
+        
+        balls.add(new Ball(6, new Point(1,600))); // 
+        
+        //Dximi - kat nie potej stronie
+        balls.add(new Ball(7, new Point(600,250)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
+        
         this.setWhiteBall(balls.get(3));
-        this.setSelectedBall(this.balls.get(5));
+        this.setSelectedBall(this.balls.get(7));
         //this.setSelectedPocket(this.pockets.get(5));
     }
 
