@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Point;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.models.NewPoint;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
 public class HitService {
+	
+	@Autowired
+	private BilliardTable table;
 
 	@Autowired
 	MathService mathService;
@@ -85,23 +88,23 @@ public class HitService {
 			double rightAngle = 1.57;
 
 			double angle = findAngle(white, pointTarget, pocket);
-			System.out.println("kat: " + 57 * angle);
+			//System.out.println("kat: " + 57 * angle);
 
 			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
-			System.out.println("kolizja: " + collision);
+			//System.out.println("kolizja: " + collision);
 
 			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
-			System.out.println("kolizja2: " + collision2);
+			//System.out.println("kolizja2: " + collision2);
 
 			if (collision2) {
-				System.out.println("Error list");
-				System.out.println(list);
+				//System.out.println("Error list");
+				//System.out.println(list);
 			}
 
-			System.out.println(list);
+			//System.out.println(list);
 
-			System.out.println("rightAngle = " + rightAngle);
-			System.out.println("angle orginal =" + angle);
+			//System.out.println("rightAngle = " + rightAngle);
+			//System.out.println("angle orginal =" + angle);
 			listPoints.add(pointTarget);
 //			if (angle < rightAngle   || collision2 == false || collision == false) {
 //				System.out.println("siemanol angle =" + angle + "  right angle = " + rightAngle);
@@ -119,7 +122,7 @@ public class HitService {
 				}
 			}
 
-			System.out.println(listPoints);
+			//System.out.println(listPoints);
 			return listPoints;
 		} else {
 			return null;
@@ -298,8 +301,8 @@ public class HitService {
 	public Point find(Point target, Point white, Point pocket, int idPocket) {
 
 		int leftBand = 0;
-		int rightBand = 1190;
-		int upperBand = 620;
+		int rightBand = this.table.getWidth();
+		int upperBand = this.table.getHeight();
 		int lowerBand = 0;
 
 		// 1-gora, 2-prawa, 3-dol, 4-lewy
@@ -310,55 +313,55 @@ public class HitService {
 		if (idPocket == 1) {
 			// prawa dol
 
-			firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
-			secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
+			firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+			secondPoint = bandHitingPoint(white, target, rightBand, 2);
 		} else if (idPocket == 2) {
 			// zalezy
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
-				secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
-				secondPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 
 			}
 
 		} else if (idPocket == 3) {
 			// lewa, dol
-			firstPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
-			secondPoint = bandHitingPoint(white, target, lowerBand + (int)diameter/2, 3);
+			firstPoint = bandHitingPoint(white, target, leftBand, 4);
+			secondPoint = bandHitingPoint(white, target, lowerBand, 3);
 
 		} else if (idPocket == 4) {
 			// lewa, gora
-			firstPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
-			secondPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
+			firstPoint = bandHitingPoint(white, target, leftBand, 4);
+			secondPoint = bandHitingPoint(white, target, upperBand, 1);
 
 		} else if (idPocket == 5) {
 			// zalezy
 
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
-				secondPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
+				firstPoint = bandHitingPoint(white, target, upperBand , 1);
+				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
-				secondPoint = bandHitingPoint(white, target, leftBand + (int)diameter/2, 4);
+				firstPoint = bandHitingPoint(white, target, upperBand, 1);
+				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 
 			}
 
 		} else if (idPocket == 6) {
 			// prawa, gora
-			firstPoint = bandHitingPoint(white, target, rightBand - (int)diameter/2, 2);
-			secondPoint = bandHitingPoint(white, target, upperBand - (int)diameter/2, 1);
+			firstPoint = bandHitingPoint(white, target, rightBand, 2);
+			secondPoint = bandHitingPoint(white, target, upperBand, 1);
 
 		}
 
@@ -419,7 +422,8 @@ public class HitService {
 			// failure
 		}
 
-		else if (hitPoints.get(1) == null) {
+		//else if (hitPoints.get(1) == null) {
+		else if (hitPoints.size() == 1) {
 
 			hitAngle = findAngle(white, hitPoints.get(0), pocket) * 57;
 

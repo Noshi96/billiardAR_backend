@@ -155,13 +155,41 @@ public class HistoryService {
 		}
 		return list;
 	}
-
+/** Try to find Ball inside the list
+ * 
+ * @param point
+ * @param list
+ * @param radius
+ * @return
+ */
 	public Ball findBallByPoint(Point point, List<Ball> list, int radius) {
 		for (Ball ball : list) {
 			if (Math.abs(point.x - ball.getPoint().x) < radius && Math.abs(point.y - ball.getPoint().y) < radius)
 				return ball;
 		}
 		return null;
+	}
+/** Remove ball from list if detected in less than 1/3 frames of historyScanLimit frames
+ * 
+ * @param list
+ * @param maxBallRadius
+ */
+	public void removeFalseBalls(List<Ball> list, int maxBallRadius) {
+		int lastIndex = this.history.size() - historyScanLimit;
+		if (lastIndex < 0)
+			lastIndex = 0;
+
+		List<Ball> newList = new ArrayList<Ball>();
+
+		for (Ball ball : list) {
+			int count = 0;
+			for (int index = lastIndex; index < this.history.size(); index++)
+				if (findBallByPoint(ball.getPoint(), this.history.get(index), maxBallRadius) != null)
+					count++;
+			if (count < historyScanLimit / 3)
+				newList.add(ball);
+		}
+		list.removeAll(newList);
 	}
 
 }

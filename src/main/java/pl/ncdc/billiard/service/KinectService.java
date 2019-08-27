@@ -138,6 +138,7 @@ public class KinectService {
 		List<Ball> newList = updateTable(frame);
 		
 		this.historyService.updateHistory(newList, this.maxBallRadius);
+		this.historyService.removeFalseBalls(newList, this.maxBallRadius);
 		this.historyService.findMissingBalls(newList, this.maxBallRadius);
 		this.historyService.updateHistory(this.table.getWhiteBall(), maxBallRadius);
 		removeFalseWhite(newList);
