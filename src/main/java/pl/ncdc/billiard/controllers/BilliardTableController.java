@@ -92,10 +92,11 @@ public class BilliardTableController {
 		Ball white = tableService.getTable().getWhiteBall();
 		Ball selected = tableService.getTable().getSelectedBall();
 		Pocket pocket = tableService.getTable().getSelectedPocket();
-		int idPocket = tableService.getTable().getSelectedPocket().getId();
 		if (white == null || selected == null || pocket == null)
 			return null;
-
+		
+		int idPocket = tableService.getTable().getSelectedPocket().getId();
+		
 		return hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
 				tableService.getTable().getBalls(), idPocket);
 	}

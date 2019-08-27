@@ -17,7 +17,7 @@ public class BilliardTableService {
 
 	@Autowired
 	private BilliardTable table;
-
+	
 	@Autowired
 	private PoolDrawerService poolDrawerService;
 
@@ -28,7 +28,7 @@ public class BilliardTableService {
 	public byte[] drawPoolImage() {
 		return poolDrawerService.drawImage(table);
 	}
-
+	
 	public void selectBall(Point point) {
 		point = table.findBallByPoint(point);
 		if (point == null)
@@ -36,7 +36,7 @@ public class BilliardTableService {
 		else
 			table.setSelectedBall(new Ball(0, table.findBallByPoint(point)));
 	}
-
+	
 	public void selectPocket(Long pocketId) {
 		table.setSelectedPocket(null);
 		for (Pocket pocket : table.getPockets()) {
@@ -61,7 +61,7 @@ public class BilliardTableService {
 		// calculate new area size
 		int width = (int) Math.abs((rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2);
 		int height = (int) Math.abs((leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2);
-
+		
 		this.table.setWidth(width);
 		this.table.setHeight(height);
 

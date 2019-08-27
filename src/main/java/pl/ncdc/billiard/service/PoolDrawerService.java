@@ -2,7 +2,9 @@ package pl.ncdc.billiard.service;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import pl.ncdc.billiard.controllers.BilliardTableController;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.CalibrationParams;
@@ -61,7 +64,7 @@ public class PoolDrawerService {
 	// koniec zmiennych do pliku
 	
 	List<Point> hitPoints;
-	
+
 	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 
 	
@@ -113,19 +116,12 @@ public class PoolDrawerService {
     		new Point(0, kinectHeight)
 		);
 	    
-//	    MatOfPoint2f destinationMat = new MatOfPoint2f(
-//    		new Point( 80, 80),
-//    		new Point( projectorMaxWidth - 105, 100),
-//    		new Point( projectorMaxWidth - 105, projectorMaxHeight - 122),
-//    		new Point( 105, projectorMaxHeight - 122)
-//		);
 	    MatOfPoint2f destinationMat = new MatOfPoint2f(
     		calibrationParams.getLeftUpperCornerProjector(),
     		calibrationParams.getRightUpperCornerProjector(),
     		calibrationParams.getRightBottomCornerProjector(),
     		calibrationParams.getLeftBottomCornerProjector()
 		);
-		    
 	    
 	    Mat xd = Imgproc.getPerspectiveTransform(sourceMat, destinationMat);  
 	    Imgproc.warpPerspective(
@@ -135,20 +131,20 @@ public class PoolDrawerService {
     		new Size(projectorMaxWidth,projectorMaxHeight)
 		);
 	    //get perspective transform
-
-	    
-	    
+	      
+	      
+		
 		MatOfByte matOfByte = new MatOfByte();
 		Imgcodecs.imencode(".png", poolPlayZoneMat, matOfByte);
 		Base64.Encoder encoder = Base64.getEncoder();
 		byte[] data = encoder.encode(matOfByte.toArray());
-		
+
 		xd.release();
 	    destinationMat.release();
 	    sourceMat.release();
 	    poolPlayZoneMat.release();
 	    matOfByte.release();
-		
+
 		return data;
 	} // end of drawImage(args);
 		
@@ -164,6 +160,7 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewMode1(Mat mat, BilliardTable table) {
+		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -185,7 +182,7 @@ public class PoolDrawerService {
 			
 
 			
-			System.out.println("hit points: " + hitPoints);
+			//System.out.println("hit points: " + hitPoints);
 			
 		//console.log(this.hittingPoint);
 		//this.drawTrajectory(this.hittingPoint);
@@ -197,6 +194,11 @@ public class PoolDrawerService {
 	
 	
 	public void drawViewMode22(Mat mat, BilliardTable table) {
+		if ( table.getWhiteBall() == null ) {
+			return;
+			// error bo nie ma bialej bili.
+		}
+		
 		Point white = table.getWhiteBall().getPoint();
 		List<Ball> listBall = table.getBalls();
 		
@@ -366,11 +368,11 @@ public class PoolDrawerService {
 			Imgproc.circle (
 				mat,
 				ball.getPoint(),
-				ballRadius + 2,
+				ballRadius + 4,
 				new Scalar(255, 255, 0),
 				ballLineThickness
 			);
-			
+
 			// rysowanie napisu id
 			if( displayBallId ) {
 			    Imgproc.putText (
@@ -468,7 +470,7 @@ public class PoolDrawerService {
 		    playZoneBorderThickness
 	    );
 	} // end of drawPlayZoneBorder(args);
-	
+
 	public void updateCalibration(CalibrationParams calibrationParams) {
 		this.calibrationParams = calibrationParams;
 	}
