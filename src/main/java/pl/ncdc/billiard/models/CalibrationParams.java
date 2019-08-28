@@ -26,16 +26,16 @@ public class CalibrationParams {
 
     public static CalibrationParams getDefaultCalibrationParams() {
         return new CalibrationParams(null, "Default",
-                new Point(0, 0),
-                new Point(0, 1080),
-                new Point(1920, 0),
-                new Point(1920, 1080),
-                20,
+                new Point(436, 880),
+                new Point(442, 292),
+                new Point(1603, 889),
+                new Point(1611, 308),
+                26,
                 new Point(254, 127),
-                375000,
-                new Point(0, 0),
-                new Point(0, 1080),
-                new Point(1920, 0),
-                new Point(1920, 1080));
+                320000,
+                new Point(97, 954),
+                new Point(70, 70),
+                new Point(1803, 960),
+                new Point(1827, 80));
     }
 }
