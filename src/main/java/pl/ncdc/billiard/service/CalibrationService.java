@@ -36,18 +36,12 @@ public class CalibrationService {
 
 	@PostConstruct
 	private void init() {
-		this.billiardTableService.updateCalibration(getCalibrationParams());
-		this.kinectService.updateCalibration(getCalibrationParams());
-		this.poolDrawerService.updateCalibration(getCalibrationParams());
-		this.depthImageService.updateCalibration(getCalibrationParams());
+		updateServices(getCalibrationParams());
 	}
 
 	public CalibrationParams save(CalibrationParams calibrationParams) {
-		this.billiardTableService.updateCalibration(calibrationParams);
-		this.kinectService.updateCalibration(calibrationParams);
-		this.poolDrawerService.updateCalibration(calibrationParams);
-		this.depthImageService.updateCalibration(calibrationParams);
 
+		updateServices(calibrationParams);
 		pl.ncdc.billiard.entities.CalibrationParams entity = getCalibrationParamsEntity();
 		calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);
 
@@ -55,6 +49,43 @@ public class CalibrationService {
 
 		calibrationParamsMapper.updateModelFromEntity(entity, calibrationParams);
 		return calibrationParams;
+	}
+
+	/**
+	 * 
+	 * @param calibrationParams
+	 */
+	private void updateServices(CalibrationParams calibrationParams) {
+
+		// BilliardTableService
+		Point leftTop = calibrationParams.getLeftUpperCorner();
+		Point leftBottom = calibrationParams.getLeftBottomCorner();
+		Point rightBottom = calibrationParams.getRightBottomCorner();
+		Point rightTop = calibrationParams.getRightUpperCorner();
+
+		int width = (int) Math.abs((rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2);
+		int height = (int) Math.abs((leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2);
+
+		this.billiardTableService.getTable().setWidth(width);
+		this.billiardTableService.getTable().setHeight(height);
+
+		this.billiardTableService.getTable().setBallRadius(calibrationParams.getBallDiameter() / 2);
+		this.billiardTableService.calculatePocketsPosition(width, height);
+
+		// KinectService
+		this.kinectService.getKinect().stop();
+
+		this.kinectService.setBallRadius(calibrationParams.getBallDiameter());
+
+		this.kinectService.generatePerspectiveTransform(leftTop, leftBottom, rightBottom, rightTop, width, height);
+
+		// DepthImageService
+		this.depthImageService.generateMask(width, height);
+
+		this.kinectService.getKinect().start(KinectService.flag);
+		
+		// PoolDrawerService
+		this.poolDrawerService.updateCalibration(calibrationParams);
 	}
 
 	public CalibrationParams getCalibrationParams() {

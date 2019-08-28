@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
-import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.Pocket;
 
 @Service
@@ -46,27 +45,7 @@ public class BilliardTableService {
 		}
 	}
 
-	/**
-	 * Calculate new table height, width, and pockets positions
-	 * 
-	 * @param calibrationParams
-	 */
-	public void updateCalibration(CalibrationParams calibrationParams) {
-
-		Point leftTop = calibrationParams.getLeftUpperCorner();
-		Point leftBottom = calibrationParams.getLeftBottomCorner();
-		Point rightBottom = calibrationParams.getRightBottomCorner();
-		Point rightTop = calibrationParams.getRightUpperCorner();
-
-		// calculate new area size
-		int width = (int) Math.abs((rightTop.x + rightBottom.x - leftTop.x - leftBottom.x) / 2);
-		int height = (int) Math.abs((leftBottom.y + rightBottom.y - leftTop.y - rightTop.y) / 2);
-		
-		this.table.setWidth(width);
-		this.table.setHeight(height);
-
-		this.table.setBallRadius(calibrationParams.getBallDiameter() / 2);
-
+	public void calculatePocketsPosition(int width, int height) {
 		// add pockets
 		List<Pocket> pockets = new ArrayList<Pocket>();
 		// top left

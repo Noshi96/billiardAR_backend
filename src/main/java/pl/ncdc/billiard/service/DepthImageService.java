@@ -16,7 +16,6 @@ import org.opencv.utils.Converters;
 import org.springframework.stereotype.Service;
 
 import edu.ufl.digitalworlds.j4k.DepthMap;
-import pl.ncdc.billiard.models.CalibrationParams;
 
 @Service
 public class DepthImageService {
@@ -81,7 +80,8 @@ public class DepthImageService {
 		return mask;
 	}
 
-	public void updateCalibration(CalibrationParams calibrationParams) {
+	public void generateMask(int width, int height) {
+
 		List<Point> pts = new ArrayList<Point>();
 		pts.add(new Point(62,125));
 		pts.add(new Point(64,327));
@@ -89,16 +89,20 @@ public class DepthImageService {
 		pts.add(new Point(465,125));
 
 		Mat src = Converters.vector_Point2f_to_Mat(pts);
+
 		pts = new ArrayList<Point>();
 		pts.add(new Point(0, 0));
-		pts.add(new Point(0, 584));
-		pts.add(new Point(1168, 584));
-		pts.add(new Point(1168, 0));
+		pts.add(new Point(0, height));
+		pts.add(new Point(width, height));
+		pts.add(new Point(width, 0));
 
 		Mat dst = Converters.vector_Point2f_to_Mat(pts);
 
 		this.perspectiveTransform.release();
 		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);	
+
+		src.release();
+		dst.release();
 	}
 
 }

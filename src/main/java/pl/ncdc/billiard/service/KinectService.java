@@ -82,55 +82,6 @@ public class KinectService {
 	}
 
 	/**
-	 * Calculates a perspective transform from four pairs of the corresponding
-	 * points. Define min and max ball radius. Computes a foreground mask.
-	 * 
-	 * @param calibrationParams
-	 */
-	public void updateCalibration(CalibrationParams calibrationParams) {
-
-		this.kinect.stop();
-
-		// read points from calibration parameters
-		Point leftTop = calibrationParams.getLeftUpperCorner();
-		Point leftBottom = calibrationParams.getLeftBottomCorner();
-		Point rightBottom = calibrationParams.getRightBottomCorner();
-		Point rightTop = calibrationParams.getRightUpperCorner();
-
-		// check detected ball's diameter
-		this.minBallRadius = calibrationParams.getBallDiameter() / 2 - 2;
-		this.maxBallRadius = calibrationParams.getBallDiameter() / 2 + 2;
-
-		this.minWhiteBallDensity = calibrationParams.getWhiteBallDensity();
-
-		// add points to a list and generate Mat object
-		List<Point> pts = new ArrayList<Point>();
-
-		pts.add(leftTop);
-		pts.add(leftBottom);
-		pts.add(rightBottom);
-		pts.add(rightTop);
-
-		Mat src = Converters.vector_Point2f_to_Mat(pts);
-
-		pts = new ArrayList<Point>();
-		pts.add(new Point(0, 0));
-		pts.add(new Point(0, this.table.getHeight()));
-		pts.add(new Point(this.table.getWidth(), this.table.getHeight()));
-		pts.add(new Point(this.table.getWidth(), 0));
-
-		Mat dst = Converters.vector_Point2f_to_Mat(pts);
-
-		this.perspectiveTransform.release();
-		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
-
-		src.release();
-		dst.release();
-
-		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ | Kinect.UV);
-	}
-
-	/**
 	 * Processes incoming data from <i>Kinect</i>.
 	 * 
 	 * @param data   <b>BYTE</b> array
@@ -364,5 +315,41 @@ public class KinectService {
 		circles.release();
 
 		return calibrationParams;
+	}
+
+	public Kinect getKinect() {
+		return this.kinect;
+	}
+
+	public void generatePerspectiveTransform(Point leftTop, Point leftBottom, Point rightBottom, Point rightTop,
+			int width, int height) {
+		// add points to a list and generate Mat object
+		List<Point> pts = new ArrayList<Point>();
+
+		pts.add(leftTop);
+		pts.add(leftBottom);
+		pts.add(rightBottom);
+		pts.add(rightTop);
+
+		Mat src = Converters.vector_Point2f_to_Mat(pts);
+
+		pts = new ArrayList<Point>();
+		pts.add(new Point(0, 0));
+		pts.add(new Point(0, height));
+		pts.add(new Point(width, height));
+		pts.add(new Point(width, 0));
+
+		Mat dst = Converters.vector_Point2f_to_Mat(pts);
+
+		this.perspectiveTransform.release();
+		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
+
+		src.release();
+		dst.release();
+	}
+
+	public void setBallRadius(int radius) {
+		this.minBallRadius = radius / 2 - 2;
+		this.maxBallRadius = radius / 2 + 2;
 	}
 }
