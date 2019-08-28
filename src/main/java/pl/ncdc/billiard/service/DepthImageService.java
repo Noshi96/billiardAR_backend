@@ -1,13 +1,9 @@
 package pl.ncdc.billiard.service;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.opencv.core.Mat;
-import org.opencv.highgui.HighGui;
 import org.springframework.stereotype.Service;
 
 import edu.ufl.digitalworlds.j4k.DepthMap;
@@ -39,31 +35,48 @@ public class DepthImageService {
 	}
 
 	public void validateCircles(Mat circles) {
-		
-		if (xyz == null || xyz.length == 0)
+
+		if (data == null || data.length == 0)
 			return;
 		this.depthMap = new DepthMap(this.depthWidth, this.depthHeight, xyz);
-	}
+		if (i == 0)
+			try {
+//				// save data to files
+//				ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("data"));
+//				outputStream.writeObject(data);
+//				outputStream.close();
+//				outputStream = new ObjectOutputStream(new FileOutputStream("player_index"));
+//				outputStream.writeObject(player_index);
+//				outputStream.close();
+//				outputStream = new ObjectOutputStream(new FileOutputStream("xyz"));
+//				outputStream.writeObject(xyz);
+//				outputStream.close();
+//				outputStream = new ObjectOutputStream(new FileOutputStream("uv"));
+//				outputStream.writeObject(uv);
+//				outputStream.close();
 
-	/**
-	 * Use <i>HighGui.imshow()</i> to display an image, and wait 1 Ms
-	 * <p>
-	 * Require: {@code jvmArgs=['-Djava.awt.headless=false']} in <b>build.gradle</b>
-	 * </p>
-	 * 
-	 * @param image Image to display
-	 */
-	private void show(Mat image) {
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
+				// save data to files
+				ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("data"));
+				data = (short[]) inputStream.readObject();
+				inputStream.close();
+				inputStream = new ObjectInputStream(new FileInputStream("player_index"));
+				player_index = (byte[]) inputStream.readObject();
+				inputStream.close();
+				inputStream = new ObjectInputStream(new FileInputStream("xyz"));
+				xyz = (float[]) inputStream.readObject();
+				inputStream.close();
+				inputStream = new ObjectInputStream(new FileInputStream("uv"));
+				uv = (float[]) inputStream.readObject();
+				inputStream.close();
+				System.out.println(data.length);
+				System.out.println(player_index.length);
+				System.out.println(xyz.length);
+				System.out.println(uv.length);
 
-			@Override
-			public void run() {
-				// Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2GRAY);
-				HighGui.imshow("Image", image);
-				HighGui.waitKey();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}, 0);
+		i++;
 	}
 
 }

@@ -69,7 +69,7 @@ public class KinectService {
 
 	@PostConstruct
 	private void init() {
-		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ);
+		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ | Kinect.UV);
 		this.status = 0;
 	}
 
@@ -119,7 +119,7 @@ public class KinectService {
 		src.release();
 		dst.release();
 
-		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ);
+		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ | Kinect.UV);
 	}
 
 	/**
@@ -211,9 +211,9 @@ public class KinectService {
 		// show(mask);
 		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
-		
+
 		this.depthImageService.validateCircles(circles);
-		
+
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
 		// Detect white ball
@@ -236,28 +236,6 @@ public class KinectService {
 		channelL.release();
 
 		return list;
-	}
-
-	/**
-	 * Use <i>HighGui.imshow()</i> to display an image, and wait 1 Ms
-	 * <p>
-	 * Require: {@code jvmArgs=['-Djava.awt.headless=false']} in <b>build.gradle</b>
-	 * </p>
-	 * 
-	 * @param image Image to display
-	 */
-	private void show(Mat image) {
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				if (image.type() == CvType.CV_8UC4)
-					Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
-				HighGui.imshow("Image", image);
-				HighGui.waitKey(5);
-			}
-		}, 0);
 	}
 
 	/**
