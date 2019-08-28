@@ -18,7 +18,7 @@ public class HiddenPlacesService {
 	
 	public List<Point> showHiddenPlaces(Point white, List<Ball> listBall) {
 		List<Point> hiddenPointsList = new ArrayList<Point>();
-		double radius = 10;
+		double radius = 18;
 
 		// petla
 		for (int i = 0; i < listBall.size(); i++) {
@@ -63,8 +63,8 @@ public class HiddenPlacesService {
 			double dx = (ballNegShift.x - whitePosShift.x) / lengthFirst;
 			double dy = (ballNegShift.y - whitePosShift.y) / lengthFirst;
 
-			double x = whitePosShift.x + ((diameter * 10 + lengthFirst) * dx);
-			double y = whitePosShift.y + ((diameter * 10 + lengthFirst) * dy);
+			double x = whitePosShift.x + ((diameter * 100 + lengthFirst) * dx);
+			double y = whitePosShift.y + ((diameter * 100 + lengthFirst) * dy);
 
 			Point pointTargetFirst = new Point();
 			pointTargetFirst.x = x;
@@ -76,8 +76,8 @@ public class HiddenPlacesService {
 			double dxSec = (ballPosShift.x - whiteNegShift.x) / lengthSecond;
 			double dySec = (ballPosShift.y - whiteNegShift.y) / lengthSecond;
 
-			double xSec = whiteNegShift.x + ((diameter * 10 + lengthSecond) * dxSec);
-			double ySec = whiteNegShift.y + ((diameter * 10 + lengthSecond) * dySec);
+			double xSec = whiteNegShift.x + ((diameter * 100 + lengthSecond) * dxSec);
+			double ySec = whiteNegShift.y + ((diameter * 100 + lengthSecond) * dySec);
 
 			Point pointTargetSecond = new Point();
 			pointTargetSecond.x = xSec;
