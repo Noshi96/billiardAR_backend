@@ -16,11 +16,11 @@ public class HistoryService {
 	/** List of previously detected white balls **/
 	private List<Ball> whiteHistory;
 	/** How many previous states will be stored **/
-	private final static int maxHistoryLength = 90;
+	private final static int maxHistoryLength = 120;
 	/** How much current position should change new calculated position **/
 	private final static double corretionRate = 0.05;
 	/** Number of frames to search disappearing balls **/
-	private final static int historyScanLimit = 15;
+	private final static int historyScanLimit = 20;
 
 	public HistoryService() {
 		this.history = new ArrayList<List<Ball>>();
@@ -58,8 +58,8 @@ public class HistoryService {
 		if (detected == 0)
 			return;
 
-		avg.x /= detected;
-		avg.y /= detected;
+		avg.x /= (double) detected;
+		avg.y /= (double) detected;
 
 		double dx = whiteBall.getPoint().x - avg.x;
 		double dy = whiteBall.getPoint().y - avg.y;
@@ -116,8 +116,8 @@ public class HistoryService {
 			if (detected == 0)
 				break;
 
-			avg.x /= detected;
-			avg.y /= detected;
+			avg.x /= (double) detected;
+			avg.y /= (double) detected;
 
 			double dx = ball.getPoint().x - avg.x;
 			double dy = ball.getPoint().y - avg.y;
@@ -152,7 +152,7 @@ public class HistoryService {
 					for (int i = index; i < this.history.size(); i++)
 						if (findBallByPoint(ball.getPoint(), this.history.get(i), radius) != null)
 							count++;
-					if (count > historyScanLimit / 2)
+					if (count > historyScanLimit * 2 / 3)
 						list.add(ball);
 				}
 			}
