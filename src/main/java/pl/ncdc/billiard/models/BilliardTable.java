@@ -54,53 +54,37 @@ public class BilliardTable {
 	private int selectedChallenge = 0;
 
 
+	// konstruktor - wersja na kinecta
+//	public BilliardTable() {
+//		balls = new ArrayList<>();
+//		pockets = new ArrayList<Pocket>();
+//	}
 
-//     // odwrocone bandy
+
+
+	// konstruktor - wersja mocnk (noszek)
      public BilliardTable() {
-         //balls = new ArrayList<>();
- //		pockets = new ArrayList<Pocket>();
- //		pockets.add(new Pocket(0, new Point(0, 620)));
- //		pockets.add(new Pocket(1, new Point(1190 / 2, 620)));
- //		pockets.add(new Pocket(2, new Point(1190, 620)));
- //		pockets.add(new Pocket(3, new Point(0, 0)));
- //		pockets.add(new Pocket(4, new Point(1190 / 2, 0)));
- //		pockets.add(new Pocket(5, new Point(1190, 0)));
-
          balls = new ArrayList<>();
-         balls.add(new Ball(0, new Point(1000,800))); // ostatnie true- jest biala
-
+         balls.add(new Ball(0, new Point(1000,800)));
+         balls.add(new Ball(1, new Point(250,600)));
          balls.add(new Ball(2, new Point(400,29) ));
-
+         balls.add(new Ball(3, new Point(800,500) ));
          balls.add(new Ball(4, new Point(417,629) ));
-         balls.add(new Ball(5, new Point(600,450)));	// White ball WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-        
-         //balls.add(new Ball(6, new Point(800,450)));
-         //balls.add(new Ball(2, false, new Point(111,99), false));
-         //balls.add(new Ball(2, false, new Point(111,99), false));
-         balls.add(new Ball(3, new Point(750,450)));
-         balls.add(new Ball(1, new Point(250,600))); // true - jest selected
-        
-         balls.add(new Ball(6, new Point(1,600))); // 
-        
-         //Dximi - kat nie potej stronie
-         balls.add(new Ball(7, new Point(610,270)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
-         
+         balls.add(new Ball(5, new Point(200,450)));
+         balls.add(new Ball(6, new Point(1,600))); 
+         balls.add(new Ball(7, new Point(810,250)));
          balls.add(new Ball(8, new Point(476, 186)));
+         balls.add(new Ball(9, new Point(600, 300)));
+
+         this.setWhiteBall(balls.get(9));
+         //this.setWhiteBall( new Ball( 0,  new Point(750,450)));
          
-        // balls.add(new Ball(8, new Point(600, 50)));
-         balls.add(new Ball(8, new Point(800, 50)));
-        
-         this.setWhiteBall(balls.get(3));
          //this.setSelectedBall(this.balls.get(7));
          //this.setSelectedPocket(this.pockets.get(5));
      }
 
 
 
-//	public BilliardTable() {
-//		balls = new ArrayList<>();
-//		pockets = new ArrayList<Pocket>();
-//	}
 
 	public int getSelectedViewMode() {
 		return selectedViewMode;

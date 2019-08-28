@@ -1,8 +1,7 @@
 package pl.ncdc.billiard.mappers;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
+import org.opencv.core.Point;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 import pl.ncdc.billiard.models.IndividualTraining;
 
@@ -20,4 +19,13 @@ public interface IndividualTrainingMapper {
     IndividualTrainingEntity toEntity(IndividualTraining individualTraining);
 
     List<IndividualTrainingEntity> toEntities(List<IndividualTraining> individualTrainings);
+
+
+    IndividualTraining toInPixelModel(IndividualTraining individualTraining, @Context Point viewport);
+
+    default Point toPixel(Point point, @Context Point viewport) {
+        return new Point(point.x * viewport.x, point.y * viewport.y);
+    }
+
+    List<Point> toPixel(List<Point> points, @Context Point viewPoint);
 }
