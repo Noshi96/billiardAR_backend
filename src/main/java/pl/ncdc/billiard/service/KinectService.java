@@ -11,6 +11,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
@@ -268,11 +269,25 @@ public class KinectService {
 	 * @param r       Radius of detected circles
 	 * @return Function return Ball pointed to the White Ball
 	 */
-	public Ball whiteBallDetection(Mat image, Mat circles, int r) {
+	public Ball whiteBallDetection(Mat frame, Mat circles, int r) {
+		
+		Mat image = frame.clone();
+		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
+		
 		/** Actual detected white ball **/
 		Ball white = null;
-		/** White pixels density of actual white ball **/
-		double actualDensity = this.minWhiteBallDensity;
+		
+		Mat whiteMask = new Mat();
+		image.copyTo(whiteMask);
+		
+		Scalar lowerVal = new Scalar(200, 200, 200);
+		Scalar upperVal = new Scalar(255, 255, 255);
+		
+		Core.inRange(image, lowerVal, upperVal, whiteMask);
+		
+		double percentage = 0.50;
+		double maxWhite = Integer.MIN_VALUE;
+		
 		// for each circle
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
@@ -287,21 +302,29 @@ public class KinectService {
 					if (Math.pow(k - c[0], 2) + Math.pow(j - c[1], 2) <= Math.pow(c[2], 2)) {
 						// if position is inside the image (array)
 						if (j > 0 && k > 0 && j < table.getHeight() && k < table.getWidth()) {
-							rectSum += image.get(j, k)[0];
-							rectSum += image.get(j, k)[1];
-							rectSum += image.get(j, k)[2];
+							if(whiteMask.get(j,k)[0] > 1)
+							{
+								rectSum += 1;
+							}
 						}
 					}
 				}
 			}
-			// current ball accept criteria
-			if (rectSum > actualDensity) {
+			if (rectSum > maxWhite) {
+				maxWhite = rectSum;
 				white = new Ball(0, new Point(c[0], c[1]));
-				actualDensity = rectSum;
 			}
 		}
-		// white ball not detected
-		return white;
+		
+		whiteMask.release();
+		image.release();
+		
+		//maxWhite = maxWhite / (Math.PI * r * r);
+		//if (maxWhite > percentage) {
+			return white;
+		//}
+		
+		//return null;
 	}
 
 	/**
