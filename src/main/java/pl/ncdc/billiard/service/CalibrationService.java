@@ -20,16 +20,18 @@ public class CalibrationService {
 	private final PoolDrawerService poolDrawerService;
 	private final CalibrationParamsRepository calibrationParamsRepository;
 	private final CalibrationParamsMapper calibrationParamsMapper;
+	private final DepthImageService depthImageService;
 
 	@Autowired
 	public CalibrationService(@Lazy KinectService kinectService, BilliardTableService billiardTableService,
 			CalibrationParamsRepository calibrationParamsRepository, CalibrationParamsMapper calibrationParamsMapper,
-			PoolDrawerService poolDrawerService) {
+			PoolDrawerService poolDrawerService, DepthImageService depthImageService) {
 		this.kinectService = kinectService;
 		this.billiardTableService = billiardTableService;
 		this.calibrationParamsRepository = calibrationParamsRepository;
 		this.calibrationParamsMapper = calibrationParamsMapper;
 		this.poolDrawerService = poolDrawerService;
+		this.depthImageService = depthImageService;
 	}
 
 	@PostConstruct
@@ -37,12 +39,14 @@ public class CalibrationService {
 		this.billiardTableService.updateCalibration(getCalibrationParams());
 		this.kinectService.updateCalibration(getCalibrationParams());
 		this.poolDrawerService.updateCalibration(getCalibrationParams());
+		this.depthImageService.updateCalibration(getCalibrationParams());
 	}
 
 	public CalibrationParams save(CalibrationParams calibrationParams) {
 		this.billiardTableService.updateCalibration(calibrationParams);
 		this.kinectService.updateCalibration(calibrationParams);
 		this.poolDrawerService.updateCalibration(calibrationParams);
+		this.depthImageService.updateCalibration(calibrationParams);
 
 		pl.ncdc.billiard.entities.CalibrationParams entity = getCalibrationParamsEntity();
 		calibrationParamsMapper.updateEntityFromModelIgnoreId(calibrationParams, entity);

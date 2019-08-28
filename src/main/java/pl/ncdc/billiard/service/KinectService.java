@@ -70,7 +70,13 @@ public class KinectService {
 	@PostConstruct
 	private void init() {
 		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ | Kinect.UV);
-		this.status = 0;
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				KinectService.this.depthImageService.validateCircles(null);
+			}
+		}, 5000);
 	}
 
 	/**

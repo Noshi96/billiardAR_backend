@@ -28,7 +28,7 @@ public class Kinect extends J4KSDK {
 
 	@Override
 	public void onDepthFrameEvent(short[] data, byte[] body_index, float[] xyz, float[] uv) {
-		this.depthImageService.load(data, body_index, xyz, uv, this.getDepthWidth(), this.getDepthHeight());
+		this.depthImageService.load(xyz, this.getDepthWidth(), this.getDepthHeight());
 	}
 
 }
