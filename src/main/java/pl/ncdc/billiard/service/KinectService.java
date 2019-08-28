@@ -49,6 +49,8 @@ public class KinectService {
 
 	private Kinect kinect;
 
+	public final static int FLAG = Kinect.COLOR | Kinect.XYZ;
+
 	private Mat perspectiveTransform;
 
 	// kalibracja
@@ -69,7 +71,7 @@ public class KinectService {
 
 	@PostConstruct
 	private void init() {
-		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ | Kinect.UV);
+		this.kinect.start(FLAG);
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
