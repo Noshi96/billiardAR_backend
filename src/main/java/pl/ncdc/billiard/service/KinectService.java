@@ -44,6 +44,8 @@ public class KinectService {
 	private HistoryService historyService;
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
+	@Autowired
+	private DepthImageService depthImageService;
 
 	private Kinect kinect;
 
@@ -67,7 +69,7 @@ public class KinectService {
 
 	@PostConstruct
 	private void init() {
-		this.kinect.start(Kinect.COLOR);
+		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ);
 		this.status = 0;
 	}
 
@@ -116,8 +118,8 @@ public class KinectService {
 
 		src.release();
 		dst.release();
-		
-		this.kinect.start(Kinect.COLOR);
+
+		this.kinect.start(Kinect.COLOR | Kinect.DEPTH | Kinect.PLAYER_INDEX | Kinect.XYZ);
 	}
 
 	/**
@@ -131,12 +133,11 @@ public class KinectService {
 
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
-		
+
 		this.actualFrame.release();
 		this.actualFrame = frame.clone();
 
 		List<Ball> newList = updateTable(frame);
-		
 		this.historyService.updateHistory(newList, this.maxBallRadius);
 		this.historyService.removeFalseBalls(newList, this.maxBallRadius);
 		this.historyService.findMissingBalls(newList, this.maxBallRadius);
@@ -146,7 +147,7 @@ public class KinectService {
 
 		this.table.setBalls(newList);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
-		
+
 		frame.release();
 
 	}
@@ -192,24 +193,27 @@ public class KinectService {
 	private List<Ball> updateTable(Mat frame) {
 		Mat circles = new Mat();
 		Mat Lab = new Mat();
-		
+
 		// wrap image
 		Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
 				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
-		
-        Imgproc.cvtColor(frame, Lab, Imgproc.COLOR_BGR2Lab);
-        
-        List<Mat> channelList = new ArrayList<Mat>(3);
+
+		Imgproc.cvtColor(frame, Lab, Imgproc.COLOR_BGR2Lab);
+
+		List<Mat> channelList = new ArrayList<Mat>(3);
 		Core.split(Lab, channelList);
 		Mat channelL = new Mat();
 
 		channelList.get(1).copyTo(channelL);
-		
+
 		// apply blur
 		Imgproc.medianBlur(channelL, channelL, 5);
 		// show(mask);
 		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
+		
+		this.depthImageService.validateCircles(circles);
+		
 		// save detected balls to a list
 		List<Ball> list = new ArrayList<Ball>();
 		// Detect white ball
@@ -226,11 +230,11 @@ public class KinectService {
 				list.add(new Ball(0, point));
 			}
 		}
-		
+
 		circles.release();
 		Lab.release();
 		channelL.release();
-		
+
 		return list;
 	}
 
@@ -270,24 +274,24 @@ public class KinectService {
 	 * @return Function return Ball pointed to the White Ball
 	 */
 	public Ball whiteBallDetection(Mat frame, Mat circles, int r) {
-		
+
 		Mat image = frame.clone();
 		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
-		
+
 		/** Actual detected white ball **/
 		Ball white = null;
-		
+
 		Mat whiteMask = new Mat();
 		image.copyTo(whiteMask);
-		
+
 		Scalar lowerVal = new Scalar(200, 200, 200);
 		Scalar upperVal = new Scalar(255, 255, 255);
-		
+
 		Core.inRange(image, lowerVal, upperVal, whiteMask);
-		
+
 		double percentage = 0.50;
 		double maxWhite = Integer.MIN_VALUE;
-		
+
 		// for each circle
 		for (int i = 0; i < circles.cols(); i++) {
 			double[] c = circles.get(0, i);
@@ -302,8 +306,7 @@ public class KinectService {
 					if (Math.pow(k - c[0], 2) + Math.pow(j - c[1], 2) <= Math.pow(c[2], 2)) {
 						// if position is inside the image (array)
 						if (j > 0 && k > 0 && j < table.getHeight() && k < table.getWidth()) {
-							if(whiteMask.get(j,k)[0] > 1)
-							{
+							if (whiteMask.get(j, k)[0] > 1) {
 								rectSum += 1;
 							}
 						}
@@ -315,16 +318,16 @@ public class KinectService {
 				white = new Ball(0, new Point(c[0], c[1]));
 			}
 		}
-		
+
 		whiteMask.release();
 		image.release();
-		
-		//maxWhite = maxWhite / (Math.PI * r * r);
-		//if (maxWhite > percentage) {
-			return white;
-		//}
-		
-		//return null;
+
+		// maxWhite = maxWhite / (Math.PI * r * r);
+		// if (maxWhite > percentage) {
+		return white;
+		// }
+
+		// return null;
 	}
 
 	/**
@@ -356,7 +359,7 @@ public class KinectService {
 			pockets.get(index).y = Math.floor(pockets.get(index).y);
 		}
 		pockets.sort((p1, p2) -> Double.compare(p1.x, p2.x));
-		
+
 		if (pockets.get(0).y < pockets.get(1).y) {
 			calibrationParams.setLeftUpperCorner(new Point(pockets.get(0).x + radius, pockets.get(0).y + radius));
 			calibrationParams.setLeftBottomCorner(new Point(pockets.get(1).x + radius, pockets.get(1).y - radius));
@@ -373,7 +376,7 @@ public class KinectService {
 		}
 		frame.release();
 		circles.release();
-		
+
 		return calibrationParams;
 	}
 }
