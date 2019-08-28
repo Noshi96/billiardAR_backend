@@ -13,7 +13,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +55,8 @@ public class KinectService {
 	// kalibracja
 	private int minBallRadius;
 	private int maxBallRadius;
-	private int minWhiteBallDensity;
 
 	Mat actualFrame;;
-
-	private int status;
 
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
@@ -100,8 +96,8 @@ public class KinectService {
 		this.historyService.updateHistory(newList, this.maxBallRadius);
 		this.historyService.removeFalseBalls(newList, this.maxBallRadius);
 		this.historyService.findMissingBalls(newList, this.maxBallRadius);
-		this.historyService.updateHistory(this.table.getWhiteBall(), maxBallRadius);
-		removeFalseWhite(newList);
+		this.historyService.updateHistory(this.table.getWhiteBall(), this.maxBallRadius);
+		this.historyService.removeFalseWhite(newList, this.table.getWhiteBall(), this.maxBallRadius);
 		sort(newList);
 
 		this.table.setBalls(newList);
@@ -120,21 +116,6 @@ public class KinectService {
 		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o2.getPoint().x));
 		for (int i = 1; i < list.size(); i++)
 			list.get(i).setId(i);
-	}
-
-	/**
-	 * Remove false ball from list if detected as white
-	 * 
-	 * @param list
-	 */
-	private void removeFalseWhite(List<Ball> list) {
-		Ball whiteBall = this.table.getWhiteBall();
-		if (whiteBall == null)
-			return;
-		Ball inList = this.historyService.findBallByPoint(whiteBall.getPoint(), list, this.maxBallRadius);
-		if (inList == null)
-			return;
-		list.remove(inList);
 	}
 
 	/**
@@ -226,7 +207,7 @@ public class KinectService {
 
 		Core.inRange(image, lowerVal, upperVal, whiteMask);
 
-		double percentage = 0.50;
+		//double percentage = 0.50;
 		double maxWhite = Integer.MIN_VALUE;
 
 		// for each circle

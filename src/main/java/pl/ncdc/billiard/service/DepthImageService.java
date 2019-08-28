@@ -10,7 +10,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import org.springframework.stereotype.Service;
@@ -19,25 +18,23 @@ import edu.ufl.digitalworlds.j4k.DepthMap;
 
 @Service
 public class DepthImageService {
-	/** CV_32F **/
+
 	private float[] xyz;
 	private int depthWidth;
 	private int depthHeight;
-	private DepthMap depthMap;
 	private Mat perspectiveTransform;
-	
-	private final float downTreshold = 2.325f;
-	private final float upTreshold = 2.3f;
-	
-	//<- Usunac odtad
-	public DepthImageService()
-	{
+
+	private final static float DOWN_TRESHOLD = 2.325f;
+	private final static float UP_TRESHOLD = 2.3f;
+
+	public DepthImageService() {
+		this.perspectiveTransform = new Mat();
+		// <- Usunac odtad
 		this.depthHeight = 424;
 		this.depthWidth = 512;
-		this.perspectiveTransform = new Mat();
+		// <- dotad
 	}
-	//<- dotad
-	
+
 	public void load(float[] xyz, int depthWidth, int depthHeight) {
 		this.xyz = xyz;
 		this.depthWidth = depthWidth;
@@ -45,38 +42,37 @@ public class DepthImageService {
 	}
 
 	public void validateCircles(Mat circles) {
-		//<- Usunac odtad
-        try {
-            ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("xyz"));
-            this.xyz = (float[]) inputStream.readObject();
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //<- dotad
-		
-		this.depthMap = new DepthMap(this.depthWidth, this.depthHeight, xyz);
-		
-		byte[] xd = maskZ(depthMap, this.downTreshold, this.upTreshold);
-		Mat mask = new Mat(depthMap.getHeight(), depthMap.getWidth(), CvType.CV_8UC1);
+		// <- Usunac odtad
+		try {
+			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("xyz"));
+			this.xyz = (float[]) inputStream.readObject();
+			inputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// <- dotad
+
+		DepthMap depthMap = new DepthMap(this.depthWidth, this.depthHeight, this.xyz);
+
+		byte[] xd = maskZ(depthMap);
+
+		Mat mask = new Mat(this.depthHeight, this.depthWidth, CvType.CV_8UC1);
 		mask.put(0, 0, xd);
-		
-		Imgproc.warpPerspective(mask, mask, this.perspectiveTransform,
-				new Size(1168, 584), Imgproc.INTER_CUBIC);
-		
+
+		Imgproc.warpPerspective(mask, mask, this.perspectiveTransform, new Size(1168, 584), Imgproc.INTER_CUBIC);
+
 		HighGui.imshow("img", mask);
 		HighGui.waitKey();
 	}
-	
-	public byte[] maskZ(DepthMap depthMap, float downThreshold, float upThreshold)
-	{
+
+	public byte[] maskZ(DepthMap depthMap) {
 		byte mask[] = new byte[depthMap.getWidth() * depthMap.getHeight()];
-		for(int i =0; i < mask.length; i++)
-		{
-			if((depthMap.realZ[i] < downThreshold)&&(depthMap.realZ[i] > upThreshold)) mask[i] = (byte)255;
-			else mask[i] = (byte)0;
+		for (int i = 0; i < mask.length; i++) {
+			if ((depthMap.realZ[i] < DOWN_TRESHOLD) && (depthMap.realZ[i] > UP_TRESHOLD))
+				mask[i] = (byte) 255;
+			else
+				mask[i] = 0;
 		}
-		
 		return mask;
 	}
 

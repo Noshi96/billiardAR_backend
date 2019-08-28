@@ -1,7 +1,5 @@
 package pl.ncdc.billiard;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +7,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.springframework.context.annotation.ComponentScan;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import pl.ncdc.billiard.configurations.WebSocketAppender;
 
 

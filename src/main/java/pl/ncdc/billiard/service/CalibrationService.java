@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,8 @@ import pl.ncdc.billiard.repository.CalibrationParamsRepository;
 @Service
 public class CalibrationService {
 
-	private KinectService kinectService;
-	private BilliardTableService billiardTableService;
+	private final KinectService kinectService;
+	private final BilliardTableService billiardTableService;
 	private final PoolDrawerService poolDrawerService;
 	private final CalibrationParamsRepository calibrationParamsRepository;
 	private final CalibrationParamsMapper calibrationParamsMapper;
@@ -82,7 +83,7 @@ public class CalibrationService {
 		// DepthImageService
 		this.depthImageService.generateMask(width, height);
 
-		this.kinectService.getKinect().start(KinectService.flag);
+		this.kinectService.getKinect().start(KinectService.FLAG);
 		
 		// PoolDrawerService
 		this.poolDrawerService.updateCalibration(calibrationParams);
