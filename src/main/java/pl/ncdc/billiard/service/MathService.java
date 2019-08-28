@@ -35,9 +35,9 @@ public class MathService {
 	 */
 	public double findAngle(Point white, Point target, Point pocket) {
 
-		white = new Point(0,0);
-		pocket = new Point(0,500);
-		target = new Point(-26,50);
+//		white = new Point(0,0);
+//		pocket = new Point(0,500);
+//		target = new Point(-26,250);
 		
 		double p0c = Math.sqrt(Math.pow(target.x - white.x, 2) + Math.pow(target.y - white.y, 2));
 		double p1c = Math.sqrt(Math.pow(target.x - pocket.x, 2) + Math.pow(target.y - pocket.y, 2));
