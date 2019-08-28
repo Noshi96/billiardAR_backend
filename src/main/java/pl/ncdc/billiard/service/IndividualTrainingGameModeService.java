@@ -2,6 +2,8 @@ package pl.ncdc.billiard.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class IndividualTrainingGameModeService {
 
     private final CalibrationService calibrationService;
@@ -32,7 +35,7 @@ public class IndividualTrainingGameModeService {
     private StopWatch stopWatch = new StopWatch();
 
     private double waitingForBallsPlacementDelay = 2.0;
-    private double ballsStopMovingDelay = 5.0;
+    private double ballsStopMovingDelay = 2.0;
     private double afterEndDelay = 5.0;
 
     @Autowired
@@ -40,6 +43,20 @@ public class IndividualTrainingGameModeService {
         this.calibrationService = calibrationService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.billiardTable = billiardTable;
+    }
+    
+    @Scheduled(fixedRate = 2000)
+    public void logBallsPositions() {
+    	if(individualTraining != null) {
+	        log.info("Balls table: " + billiardTable.getBalls().toString());
+	        if(billiardTable.getWhiteBall() != null)
+	        	log.info("White table " + billiardTable.getWhiteBall().getPoint().toString());
+//	        log.info("White " + individualTraining.getWhiteBallPosition().toString());
+//	
+//	        log.info("Selected " + individualTraining.getSelectedBallPosition().toString());
+
+	        log.info("Balls last frame " + lastFrameBallsPositions.toString());
+    	}
     }
 
     @Scheduled(fixedRate = 400)
@@ -56,28 +73,38 @@ public class IndividualTrainingGameModeService {
 
             if(stopWatch.getTime(TimeUnit.SECONDS) > waitingForBallsPlacementDelay) {
                 stopWatch.reset();
+                log.info("Ready");
                 state = State.Ready;
             }
         } else if(state == State.Ready) {
             if(!isAllBallsPlacedCorrectly()) {
+
+                log.info("WaitingForBallsStop");
                 state = State.WaitingForBallsStop;
             }
         } else if(state == State.WaitingForBallsStop) {
-            if(doesBallsStopMoving() && stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
-                if(isAllWinningConditionMeet()) {
-                    state = State.Success;
-                } else {
-                    state = State.Fail;
-                }
-                stopWatch.reset();
-                stopWatch.start();
+            if(doesBallsStopMoving()) {
+            	if(stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
+	                if(isAllWinningConditionMeet()) {
+	
+	                    log.info("Success");
+	                    state = State.Success;
+	                } else {
+	
+	                    log.info("Fail");
+	                    state = State.Fail;
+	                }
+	                stopWatch.reset();
+	                stopWatch.start();
+            	}
             } else {
                 stopWatch.reset();
                 stopWatch.start();
             }
         } else if(state == State.Success || state == State.Fail) {
             if(stopWatch.getTime(TimeUnit.SECONDS) > afterEndDelay) {
-                setIndividualTraining(null);
+            	state = State.WaitingForBallsPlacement;
+                //setIndividualTraining(individualTraining);
             }
         }
 
@@ -85,6 +112,9 @@ public class IndividualTrainingGameModeService {
             lastFrameBallsPositions = new ArrayList<>();
         } else {
             lastFrameBallsPositions = billiardTable.getBalls().stream().map(ball -> new Point(ball.getPoint().x, ball.getPoint().y)).collect(Collectors.toList());
+            if(billiardTable.getWhiteBall() != null) {
+            	lastFrameBallsPositions.add(billiardTable.getWhiteBall().getPoint());
+            }
         }
 
         simpMessagingTemplate.convertAndSend("/individualTraining/state", state);
@@ -96,14 +126,14 @@ public class IndividualTrainingGameModeService {
     }
 
     private boolean isAllBallsPlacedCorrectly() {
-        int whiteAndTargetBallCount = 2;
+        int targetBallCount = 1;
         int ballsCount = 0;
 
         if(billiardTable.getBalls() != null) {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() + whiteAndTargetBallCount != ballsCount) {
+        if(individualTraining.getDisturbBallsPositions().size() + targetBallCount != ballsCount) {
             return false;
         }
 
@@ -123,26 +153,35 @@ public class IndividualTrainingGameModeService {
     }
 
     private boolean doesBallsStopMoving() {
-        return lastFrameBallsPositions.stream().allMatch(this::isSomethingOnPoint);
+        if(lastFrameBallsPositions.stream().allMatch(this::isSomethingOnPoint)) {
+        	log.info("stopMoving");
+        	return true;
+        }
+    	log.info("moving");
+        return false;
     }
 
     private boolean isAllWinningConditionMeet() {
-        int whiteBallCount = 1;
         int ballsCount = 0;
 
         if(billiardTable.getBalls() != null) {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() + whiteBallCount != ballsCount) {
+        if(individualTraining.getDisturbBallsPositions().size() != ballsCount) {
+        	log.info("disturb: " + individualTraining.getDisturbBallsPositions().size());
+        	log.info("ballCount: " + ballsCount);
            return false;
         }
 
         if(!individualTraining.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
+        	log.info("disturbed MSKOHAIOSAIOSAJHIOSAJIOHJSAI");
             return false;
         }
 
         if(!isWhiteBallInRect()) {
+        	log.info("white SHGOUAHSOUGSAHOIGSJAIHJSAIOHJSAIOJHSOI");
+        	log.info("whiteRect: " + individualTraining.getRectanglePosition().toString());
            return false;
         }
 
@@ -170,6 +209,12 @@ public class IndividualTrainingGameModeService {
     private boolean isSomethingOnPoint(Point point) {
         if(billiardTable.getBalls() == null) {
             return false;
+        }
+        
+        if(billiardTable.getWhiteBall() != null) {
+        	if(distance(point, billiardTable.getWhiteBall().getPoint()) < getBallPositionTolerance()) {
+        		return true;
+        	}
         }
 
         return billiardTable.getBalls()

@@ -81,6 +81,6 @@ public class IndividualTrainingController {
 	@PutMapping("/setChallenge/{selectedChallenge}")
 	public void setSelectedChallenge(@PathVariable int selectedChallenge) {
 		tableService.setSelectedChallenge(selectedChallenge);
-		individualTrainingGameModeService.setIndividualTraining(individualTrainingService.getById((long) selectedChallenge));
+		individualTrainingGameModeService.setIndividualTraining(individualTrainingService.getInPixelById((long) selectedChallenge));
 	}
 }

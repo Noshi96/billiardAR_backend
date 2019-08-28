@@ -44,6 +44,9 @@ public class PoolDrawerService {
 	IndividualTrainingService individualTrainingService;
 	
 	@Autowired
+	IndividualTrainingGameModeService individualTrainingGameModeService;
+	
+	@Autowired
 	RotationService rotationService;
 	
 	@Value("${kinectService.mask}")
@@ -65,7 +68,7 @@ public class PoolDrawerService {
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
 	int trainingDotRadius = 3;
-	int trainingBallRadius = 20;
+	int trainingBallRadius = 25;
 	
 	int ballLineThickness = 2;
 	int pocketLineThickness = 5;
@@ -243,10 +246,13 @@ public class PoolDrawerService {
 		
 
 		// rysowanie bialej bili
+		
 		// mala kropka na srodku pozycji bialej bili
-		drawTrainingDot(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(255, 255, 255));
+		//drawTrainingDot(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(255, 255, 255));
+		
 		// okrag wokol bialej bili
-		drawTrainingBall(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(0, 255, 255));
+		//drawTrainingBall(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(0, 255, 255));
+		
 		// nieco wiekszy, bialy okrag wokol bialej bili
 		Imgproc.circle (
 			mat,
@@ -259,17 +265,19 @@ public class PoolDrawerService {
 		
 	    // rysowanie punktu ustawienia bili do wbicia
 		// mala kropka na srodku pozycji bili do wbicia
-		drawTrainingDot(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(0, 159, 255));	
+		//drawTrainingDot(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(0, 159, 255));	
+		
 		// pomaranczowy okrag wokol bili do wbicia
-		drawTrainingBall(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(0, 159, 255));
+		drawTrainingBall(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(100, 200, 255));
 		
 		
 		// rysowanie przeszkadzajek
 		for ( Point disturbBallPosition: individualTraining.getDisturbBallsPositions() ) {
 			// mala kropka na srodku pozycji przeszkadzajki
-			drawTrainingDot(mat, table, disturbBallPosition, new Scalar(0, 0, 255));	
+			//drawTrainingDot(mat, table, disturbBallPosition, new Scalar(0, 0, 255));	
+			
 			// czerwony okrag wokol przeszkadzajki
-			drawTrainingBall(mat, table, disturbBallPosition, new Scalar(0, 0, 255));
+			drawTrainingBall(mat, table, disturbBallPosition, new Scalar(230, 180, 130));
 			
 		}
 		
@@ -284,6 +292,18 @@ public class PoolDrawerService {
 		    new Scalar(255, 255, 255),
 		    trainingRectangleThickness
 	    );
+	    
+	    if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Ready) {
+	    	Imgproc.putText(mat, "READY", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Fail) {
+	    	Imgproc.putText(mat, "FAILED", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Success) {
+	    	Imgproc.putText(mat, "SUCCESS", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsPlacement) {
+	    	Imgproc.putText(mat, "WaitingForBallsPlacement", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsStop) {
+	    	Imgproc.putText(mat, "WaitingForBallsStop", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+	    }
 		
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
