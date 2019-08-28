@@ -79,9 +79,10 @@ public class RotationService {
 	}
 
 	public Point whiteBallZeroRotation(Point white, Point selected, Point pocket, List<Ball> listBall, int idPocket) {
+		List<Point> listPoint = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket);
+		Point targetPoint = listPoint.get(0);
 
-		Point targetPoint = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket).get(0);
-
+		if(listPoint.size() == 1) {
 		if (targetPoint != null) {
 
 			List<Double> listt = mathService.abOfFunction(targetPoint.x, targetPoint.y, pocket.x, pocket.y);
@@ -122,6 +123,7 @@ public class RotationService {
 
 				return secondOption;
 			}
+		}
 		}
 
 		return null;

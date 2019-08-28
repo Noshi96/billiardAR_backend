@@ -23,6 +23,7 @@ public class HitService {
 	MathService mathService;
 
 	double diameter = 20; // do zmiany
+	double radius = 10;
 
 	/**
 	 *
@@ -93,13 +94,10 @@ public class HitService {
 			boolean collision = findCollisionSecond(white, pointTarget, list, selected);
 			System.out.println("kolizja: " + collision);
 
-			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
-			System.out.println("kolizja2: " + collision2);
+//			boolean collision2 = findCollision(pocket, pointTarget, list, selected);
+//			System.out.println("kolizja2: " + collision2);
 
-			if (collision2) {
-				//System.out.println("Error list");
-				//System.out.println(list);
-			}
+
 
 			//System.out.println(list);
 
@@ -111,11 +109,29 @@ public class HitService {
 //				listPoints.add(find(pointTarget, white, pocket, idPocket + 1));
 //			}
 
-			if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollision(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list, selected) == false) {
+			if (findAngle(white, pointTarget, pocket) < rightAngle  || findCollisionSecond(pocket, pointTarget, list, selected) == false || findCollisionSecond(white, pointTarget, list, selected) == false) {
 				bandPoint = find(pointTarget, white, pocket, idPocket + 1);
 
 				//Jesli zwroci true znaczy ze nie ma kolizji wiec moze dodac sobie punkt bandy do listy(obr. 3)
-				if (findCollision(pocket, bandPoint, list, selected)) {
+				
+				if(findCollisionSecond(white, bandPoint, list, selected)){
+					System.out.println("111111111111111111111111111111111111111111111111111111111");
+				}
+				
+				if(findCollisionSecond(bandPoint, pointTarget, list, selected)){
+					System.out.println("222222222222222222222222222222222222222222222222222222222222");
+				}
+				
+				if(findCollisionSecond(pointTarget,pocket, list, selected)){
+					System.out.println("33333333333333333333333333333333333333333333333333333333333333");
+					System.out.println("pocket.x = " + pocket.x);
+					System.out.println("pocket.y = " + pocket.y);
+				}
+				
+				if (findCollisionSecond(white, bandPoint, list, selected) && findCollisionSecond(bandPoint, pointTarget, list, selected) && findCollisionSecond(pointTarget,pocket, list, selected)) {
+					
+					
+					
 					listPoints.add(bandPoint);
 				} else {
 					return null;
@@ -139,6 +155,11 @@ public class HitService {
 	 */
 	public boolean findCollision(Point pocket, Point target, List<Ball> listBall, Point selectedBall) {
 		//kolizja selected z target(obr. 1)
+		
+	
+
+
+		
 		for (Ball ball : listBall) {
 			if (!isPointInRange(ball.getPoint(), selectedBall, diameter / 2)) {
 				double angle = findAngleOfCollision(target, ball.getPoint(), pocket);
@@ -168,18 +189,112 @@ public class HitService {
 	
 	public boolean findCollisionSecond(Point white, Point target, List<Ball> listBall, Point selected) {
 
+		List<Double> listt = mathService.abOfFunction(white.x, white.y, target.x, target.y);
+
+		double a = listt.get(0);
+		double aWhite = -1 / a;
+
+		double bWhite = 0;
+
+		bWhite = white.y - (white.x * aWhite);
+
+		double aBall = -1 / a;
+		double bBall = target.y - (target.x * aBall);
+
+		Point whitePosShift = new Point();
+		Point whiteNegShift = new Point();
+		Point targetPosShift = new Point();
+		Point targetNegShift = new Point();
+		
+		double whitePosShiftVar = white.x + radius * Math.sqrt((1 / (1 +  Math.pow(aWhite,2))));
+		whitePosShift.x = whitePosShiftVar;
+		whitePosShift.y = aWhite * whitePosShiftVar + bWhite;
+
+		double whiteNegShiftVar = white.x - radius * Math.sqrt((1 / (1 + Math.pow(aWhite,2))));
+		whiteNegShift.x = whiteNegShiftVar;
+		whiteNegShift.y = aWhite * whiteNegShiftVar + bWhite;
+
+		double ballPosShiftVar = target.x + radius * Math.sqrt((1 / (1 + Math.pow(aBall,2))));
+		targetPosShift.x = ballPosShiftVar;
+		targetPosShift.y = aBall * ballPosShiftVar + bBall;
+
+		double ballNegShiftVar = target.x - radius * Math.sqrt((1 / (1 +  Math.pow(aBall,2))));
+		targetNegShift.x = ballNegShiftVar;
+		targetNegShift.y = aBall * ballNegShiftVar + bBall;
+
+		
+		List<Double> line1 = mathService.abOfFunction(whitePosShift.x, whitePosShift.y, targetPosShift.x, targetPosShift.y);
+		List<Double> line2 = mathService.abOfFunction(whiteNegShift.x, whiteNegShift.y, targetNegShift.x, targetNegShift.y);
+		double aLine1 = line1.get(0);
+		double bLine1 = line1.get(1);
+		double aLine2 = line2.get(0);
+		double bLine2 = line2.get(1);
+		double x, y;
+		
+		double aNew1 = aLine1;
+		double cNew1 = bLine1;
+		double bNew1 = 1;
+		
+		double aNew2 = aLine2;
+		double bNew2 = 1;
+		double cNew2 = bLine2;
+		
+		
 		for (Ball ball : listBall) {
-			if (!isPointInRange(ball.getPoint(), selected, diameter*2)) {
-				double angle = findAngleOfCollision(white, ball.getPoint(), target); // tu na logike powinna byc kolizja (obr. 2)
-				angle *= 57;
-				if (angle < 185 && angle > 166) {
+			if (!isPointInRange(ball.getPoint(), selected, diameter/2)) {
+				
+				x = ball.getPoint().x;
+				y = ball.getPoint().y;
+				
+				double dist1 = (Math.abs(aNew1 * x + bNew1 * y + cNew1)) /  Math.sqrt(aNew1 * aNew1 + bNew1 * bNew1); 
+				double dist2 = (Math.abs(aNew2 * x + bNew2 * y + cNew2)) /  Math.sqrt(aNew2 * aNew2 + bNew2 * bNew2);
+				if (radius == dist1 || radius == dist2) {
+				//System.out.println ( "Touchhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh" ); 
 					return false;
 				}
+				else if (radius > dist1 || radius > dist2) {
+					
+				//System.out.println( "Intersectttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt") ; 
+				return false;
+				}
+				else {
+				//System.out.println( "Outsideeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") ; 
+				} 
+				
+				
 			}
 		}
 
 		return true;
 	}
+	
+//	static void checkCollision(int a, int b, int c,  
+//            int x, int y, int radius) 
+//{ 
+//// Finding the distance of line from center. 
+//double dist = (Math.abs(a * x + b * y + c)) /  
+//     Math.sqrt(a * a + b * b); 
+//
+//// Checking if the distance is less than,  
+//// greater than or equal to radius. 
+//if (radius == dist) 
+//System.out.println ( "Touch" ); 
+//else if (radius > dist) 
+//System.out.println( "Intersect") ; 
+//else
+//System.out.println( "Outside") ; 
+//} 
+//
+//// Driven Program 
+//public static void main (String[] args)  
+//{ 
+//int radius = 5; 
+//int x = 0, y = 0; 
+//int a = 3, b = 4, c = 25; 
+//checkCollision(a, b, c, x, y, radius); 
+//
+//} 
+//} 
 
 	/**
 	 *

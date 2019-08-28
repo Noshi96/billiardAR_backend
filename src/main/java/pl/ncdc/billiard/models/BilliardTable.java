@@ -83,11 +83,12 @@ public class BilliardTable {
          balls.add(new Ball(6, new Point(1,600))); // 
         
          //Dximi - kat nie potej stronie
-         balls.add(new Ball(7, new Point(610,250)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
+         balls.add(new Ball(7, new Point(610,270)));// SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSelected
          
          balls.add(new Ball(8, new Point(476, 186)));
          
-         balls.add(new Ball(8, new Point(600, 50)));
+        // balls.add(new Ball(8, new Point(600, 50)));
+         balls.add(new Ball(8, new Point(800, 50)));
         
          this.setWhiteBall(balls.get(3));
          //this.setSelectedBall(this.balls.get(7));
