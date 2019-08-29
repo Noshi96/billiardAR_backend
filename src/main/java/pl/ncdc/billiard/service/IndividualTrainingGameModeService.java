@@ -1,8 +1,6 @@
 package pl.ncdc.billiard.service;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.opencv.core.Point;
@@ -19,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class IndividualTrainingGameModeService {
 
     private final CalibrationService calibrationService;
@@ -44,20 +41,6 @@ public class IndividualTrainingGameModeService {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.billiardTable = billiardTable;
     }
-    
-    @Scheduled(fixedRate = 2000)
-    public void logBallsPositions() {
-    	if(individualTraining != null) {
-	        log.info("Balls table: " + billiardTable.getBalls().toString());
-	        if(billiardTable.getWhiteBall() != null)
-	        	log.info("White table " + billiardTable.getWhiteBall().getPoint().toString());
-//	        log.info("White " + individualTraining.getWhiteBallPosition().toString());
-//	
-//	        log.info("Selected " + individualTraining.getSelectedBallPosition().toString());
-
-	        log.info("Balls last frame " + lastFrameBallsPositions.toString());
-    	}
-    }
 
     @Scheduled(fixedRate = 400)
     public void update() {
@@ -73,25 +56,18 @@ public class IndividualTrainingGameModeService {
 
             if(stopWatch.getTime(TimeUnit.SECONDS) > waitingForBallsPlacementDelay) {
                 stopWatch.reset();
-                log.info("Ready");
                 state = State.Ready;
             }
         } else if(state == State.Ready) {
             if(!isAllBallsPlacedCorrectly()) {
-
-                log.info("WaitingForBallsStop");
                 state = State.WaitingForBallsStop;
             }
         } else if(state == State.WaitingForBallsStop) {
             if(doesBallsStopMoving()) {
             	if(stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
 	                if(isAllWinningConditionMeet()) {
-	
-	                    log.info("Success");
 	                    state = State.Success;
 	                } else {
-	
-	                    log.info("Fail");
 	                    state = State.Fail;
 	                }
 	                stopWatch.reset();
@@ -104,7 +80,6 @@ public class IndividualTrainingGameModeService {
         } else if(state == State.Success || state == State.Fail) {
             if(stopWatch.getTime(TimeUnit.SECONDS) > afterEndDelay) {
             	state = State.WaitingForBallsPlacement;
-                //setIndividualTraining(individualTraining);
             }
         }
 
@@ -154,10 +129,8 @@ public class IndividualTrainingGameModeService {
 
     private boolean doesBallsStopMoving() {
         if(lastFrameBallsPositions.stream().allMatch(this::isSomethingOnPoint)) {
-        	log.info("stopMoving");
         	return true;
         }
-    	log.info("moving");
         return false;
     }
 
@@ -169,19 +142,14 @@ public class IndividualTrainingGameModeService {
         }
 
         if(individualTraining.getDisturbBallsPositions().size() != ballsCount) {
-        	log.info("disturb: " + individualTraining.getDisturbBallsPositions().size());
-        	log.info("ballCount: " + ballsCount);
            return false;
         }
 
         if(!individualTraining.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
-        	log.info("disturbed MSKOHAIOSAIOSAJHIOSAJIOHJSAI");
             return false;
         }
 
         if(!isWhiteBallInRect()) {
-        	log.info("white SHGOUAHSOUGSAHOIGSJAIHJSAIOHJSAIOJHSOI");
-        	log.info("whiteRect: " + individualTraining.getRectanglePosition().toString());
            return false;
         }
 
