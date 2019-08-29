@@ -3,15 +3,20 @@ package pl.ncdc.billiard.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.opencv.core.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class MathService {
-
-	public double diameter = 20; // do zmiany
+	
+	@Autowired
+	private BilliardTable table;
 
 	public double findDistance(Point start, Point end) {
 
