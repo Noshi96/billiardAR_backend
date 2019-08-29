@@ -4,14 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class MathService {
+	
+	@Autowired
+	private BilliardTable table;
 
-	public double diameter = 20; // do zmiany
+	double diameter = table.getBallRadius() * 2; 
+	double radius = table.getBallRadius();
 
 	public double findDistance(Point start, Point end) {
 

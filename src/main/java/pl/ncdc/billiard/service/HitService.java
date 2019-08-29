@@ -22,8 +22,8 @@ public class HitService {
 	@Autowired
 	MathService mathService;
 
-	double diameter = 20; // do zmiany
-	double radius = 10;
+	double diameter = table.getBallRadius() * 2; 
+	double radius = table.getBallRadius();
 
 	/**
 	 *
@@ -111,7 +111,7 @@ public class HitService {
 //			if (findAngle(white, pointTarget, pocket) < rightAngle
 //					|| findCollisionSecond(white, pointTarget, list, selected) == false) {
 			
-			if (findAngle(white, pointTarget, pocket) < rightAngle || isCollision(white, pointTarget, list, selected)) {
+			if (findAngle(white, pointTarget, pocket) < rightAngle || isCollision(white, pointTarget, list, selected) || isCollision(pointTarget, pocket, list, selected)) {
 				
 				System.out.println("Collision lub kat" );
 				
@@ -518,23 +518,14 @@ public class HitService {
 
 		}
 
-		double angleFirstBandTarget;
+
 		double angleFirstBandPocket;
-		double angleSecondBandTarget;
 		double angleSecondBandPocket;
 
-		double angleFirstBandDifference;
-		double angleSecondBandDifference;
+		angleFirstBandPocket = mathService.findAngle(firstPoint, target, pocket);
+		angleSecondBandPocket = mathService.findAngle(secondPoint, target, pocket);
 
-		angleFirstBandTarget = mathService.findAngle(white, firstPoint, target);
-		angleFirstBandPocket = mathService.findAngle(white, firstPoint, pocket);
-		angleFirstBandDifference = Math.abs(angleFirstBandTarget - angleFirstBandPocket);
-
-		angleSecondBandTarget = mathService.findAngle(white, secondPoint, target);
-		angleSecondBandPocket = mathService.findAngle(white, secondPoint, pocket);
-		angleSecondBandDifference = Math.abs(angleSecondBandTarget - angleSecondBandPocket);
-
-		if (angleFirstBandDifference < angleSecondBandDifference) {
+		if (angleFirstBandPocket > angleSecondBandPocket) {
 			return firstPoint;
 		} else {
 			return secondPoint;
