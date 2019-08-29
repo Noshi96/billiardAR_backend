@@ -3,6 +3,8 @@ package pl.ncdc.billiard.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,6 @@ public class MathService {
 	
 	@Autowired
 	private BilliardTable table;
-
-	double diameter = table.getBallRadius() * 2; 
-	double radius = table.getBallRadius();
 
 	public double findDistance(Point start, Point end) {
 

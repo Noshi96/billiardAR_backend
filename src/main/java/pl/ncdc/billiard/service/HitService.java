@@ -3,6 +3,8 @@ package pl.ncdc.billiard.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +23,6 @@ public class HitService {
 
 	@Autowired
 	MathService mathService;
-
-	double diameter = table.getBallRadius() * 2; 
-	double radius = table.getBallRadius();
 
 	/**
 	 *
@@ -83,8 +82,8 @@ public class HitService {
 			double dx = (selected.x - pocket.x) / length;
 			double dy = (selected.y - pocket.y) / length;
 
-			double x = pocket.x + ((diameter + length) * dx);
-			double y = pocket.y + ((diameter + length) * dy);
+			double x = pocket.x + ((table.getBallRadius() * 2 + length) * dx);
+			double y = pocket.y + ((table.getBallRadius() * 2 + length) * dy);
 
 			pointTarget.x = x;
 			pointTarget.y = y;
@@ -302,7 +301,7 @@ public class HitService {
 		Point pointPosShift = new Point();
 
 		for (Ball ball : listBall) {
-			if (!isPointInRange(ball.getPoint(), selected, diameter / 2)) {
+			if (!isPointInRange(ball.getPoint(), selected, table.getBallRadius())) {
 				angleBall = findAngle(white, ball.getPoint(), target) * 57; //kat z bila potencjalnie przeszkadzajaca
 				
 				bBall = ball.getPoint().y - (ball.getPoint().x * aBall);
@@ -310,7 +309,7 @@ public class HitService {
 				crossPoint.x = (b - bBall)/(aBall - a);
 				crossPoint.y = (aBall * b - bBall * a) / (aBall - a);
 				
-				pointPosShiftVar = crossPoint.x + diameter * Math.sqrt((1 / (1 + Math.pow(aBall, 2))));
+				pointPosShiftVar = crossPoint.x + table.getBallRadius() * 2 * Math.sqrt((1 / (1 + Math.pow(aBall, 2))));
 				pointPosShift.x = pointPosShiftVar;
 				pointPosShift.y = aBall * pointPosShiftVar + bBall;
 				
@@ -674,8 +673,8 @@ public class HitService {
 			double dx = (white.x - ballPoint.x) / length;
 			double dy = (white.y - ballPoint.y) / length;
 
-			double x = ballPoint.x + ((diameter + length) * dx);
-			double y = ballPoint.y + ((diameter + length) * dy);
+			double x = ballPoint.x + ((table.getBallRadius() * 2 + length) * dx);
+			double y = ballPoint.y + ((table.getBallRadius() * 2 + length) * dy);
 
 			hiddenPoint.x = x;
 			hiddenPoint.y = y;
