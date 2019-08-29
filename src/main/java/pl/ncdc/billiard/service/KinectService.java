@@ -1,5 +1,7 @@
 package pl.ncdc.billiard.service;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -45,6 +47,8 @@ public class KinectService {
 	private SimpMessagingTemplate simpMessagingTemplate;
 	@Autowired
 	private DepthImageService depthImageService;
+	@Autowired
+	MathService math;
 
 	private Kinect kinect;
 
@@ -52,11 +56,10 @@ public class KinectService {
 
 	private Mat perspectiveTransform;
 
-	// kalibracja
 	private int minBallRadius;
 	private int maxBallRadius;
 
-	Mat actualFrame;;
+	Mat actualFrame;
 
 	@Autowired
 	public KinectService(@Lazy Kinect kinect) {
@@ -65,16 +68,35 @@ public class KinectService {
 		this.perspectiveTransform = new Mat();
 	}
 
+	byte[] data;
+	float[] xyz;
+
 	@PostConstruct
 	private void init() {
 		this.kinect.start(FLAG);
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				KinectService.this.depthImageService.validateCircles(null);
-			}
-		}, 5000);
+		// SIMULATED KINECT
+		try {
+			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("data"));
+			data = (byte[]) inputStream.readObject();
+			inputStream.close();
+
+			inputStream = new ObjectInputStream(new FileInputStream("xyz"));
+			xyz = (float[]) inputStream.readObject();
+			inputStream.close();
+
+			this.depthImageService.load(xyz, 512, 424);
+
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					send(data, 1080, 1920);
+				}
+			}, 5000, 1000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// END OF SIMULATED KINECT
 	}
 
 	/**
@@ -93,11 +115,13 @@ public class KinectService {
 		this.actualFrame = frame.clone();
 
 		List<Ball> newList = updateTable(frame);
-		
-		this.historyService.updateHistory(newList,  this.table.getWhiteBall(), this.maxBallRadius);
-		
+
+		this.historyService.updateHistory(newList, this.table.getWhiteBall(), this.maxBallRadius);
+
 		this.table.setBalls(newList);
-		
+		Ball selected = this.table.getSelectedBall();
+		if (selected != null && math.findBallByPoint(newList, selected.getPoint(), maxBallRadius) == null)
+			this.table.setSelectedBall(null);
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		frame.release();
@@ -129,7 +153,7 @@ public class KinectService {
 		Core.split(Lab, channelList);
 		Mat channelL = new Mat();
 
-		channelList.get(1).copyTo(channelL);
+		channelList.get(0).copyTo(channelL);
 
 		// apply blur
 		Imgproc.medianBlur(channelL, channelL, 5);
@@ -137,24 +161,21 @@ public class KinectService {
 		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
 				this.minBallRadius, this.maxBallRadius);
 
-		this.depthImageService.validateCircles(circles);
-
 		// save detected balls to a list
-		List<Ball> list = new ArrayList<Ball>();
+		List<Ball> list = depthImageService.validateCircles(circles, new Size(1168, 584), maxBallRadius);
 		// Detect white ball
-		Ball whiteBall = whiteBallDetection(frame, circles, this.maxBallRadius);
+
+		Ball whiteBall = whiteBallDetection(frame, list, this.maxBallRadius);
+
 		if (whiteBall != null)
 			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
-		this.table.setWhiteBall(whiteBall);
 
-		for (int x = 0; x < circles.cols(); x++) {
-			double[] c = circles.get(0, x);
-			Point point = new Point(table.getWidth() - c[0], c[1]);
-			if (whiteBall == null || Math.abs(whiteBall.getPoint().x - point.x) > this.minBallRadius
-					|| Math.abs(whiteBall.getPoint().y - point.y) > this.minBallRadius) {
-				list.add(new Ball(0, point));
-			}
-		}
+		// revert X-axis
+		for (Ball ball : list)
+			ball.getPoint().x = this.table.getWidth() - ball.getPoint().x;
+		whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
+
+		this.table.setWhiteBall(whiteBall);
 
 		circles.release();
 		Lab.release();
@@ -176,7 +197,7 @@ public class KinectService {
 	 * @param r       Radius of detected circles
 	 * @return Function return Ball pointed to the White Ball
 	 */
-	public Ball whiteBallDetection(Mat frame, Mat circles, int r) {
+	public Ball whiteBallDetection(Mat frame, List<Ball> list, int radius) {
 
 		Mat image = frame.clone();
 		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
@@ -192,35 +213,34 @@ public class KinectService {
 
 		Core.inRange(image, lowerVal, upperVal, whiteMask);
 
-		//double percentage = 0.50;
+		// double percentage = 0.50;
 		double maxWhite = Integer.MIN_VALUE;
 
 		// for each circle
-		for (int i = 0; i < circles.cols(); i++) {
-			double[] c = circles.get(0, i);
-			// get position
-			int x = (int) c[0] - r;
-			int y = (int) c[1] - r;
+		for (Ball ball : list) {
+
+			Point point = ball.getPoint();
+
+			int xMin = Math.max((int) point.x - radius, 0);
+			int yMin = Math.max((int) point.y - radius, 0);
+			int xMax = Math.min((int) point.x + radius, frame.width() - 1);
+			int yMax = Math.min((int) point.y + radius, frame.height() - 1);
 			// reset sum
 			double rectSum = 0;
 			// for each pixel in distance < radius from circle center
-			for (int j = y; j <= y + 2 * r; j++) {
-				for (int k = x; k <= x + 2 * r; k++) {
-					if (Math.pow(k - c[0], 2) + Math.pow(j - c[1], 2) <= Math.pow(c[2], 2)) {
-						// if position is inside the image (array)
-						if (j > 0 && k > 0 && j < table.getHeight() && k < table.getWidth()) {
-							if (whiteMask.get(j, k)[0] > 1) {
-								rectSum += 1;
-							}
-						}
-					}
-				}
-			}
+
+			for (int x = xMin; x < xMax; x++)
+				for (int y = yMin; y < yMax; y++)
+					if (math.inCircle(x, y, point, radius) && whiteMask.get(y, x)[0] > 1)
+						rectSum += 1;
+
 			if (rectSum > maxWhite) {
 				maxWhite = rectSum;
-				white = new Ball(0, new Point(c[0], c[1]));
+				white = new Ball(0, point);
 			}
 		}
+		if (white != null)
+			list.remove(white);
 
 		whiteMask.release();
 		image.release();
