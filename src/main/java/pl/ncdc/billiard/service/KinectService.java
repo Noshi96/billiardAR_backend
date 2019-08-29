@@ -52,7 +52,7 @@ public class KinectService {
 
 	private Kinect kinect;
 
-	public final static int FLAG = Kinect.COLOR | Kinect.XYZ;
+	public final static int FLAG = Kinect.COLOR | Kinect.XYZ | Kinect.DEPTH;
 
 	private Mat perspectiveTransform;
 
@@ -75,6 +75,7 @@ public class KinectService {
 	private void init() {
 		this.kinect.start(FLAG);
 		// SIMULATED KINECT
+		/*
 		try {
 			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("data"));
 			data = (byte[]) inputStream.readObject();
@@ -96,7 +97,7 @@ public class KinectService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// END OF SIMULATED KINECT
+		// END OF SIMULATED KINECT*/
 	}
 
 	/**
@@ -165,14 +166,14 @@ public class KinectService {
 		List<Ball> list = depthImageService.validateCircles(circles, new Size(1168, 584), maxBallRadius);
 		// Detect white ball
 
+		if (list==null)
+			return null;
 		Ball whiteBall = whiteBallDetection(frame, list, this.maxBallRadius);
-
-		if (whiteBall != null)
-			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
 
 		// revert X-axis
 		for (Ball ball : list)
 			ball.getPoint().x = this.table.getWidth() - ball.getPoint().x;
+		if (whiteBall!=null)
 		whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
 
 		this.table.setWhiteBall(whiteBall);
