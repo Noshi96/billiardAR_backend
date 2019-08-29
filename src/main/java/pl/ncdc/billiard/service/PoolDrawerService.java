@@ -358,7 +358,7 @@ public class PoolDrawerService {
 	
 	
 	public void drawTrajectory(Mat mat, BilliardTable table, List<Point> hitPoints){
-		if( hitPoints.size() == 1 ){
+		if( hitPoints.size() == 1 && hitPoints != null){
 			// jeden punkt oznacza, ze jest prosta droga do luzy
 			List<MatOfPoint> listOfPoints = new ArrayList();
 			
@@ -584,7 +584,6 @@ public class PoolDrawerService {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
-//System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 		if((table.getSelectedBall() != null)){
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();

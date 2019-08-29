@@ -79,9 +79,10 @@ public class RotationService {
 	}
 
 	public Point whiteBallZeroRotation(Point white, Point selected, Point pocket, List<Ball> listBall, int idPocket) {
+		List<Point> listPoint = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket);
+		Point targetPoint = listPoint.get(0);
 
-		Point targetPoint = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket).get(0);
-
+		if(listPoint.size() == 1) {
 		if (targetPoint != null) {
 
 			List<Double> listt = mathService.abOfFunction(targetPoint.x, targetPoint.y, pocket.x, pocket.y);
@@ -109,18 +110,8 @@ public class RotationService {
 			}
 
 			if (angle > 92) {
-				if (targetPoint.y > pocket.y) {
-					xNew2 = targetPoint.x - 100;
-					yNew2 = a2 * xNew2 + b2;
-
-					secondOption.x = xNew2;
-					secondOption.y = yNew2;
-
-					return secondOption;
-				}
 				return newPoint;
 			}
-
 			else {
 				xNew2 = targetPoint.x - 100;
 				yNew2 = a2 * xNew2 + b2;
@@ -130,6 +121,7 @@ public class RotationService {
 
 				return secondOption;
 			}
+		}
 		}
 
 		return null;
@@ -345,13 +337,23 @@ public class RotationService {
 		                    mainLineX = targetPoint.x + 1100;
 		                    
 			                if (angleOfWhiteTargetNew < 90) {
-			                    findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                    //findAngle = -angleFollowRotation; // jesli kat mniejszy to -
 			                    //System.out.println("11111111111111111111111111111111111111");
+			                    
+			                	if (pocket.y > targetPoint.y) {
+			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("1001010101010101001010101011010101");
+			                	} else {
+			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("212121212121221212121212122121212");
+			                	}
 			                } else {
 			                	if (pocket.y > targetPoint.y) {
 			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("77777777777777777777777777777777");
 			                	} else {
 			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("888888888888888888888888888888888888888888");
 			                	}
 			                	//System.out.println("22222222222222222222222222222222222222");
 			                }
@@ -363,12 +365,21 @@ public class RotationService {
 			                if (angleOfWhiteTargetNew < 90) {
 			                	if (pocket.y < targetPoint.y) {
 			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("66666666666666666666666666666666666666666666");
 			                	} else {
 			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                		//System.out.println("5555555555555555555555555555555555555555");
 			                	}
 			                    //System.out.println("33333333333333333333333333333333333333");// Tu zmienilem na minus
 			                } else {
-			                	findAngle = -angleFollowRotation;
+			                	
+			                	if (pocket.y > targetPoint.y) {
+			                		findAngle = -angleFollowRotation; // jesli kat mniejszy to -
+			                	} else {
+			                		findAngle = angleFollowRotation; // jesli kat mniejszy to -
+			                	}
+			                	
+			                	//findAngle = -angleFollowRotation;
 			                	//System.out.println("444444444444444444444444444444444444444"); // Tu zmienilem na minus
 			                }
 		                }
