@@ -4,6 +4,9 @@ import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
+import pl.ncdc.billiard.entities.traininghints.HitPointHintEntity;
+import pl.ncdc.billiard.entities.traininghints.HitPowerHintEntity;
+import pl.ncdc.billiard.entities.traininghints.TargetBallHitPointHintEntity;
 import pl.ncdc.billiard.mappers.IndividualTrainingMapper;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.DifficultyLevel;
@@ -66,6 +69,18 @@ public class IndividualTrainingService {
 			individualTrainingMapper.updateEntityFromModel(individualTraining, individualTrainingEntity);
 		}
 
+		HitPointHintEntity hitPointHintEntity = individualTrainingEntity.getHitPointHint();
+		HitPowerHintEntity hitPowerHintEntity = individualTrainingEntity.getHitPowerHint();
+		TargetBallHitPointHintEntity targetBallHitPointHintEntity = individualTrainingEntity.getTargetBallHitPointHint();
+		if(hitPointHintEntity != null) {
+			hitPointHintEntity.setIndividualTraining(individualTrainingEntity);
+		}
+		if(hitPowerHintEntity != null) {
+			hitPowerHintEntity.setIndividualTraining(individualTrainingEntity);
+		}
+		if(targetBallHitPointHintEntity != null) {
+			targetBallHitPointHintEntity.setIndividualTraining(individualTrainingEntity);
+		}
 		return individualTrainingMapper.toModel(individualTrainingRepository.save(individualTrainingEntity));
 	}
 

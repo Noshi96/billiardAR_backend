@@ -5,9 +5,9 @@ import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.ncdc.billiard.entities.traininghints.HitPointHint;
-import pl.ncdc.billiard.entities.traininghints.HitPowerHint;
-import pl.ncdc.billiard.entities.traininghints.TargetBallHitPointHint;
+import pl.ncdc.billiard.entities.traininghints.HitPointHintEntity;
+import pl.ncdc.billiard.entities.traininghints.HitPowerHintEntity;
+import pl.ncdc.billiard.entities.traininghints.TargetBallHitPointHintEntity;
 import pl.ncdc.billiard.models.DifficultyLevel;
 
 import javax.persistence.*;
@@ -29,10 +29,10 @@ public class IndividualTrainingEntity {
     private MultiPoint rectanglePosition;
     private int pocketId;
     private Point statusPosition;
-    @OneToOne
-    private HitPointHint hitPointHint;
-    @OneToOne
-    private HitPowerHint hitPowerHint;
-    @OneToOne
-    private TargetBallHitPointHint targetBallHitPointHint;
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    private HitPointHintEntity hitPointHint;
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    private HitPowerHintEntity hitPowerHint;
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    private TargetBallHitPointHintEntity targetBallHitPointHint;
 }

@@ -29,9 +29,14 @@ public abstract class MultiPointMapper {
     }
 
     public MultiPoint toMultiPoint(List<Point> points) {
-        Coordinate[] coordinates = points.stream()
-                .map(point -> new Coordinate(point.x, point.y))
-                .toArray(Coordinate[]::new);
+        Coordinate[] coordinates;
+        if(points == null) {
+            coordinates = new Coordinate[0];
+        } else {
+            coordinates = points.stream()
+                    .map(point -> new Coordinate(point.x, point.y))
+                    .toArray(Coordinate[]::new);
+        }
         return geometryFactory.createMultiPoint(coordinates);
     }
 }

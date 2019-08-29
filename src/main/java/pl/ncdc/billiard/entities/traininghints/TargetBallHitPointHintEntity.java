@@ -4,21 +4,23 @@ import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Entity
+@Entity(name = "target_ball_hit_point_hint")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TargetBallHitPointHint {
+public class TargetBallHitPointHintEntity {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @MapsId
+    private IndividualTrainingEntity individualTraining;
+
     private Point whiteBall;
     private Point targetBall;
 }
