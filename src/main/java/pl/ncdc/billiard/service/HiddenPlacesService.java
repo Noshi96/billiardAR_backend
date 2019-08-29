@@ -8,10 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class HiddenPlacesService {
-	public double diameter = 20; // do zmiany
+	
+	@Autowired
+	private BilliardTable table;
+
+	double diameter = table.getBallRadius() * 2; 
+	double radius = table.getBallRadius();
 	
 	@Autowired
 	MathService mathService;
