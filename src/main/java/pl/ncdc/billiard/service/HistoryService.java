@@ -27,6 +27,15 @@ public class HistoryService {
 		this.whiteHistory = new ArrayList<Ball>();
 	}
 
+	public void updateHistory(List<Ball> list, Ball whiteBall, int radius) {
+		updateHistory(list, radius);
+		removeFalseBalls(list, radius);
+		findMissingBalls(list, radius);
+		updateHistory(whiteBall, radius);
+		removeFalseWhite(list, whiteBall, radius);
+		sort(list);
+	}
+
 	/**
 	 * Try to calculate new position of white ball;
 	 * 
@@ -189,6 +198,7 @@ public class HistoryService {
 		}
 		list.removeAll(newList);
 	}
+
 	/**
 	 * Remove false ball from list if detected as white
 	 * 
@@ -201,5 +211,16 @@ public class HistoryService {
 		if (inList == null)
 			return;
 		list.remove(inList);
+	}
+
+	/**
+	 * Sort ball list by x position. Set its id's
+	 * 
+	 * @param list list to sort
+	 */
+	private void sort(List<Ball> list) {
+		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o2.getPoint().x));
+		for (int i = 1; i < list.size(); i++)
+			list.get(i).setId(i);
 	}
 }

@@ -93,29 +93,14 @@ public class KinectService {
 		this.actualFrame = frame.clone();
 
 		List<Ball> newList = updateTable(frame);
-		this.historyService.updateHistory(newList, this.maxBallRadius);
-		this.historyService.removeFalseBalls(newList, this.maxBallRadius);
-		this.historyService.findMissingBalls(newList, this.maxBallRadius);
-		this.historyService.updateHistory(this.table.getWhiteBall(), this.maxBallRadius);
-		this.historyService.removeFalseWhite(newList, this.table.getWhiteBall(), this.maxBallRadius);
-		sort(newList);
-
+		
+		this.historyService.updateHistory(newList,  this.table.getWhiteBall(), this.maxBallRadius);
+		
 		this.table.setBalls(newList);
+		
 		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
 
 		frame.release();
-
-	}
-
-	/**
-	 * Sort ball list by x position. Set its id's
-	 * 
-	 * @param list list to sort
-	 */
-	private void sort(List<Ball> list) {
-		list.sort((o1, o2) -> Double.compare(o1.getPoint().x, o2.getPoint().x));
-		for (int i = 1; i < list.size(); i++)
-			list.get(i).setId(i);
 	}
 
 	/**
