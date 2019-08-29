@@ -11,4 +11,5 @@ import org.opencv.core.Point;
 public class TargetBallHitPointHint {
     private Point whiteBall;
     private Point targetBall;
+    private double radius;
 }

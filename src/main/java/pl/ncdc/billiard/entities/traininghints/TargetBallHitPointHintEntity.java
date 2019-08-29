@@ -23,4 +23,5 @@ public class TargetBallHitPointHintEntity {
 
     private Point whiteBall;
     private Point targetBall;
+    private double radius;
 }
