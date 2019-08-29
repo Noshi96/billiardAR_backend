@@ -170,7 +170,11 @@ public class PoolDrawerService {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
+		
+		System.out.println("White ball pos: " + table.getWhiteBall().getPoint());
+		System.out.println("Selected ball pos: " + table.getSelectedBall().getPoint());
 
+		
 		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
 			//drawTrajectory();
 			//System.out.println("elo");
