@@ -32,12 +32,17 @@ public class HistoryService {
 	}
 
 	public void updateHistory(List<Ball> list, Ball whiteBall, int radius) {
-		updateHistory(list, radius);
-		removeFalseBalls(list, radius);
-		findMissingBalls(list, radius);
-		updateHistory(whiteBall, radius);
-		removeFalseWhite(list, whiteBall, radius);
-		this.math.sort(list);
+		if (list != null) {
+			updateHistory(list, radius);
+			removeFalseBalls(list, radius);
+			findMissingBalls(list, radius);
+		}
+		if (whiteBall != null) {
+			updateHistory(whiteBall, radius);
+			removeFalseWhite(list, whiteBall, radius);
+		}
+		if (list != null)
+			this.math.sort(list);
 	}
 
 	/**

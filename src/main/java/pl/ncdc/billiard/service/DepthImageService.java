@@ -25,8 +25,8 @@ public class DepthImageService {
 	private Mat perspectiveTransform;
 
 	private final static float DOWN_TRESHOLD = 2.325f;
-	private final static float UP_TRESHOLD = 2.3f;
-	private final static double MIN_DETECTION_RATE = 0.6;
+	private final static float UP_TRESHOLD = 2.295f;
+	private final static double MIN_DETECTION_RATE = 0.1;
 
 	public DepthImageService() {
 		this.perspectiveTransform = new Mat();
@@ -40,6 +40,8 @@ public class DepthImageService {
 
 	public List<Ball> validateCircles(Mat circles, Size size, int radius) {
 
+		if (this.xyz == null)
+			return null;
 		DepthMap depthMap = new DepthMap(this.depthWidth, this.depthHeight, this.xyz);
 
 		byte[] xd = maskZ(depthMap);
@@ -64,9 +66,9 @@ public class DepthImageService {
 
 			for (int x = xMin; x < xMax; x++)
 				for (int y = yMin; y < yMax; y++)
-					if (mask.get(y, x)[0] == 0)
+					if (mask.get(y, x)[0] != 0)
 						ballArea++;
-			
+
 			if (ballArea > area * MIN_DETECTION_RATE) {
 				// draw circles on image
 				Imgproc.circle(mask, point, (int) c[2], new Scalar(255, 0, 0));
@@ -74,8 +76,8 @@ public class DepthImageService {
 				list.add(new Ball(0, point));
 			}
 		}
-		HighGui.imshow("img", mask);
-		HighGui.waitKey(1000);
+//		HighGui.imshow("img", mask);
+//		HighGui.waitKey(1);
 		return list;
 	}
 
