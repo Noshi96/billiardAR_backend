@@ -7,7 +7,7 @@ import pl.ncdc.billiard.models.IndividualTraining;
 
 import java.util.List;
 
-@Mapper(uses = {PointMapper.class, MultiPointMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = {PointMapper.class, MultiPointMapper.class, HitPointHintMapper.class, HitPowerHintMapper.class, TargetBallHitPointHintMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface IndividualTrainingMapper {
 
     IndividualTraining toModel(IndividualTrainingEntity individualTrainingEntity);
