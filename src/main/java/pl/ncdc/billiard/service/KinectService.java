@@ -68,36 +68,29 @@ public class KinectService {
 		this.perspectiveTransform = new Mat();
 	}
 
-	byte[] data;
-	float[] xyz;
+	// byte[] data;
+	// float[] xyz;
 
 	@PostConstruct
 	private void init() {
 		this.kinect.start(FLAG);
 		// SIMULATED KINECT
 		/*
-		try {
-			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("data"));
-			data = (byte[]) inputStream.readObject();
-			inputStream.close();
-
-			inputStream = new ObjectInputStream(new FileInputStream("xyz"));
-			xyz = (float[]) inputStream.readObject();
-			inputStream.close();
-
-			this.depthImageService.load(xyz, 512, 424);
-
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					send(data, 1080, 1920);
-				}
-			}, 5000, 1000);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// END OF SIMULATED KINECT*/
+		 * try { ObjectInputStream inputStream = new ObjectInputStream(new
+		 * FileInputStream("data")); data = (byte[]) inputStream.readObject();
+		 * inputStream.close();
+		 * 
+		 * inputStream = new ObjectInputStream(new FileInputStream("xyz")); xyz =
+		 * (float[]) inputStream.readObject(); inputStream.close();
+		 * 
+		 * this.depthImageService.load(xyz, 512, 424);
+		 * 
+		 * Timer timer = new Timer(); timer.schedule(new TimerTask() {
+		 * 
+		 * @Override public void run() { send(data, 1080, 1920); } }, 5000, 1000); }
+		 * catch (Exception e) { e.printStackTrace(); }
+		 */
+		// END OF SIMULATED KINECT
 	}
 
 	/**
@@ -169,6 +162,9 @@ public class KinectService {
 		if (list==null)
 			return null;
 		Ball whiteBall = whiteBallDetection(frame, list, this.maxBallRadius);
+
+		if (whiteBall != null)
+			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
 
 		// revert X-axis
 		for (Ball ball : list)
@@ -328,7 +324,8 @@ public class KinectService {
 
 		Mat dst = Converters.vector_Point2f_to_Mat(pts);
 
-		this.perspectiveTransform.release();
+		if (this.perspectiveTransform != null)
+			this.perspectiveTransform.release();
 		this.perspectiveTransform = Imgproc.getPerspectiveTransform(src, dst);
 
 		src.release();

@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class MathService {
-
-	public double diameter = 20; // do zmiany
+	
+	@Autowired
+	private BilliardTable table;
 
 	public double findDistance(Point start, Point end) {
 
@@ -35,9 +38,9 @@ public class MathService {
 	 */
 	public double findAngle(Point white, Point target, Point pocket) {
 
-		white = new Point(0, 0);
-		pocket = new Point(0, 500);
-		target = new Point(-26, 50);
+//		white = new Point(0,0);
+//		pocket = new Point(0,500);
+//		target = new Point(-26,250);
 
 		double p0c = Math.sqrt(Math.pow(target.x - white.x, 2) + Math.pow(target.y - white.y, 2));
 		double p1c = Math.sqrt(Math.pow(target.x - pocket.x, 2) + Math.pow(target.y - pocket.y, 2));
@@ -100,7 +103,7 @@ public class MathService {
 	 * <p>
 	 * Check if current point is inside of given circle
 	 * <p>
-	 * ( a - x )<sup>2</sup> - ( b - y )<sup>2</sup> <= r<sup>2<sup>
+	 * ( a - x )<sup>2</sup> + ( b - y )<sup>2</sup> <= r<sup>2<sup>
 	 * 
 	 * @param a current point x-position
 	 * @param b current point y-position
@@ -119,7 +122,7 @@ public class MathService {
 	/**
 	 * Check if current point is inside of given circle
 	 * <p>
-	 * ( a - x )<sup>2</sup> - ( b - y )<sup>2</sup> <= r<sup>2<sup>
+	 * ( a - x )<sup>2</sup> - ( b + y )<sup>2</sup> <= r<sup>2<sup>
 	 * 
 	 * @param a      current point x-position
 	 * @param b      current point y-position
@@ -127,6 +130,7 @@ public class MathService {
 	 * @param r      circle radius
 	 * @return true if current point is inside the circle
 	 * @author charlie
+	 * @see MathService#inCircle(int, int, int, int, int) MathService.inCircle
 	 */
 	public boolean inCircle(int a, int b, Point point, int r) {
 		return inCircle(a, b, (int) point.x, (int) point.y, r);
@@ -136,13 +140,14 @@ public class MathService {
 	 * <p>
 	 * Check if current point is inside of given circle
 	 * <p>
-	 * ( a - x )<sup>2</sup> - ( b - y )<sup>2</sup> <= r<sup>2<sup>
+	 * ( a - x )<sup>2</sup> - ( b + y )<sup>2</sup> <= r<sup>2<sup>
 	 * 
 	 * @param point  current point position
 	 * @param center circle center
 	 * @param r      circle radius
 	 * @return true if current point is inside the circle
 	 * @author charlie
+	 * @see MathService#inCircle(int, int, int, int, int) MathService.inCircle
 	 */
 	public boolean inCircle(Point point, Point center, int r) {
 		return inCircle((int) point.x, (int) point.y, (int) center.x, (int) center.y, r);

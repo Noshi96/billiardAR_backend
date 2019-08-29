@@ -62,21 +62,21 @@ public class BilliardTable {
 
 
 
-//	// konstruktor - wersja mocnk (noszek)
+	// konstruktor - wersja mocnk (noszek)
 //     public BilliardTable() {
 //         balls = new ArrayList<>();
 //         balls.add(new Ball(0, new Point(1000,800)));
 //         balls.add(new Ball(1, new Point(250,600)));
 //         balls.add(new Ball(2, new Point(400,29) ));
+//         //balls.add(new Ball(3, new Point(600,500) ));
+//         balls.add(new Ball(3, new Point(417,629) ));
+//         balls.add(new Ball(4, new Point(600,401)));
+//         balls.add(new Ball(5, new Point(1,600))); 
+//         balls.add(new Ball(6, new Point(810,250)));
+//         balls.add(new Ball(7, new Point(476, 186)));
+//         balls.add(new Ball(8, new Point(600, 300)));
 //
-//         balls.add(new Ball(4, new Point(417,629) ));
-//         balls.add(new Ball(5, new Point(600,450)));
-//         balls.add(new Ball(6, new Point(1,600))); 
-//         balls.add(new Ball(7, new Point(610,250)));
-//         balls.add(new Ball(8, new Point(476, 186)));
-//         balls.add(new Ball(9, new Point(600, 50)));
-//
-//         this.setWhiteBall(balls.get(3));
+//         this.setWhiteBall(new Ball(3, new Point(600,500)));
 //         //this.setWhiteBall( new Ball( 0,  new Point(750,450)));
 //         
 //         //this.setSelectedBall(this.balls.get(7));
