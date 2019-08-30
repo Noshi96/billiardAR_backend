@@ -961,6 +961,8 @@ public class PoolDrawerService {
 	
 	public void toggleHitInfo() {
 		displayShotInformations = ! displayShotInformations;
+	}
+	
 	public void drawTarget(Mat mat, List<Point> hitList) {
 	    // rysowanie wybranej zaznaczonej bili
 		if ( hitList != null) {
