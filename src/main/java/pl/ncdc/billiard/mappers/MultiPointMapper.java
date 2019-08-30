@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = PointMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class MultiPointMapper {
 
     @Autowired
