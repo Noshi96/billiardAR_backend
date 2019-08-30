@@ -694,7 +694,7 @@ public class PoolDrawerService {
 		         trajectoryLineThickness
 		      );
 	    } else {
-	    	System.out.println("Znalazlo odbicie od bandy");
+	    	//System.out.println("Znalazlo odbicie od bandy");
 	    }
 		
 		}
@@ -722,7 +722,7 @@ public class PoolDrawerService {
 			
 			}	
 			//System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
-			System.out.println("id pocket = " + idPocket);
+			//System.out.println("id pocket = " + idPocket);
 			tableService.selectPocket((long)idPocket);
 			
 			Pocket pocket = table.getSelectedPocket();
