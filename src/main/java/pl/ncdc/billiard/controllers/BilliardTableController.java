@@ -86,6 +86,11 @@ public class BilliardTableController {
 	public void setViewMode(@PathVariable int viewMode) {
 		tableService.setViewMode(viewMode);
 	}
+	
+	@PutMapping("/toggleHitInfo")
+	public void toggleHitInfo() {
+		poolDrawerService.toggleHitInfo();
+	}
 
 	@PutMapping("/hit")
 	public List<Point> findHittingPoint() {

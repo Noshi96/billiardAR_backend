@@ -28,7 +28,9 @@ import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.models.Pocket;
+import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
 
 @Service
 public class PoolDrawerService {
@@ -49,6 +51,9 @@ public class PoolDrawerService {
 	@Autowired
 	RotationService rotationService;
 	
+	@Autowired
+	InformationsService informationsService;
+	
 	@Value("${kinectService.mask}")
 	private String filename;
 	
@@ -60,9 +65,12 @@ public class PoolDrawerService {
 	
 	boolean displayBallId = false;
 	boolean displayPockets = false;
+	boolean displayShotInformations = true;
 	
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
+	
+	int textXD = 30;
 	
 	int ballRadius = 15;
 	int whiteBallRadius = 20;
@@ -81,7 +89,7 @@ public class PoolDrawerService {
 	List<Point> hitPoints;
 
 	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
-
+	Informations informations;
 	
 	
 	public byte[] drawImage(BilliardTable table)
@@ -89,6 +97,9 @@ public class PoolDrawerService {
 		
 		kinectHeight = table.getHeight();
 		kinectWidth = table.getWidth();
+		informations = informationsService.getHitInformations();
+		
+
 		
 		//ballRadius = table.getBallRadius();	
 		//Mat poolTableArea = new Mat(projectorMaxHeight,projectorMaxWidth, CvType.CV_8UC3);
@@ -118,13 +129,15 @@ public class PoolDrawerService {
 		else{
 			drawTraining(poolPlayZoneMat, table);
 			// tryb challenge'u zostal wybrany.
-			//this.fetchTrainingById(this.table.selectedChallenge);
+			// this.fetchTrainingById(table.selectedChallenge);
 		}
 		
 		
-		
-		
-		
+		if ( displayShotInformations ) {
+			drawShotInformation(poolPlayZoneMat, informations);
+		}else {
+			//System.out.println("display informations: false");
+		}
 		
 		
 
@@ -179,18 +192,12 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewMode1(Mat mat, BilliardTable table) {
-		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
-		
-		System.out.println("White ball pos: " + table.getWhiteBall().getPoint());
-		System.out.println("Selected ball pos: " + table.getSelectedBall().getPoint());
 
-		
 		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
 			//drawTrajectory();
-			//System.out.println("elo");
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();
 			Pocket pocket = table.getSelectedPocket();
@@ -204,12 +211,6 @@ public class PoolDrawerService {
 			
 			drawTrajectory(mat, table, hitPoints);
 			
-
-			
-			//System.out.println("hit points: " + hitPoints);
-			
-		//console.log(this.hittingPoint);
-		//this.drawTrajectory(this.hittingPoint);
 		} else {
 		  //this.drawBalls();
 		}
@@ -225,13 +226,9 @@ public class PoolDrawerService {
 		
 		Point white = table.getWhiteBall().getPoint();
 		List<Ball> listBall = table.getBalls();
-		
 		List<Point> hiddenPointsList =  hiddenPlacesService.showHiddenPlaces(white, listBall);
-		
-		//System.out.println("HDEIN PONTY: " + hiddenPointsList);
-		
+				
 		drawHiddenPlaces(mat, table, hiddenPointsList);
-		
 		drawBalls(mat, table.getBalls());
 		drawWhiteBall(mat, table.getWhiteBall());
 		if(displayPockets) {
@@ -514,14 +511,12 @@ public class PoolDrawerService {
 	}
 	
 	public void drawViewModeRotation(Mat mat, BilliardTable table) {
-		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
 
 		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
 			//drawTrajectory();
-			//System.out.println("elo");
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();
 			Pocket pocket = table.getSelectedPocket();
@@ -540,17 +535,12 @@ public class PoolDrawerService {
 			}
 
 			
-			//System.out.println("hit points: " + hitPoints);
-			
-		//console.log(this.hittingPoint);
-		//this.drawTrajectory(this.hittingPoint);
 		} else {
 		  //this.drawBalls();
 		}
 	}
 	
 	public void drawViewModeZeroRotation(Mat mat, BilliardTable table) {
-		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
@@ -571,7 +561,6 @@ public class PoolDrawerService {
 			if (rotationZeroPoint != null) {
 			drawRotationZero(mat, table,  rotationZeroPoint, hitPoints, hitPoints.get(0));
 			}
-			//System.out.println("hit points: " + hitPoints);	
 		} else {
 			
 		}
@@ -601,13 +590,10 @@ public class PoolDrawerService {
 			int idPocket = hitService.findBestPocket(white.getPoint(), selected.getPoint(), listOfPockets, listOfBallse);
 			if (idPocket != -1) {
 				
-			
-			//System.out.println("IDDD = " + idPocket);
 			if (white == null || selected == null) {
 				return ;
 			
 			}	
-			//System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
 			
 			drawBestPocket(mat, table, listOfPockets, idPocket);
 			}
@@ -619,63 +605,15 @@ public class PoolDrawerService {
 		
 		
 		
-		
+	
+	
+	
+	
+	
+	
+	
+	
 
-			
-	
-//	List<Point> listPoints = new ArrayList<Point>();
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public void examp(Mat mat) {
-		//Drawing a Circle
-		Imgproc.circle (
-			mat,          //Matrix obj of the image
-			new Point(400, 440),    //Center of the circle
-			100,                    //Radius
-			new Scalar(70, 255, 55),  //Scalar object for color
-			5                      //Thickness of the circle
-		);
-	}
 	
 	public void drawBalls(Mat mat, List<Ball> balls) {
 		if( balls == null ) {
@@ -801,5 +739,47 @@ public class PoolDrawerService {
 
 	public void updateCalibration(CalibrationParams calibrationParams) {
 		this.calibrationParams = calibrationParams;
+	}
+	
+	public void drawShotInformation(Mat mat, Informations informations) {
+		
+		if ( informations == null) {
+			return;
+		}
+				
+		
+
+//     	"Dst White -> Ball   : " + (int)informations.getDistanceWhiteSelected() +
+//     	"\nDst White -> Pocket : " + (int)informations.getDistanceWhitePocket() +
+//     	"\nHit angle  : " + (int)informations.getHitAngle() +
+//     	"\nDifficulty : " + informations.getDifficultyLevel()
+//		 ),          // Text to be added
+		
+		//double tableIncm = CalibrationParams.getDefaultCalibrationParams().getTableSizeInCm().x / BilliardTab;
+		
+		drawText(mat, new Point(20, 40),          "Dst White to Ball    : " + (int)informations.getDistanceWhiteSelected());
+		drawText(mat, new Point(20, 40 + textXD), "Dst White to Pocket : " + (int)informations.getDistanceWhitePocket());
+		drawText(mat, new Point(20, 40 + textXD * 2), "Hit angle  : " + (int)informations.getHitAngle());
+		//drawText(mat, new Point(20, 40 + textXD * 3), "Difficulty  : " + informations.getDifficultyLevel());
+		
+
+	      
+	}
+	
+	public void drawText(Mat mat, Point point, String text) {
+	      Imgproc.putText (
+	 	         mat,
+	 	         text,
+	 	         point,
+	 	         Core.FONT_HERSHEY_TRIPLEX ,
+	 	         1,
+	 	         new Scalar(255, 255, 255),
+	 	         1
+	 	      );
+	}
+	
+	
+	public void toggleHitInfo() {
+		displayShotInformations = ! displayShotInformations;
 	}
 }

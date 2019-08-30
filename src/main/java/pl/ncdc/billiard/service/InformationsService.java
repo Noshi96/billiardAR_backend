@@ -27,7 +27,15 @@ public class InformationsService {
     }
 
     @Scheduled(fixedRate = 500)
-    public void getHitInfo() {
+    public void getHitInfoLive() {
+    	Informations informasion = getHitInformations();
+    	if ( informasion != null ) {
+            simpMessagingTemplate.convertAndSend("/informations", informasion);
+    	}
+    	
+    }
+    
+    public Informations getHitInformations() {
         Ball whiteBall = billiardTable.getWhiteBall();
         Ball selectedBall = billiardTable.getSelectedBall();
         Pocket selectedPocket = billiardTable.getSelectedPocket();
@@ -35,7 +43,9 @@ public class InformationsService {
 
         if (whiteBall != null && selectedBall != null && selectedPocket != null) {
             Informations hitInfo = hitService.getHitInfo(whiteBall.getPoint(), selectedBall.getPoint(), selectedPocket.getPoint(), listBall, selectedPocket.getId());
-            simpMessagingTemplate.convertAndSend("/informations", hitInfo);
+            return hitInfo;
         }
+        
+        return null;
     }
 }
