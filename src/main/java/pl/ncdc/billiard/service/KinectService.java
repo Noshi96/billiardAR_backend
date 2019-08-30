@@ -134,7 +134,7 @@ public class KinectService {
 
 		// save detected balls to a list
 		List<Ball> list = depthImageService.validateCircles(circles, new Size(table.getWidth(), table.getHeight()),
-				maxBallRadius);
+				minBallRadius);
 
 		circles.release();
 		Lab.release();

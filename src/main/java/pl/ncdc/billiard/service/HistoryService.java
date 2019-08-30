@@ -20,9 +20,7 @@ public class HistoryService {
 	/** List of previously detected white balls **/
 	private List<Ball> whiteHistory;
 	/** How many previous states will be stored **/
-	private final static int HISTORY_MAX_LENGTH = 90;
-	/** How much current position should change new calculated position **/
-	private final static double CORRECTION_RATE = 0.1;
+	private final static int HISTORY_MAX_LENGTH = 150;
 	/** Number of frames to search disappearing balls **/
 	private final static int HISTORY_SCAN_LIMIT = 20;
 
@@ -34,7 +32,7 @@ public class HistoryService {
 	public void updateHistory(List<Ball> list, Ball whiteBall, int radius) {
 		if (list != null) {
 			updateHistory(list, radius);
-			removeFalseBalls(list, radius);
+			// removeFalseBalls(list, radius);
 			findMissingBalls(list, radius);
 		}
 		if (whiteBall != null) {
@@ -76,7 +74,8 @@ public class HistoryService {
 		if (detected < 2)
 			return;
 
-		calculateAvg(whiteBall.getPoint(), avg, detected, radius);
+		whiteBall.getPoint().x = avg.x / detected;
+		whiteBall.getPoint().y = avg.y / detected;
 
 	}
 
@@ -98,8 +97,9 @@ public class HistoryService {
 		List<Ball> newList = new ArrayList<Ball>();
 
 		for (Ball ball : list) {
-			// prepare save to history
-			newList.add(new Ball(ball.getId(), new Point(ball.getPoint().x, ball.getPoint().y)));
+
+			Point hist = new Point(ball.getPoint().x, ball.getPoint().y);
+			newList.add(new Ball(0, hist));
 
 			Point avg = new Point();
 			int detected = 0;
@@ -116,32 +116,25 @@ public class HistoryService {
 
 			if (detected == 0)
 				break;
-			calculateAvg(ball.getPoint(), avg, detected, radius);
 
+			double x = avg.x / detected;
+			double y = avg.y / detected;
+
+			ball.getPoint().x = x;
+			ball.getPoint().y = y;
+
+			double dx = hist.x - x;
+			double dy = hist.y - y;
+
+			if (Math.abs(dx) < radius)
+				hist.x = x;
+			if (Math.abs(dy) < radius)
+				hist.y = y;
 		}
 		// save to history history
 		this.history.add(newList);
 		if (this.history.size() > HISTORY_MAX_LENGTH)
 			this.history.remove(0);
-	}
-
-	private void calculateAvg(Point point, Point avg, int items, int radius) {
-
-		avg.x /= (double) items;
-		avg.y /= (double) items;
-
-		double dx = point.x - avg.x;
-		double dy = point.y - avg.y;
-
-		if (Math.abs(dx) < radius / 2)
-			point.x = avg.x;
-		else if (Math.abs(dx) < radius)
-			point.x = avg.x + dx * CORRECTION_RATE * 2;
-
-		if (Math.abs(dy) < radius / 2)
-			point.y = avg.y;
-		else if (Math.abs(dy) < radius)
-			point.y = avg.y + dy * CORRECTION_RATE * 2;
 	}
 
 	public List<Ball> findMissingBalls(List<Ball> list, int radius) {
@@ -157,7 +150,7 @@ public class HistoryService {
 					for (int i = index; i < this.history.size(); i++)
 						if (math.findBallByPoint(this.history.get(i), ball.getPoint(), radius) != null)
 							count++;
-					if (count > HISTORY_SCAN_LIMIT * 2 / 3)
+					if (count > HISTORY_SCAN_LIMIT / 3)
 						list.add(ball);
 				}
 			}
