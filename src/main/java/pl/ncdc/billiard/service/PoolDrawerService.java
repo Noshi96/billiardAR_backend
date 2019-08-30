@@ -29,6 +29,12 @@ import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.models.Pocket;
+import pl.ncdc.billiard.models.trainingHints.HitPoint;
+import pl.ncdc.billiard.models.trainingHints.HitPointHint;
+import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
+import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
+
+import static org.opencv.core.Core.FILLED;
 
 @Service
 public class PoolDrawerService {
@@ -296,18 +302,24 @@ public class PoolDrawerService {
 		    new Scalar(255, 255, 255),
 		    trainingRectangleThickness
 	    );
-	    
-	    if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Ready) {
-	    	Imgproc.putText(mat, "READY", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Fail) {
-	    	Imgproc.putText(mat, "FAILED", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Success) {
-	    	Imgproc.putText(mat, "SUCCESS", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsPlacement) {
-	    	Imgproc.putText(mat, "WaitingForBallsPlacement", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsStop) {
-	    	Imgproc.putText(mat, "WaitingForBallsStop", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+
+		String statusText = "";
+	    if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Ready) {
+	        statusText = "READY";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Fail) {
+            statusText = "FAILED";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Success) {
+            statusText = "SUCCESS";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsPlacement) {
+            statusText = "WaitingForBallsPlacement";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsStop) {
+            statusText = "WaitingForBallsStop";
 	    }
+	    Point statusPosition = individualTraining.getStatusPosition();
+	    if(statusPosition == null) {
+	        statusPosition = new Point(300, 300);
+        }
+        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255));
 		
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
@@ -322,7 +334,47 @@ public class PoolDrawerService {
 				pocketLineThickness
 			);	
 	    }
-	}
+	    
+	    // tymczasowe rysowanie podpowiedzi
+        TargetBallHitPointHint targetBallHitPointHint = individualTraining.getTargetBallHitPointHint();
+	    if(targetBallHitPointHint != null) {
+            Imgproc.circle(mat, targetBallHitPointHint.getWhiteBall(), ((int) targetBallHitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), FILLED);
+            Imgproc.circle(mat, targetBallHitPointHint.getTargetBall(), ((int) targetBallHitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), ballLineThickness);
+        }
+
+        HitPowerHint hitPowerHint = individualTraining.getHitPowerHint();
+	    if(hitPowerHint != null) {
+	        Point boundingBoxMax = new Point(hitPowerHint.getPosition().x + hitPowerHint.getSize().x, hitPowerHint.getPosition().y + hitPowerHint.getSize().y);
+            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255));
+
+            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255), ballLineThickness);
+            Point fillBoundingBoxMin = hitPowerHint.getPosition();
+            fillBoundingBoxMin.y += (1 - hitPowerHint.getHitPower() / 100) * hitPowerHint.getSize().y;
+            Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, new Scalar(255, 255, 255), FILLED);
+        }
+
+        HitPointHint hitPointHint = individualTraining.getHitPointHint();
+	    if(hitPointHint != null) {
+	        Imgproc.circle(mat, hitPointHint.getPosition(), ((int) hitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), ballLineThickness);
+
+	        int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
+	        hitPointHint.recalculateInsideCirclesOffsets();
+
+            List<Point> insideCirclesOffsets = hitPointHint.getInsideCirclesOffsets();
+            for (int i = 0; i < insideCirclesOffsets.size(); i++) {
+                Point offset = insideCirclesOffsets.get(i);
+                Point insideCirclePosition = new Point(hitPointHint.getPosition().x + offset.x, hitPointHint.getPosition().y + offset.y);
+                if(hitPointHint.getHitPoint().ordinal() == i) {
+                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), FILLED);
+                } else {
+                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), ballLineThickness);
+                }
+            }
+        }
+    }
 	
 	
 	
