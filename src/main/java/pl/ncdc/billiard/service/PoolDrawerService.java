@@ -54,6 +54,9 @@ public class PoolDrawerService {
 	@Autowired
 	InformationsService informationsService;
 	
+	@Autowired
+	BilliardTableService tableService;
+	
 	@Value("${kinectService.mask}")
 	private String filename;
 	
@@ -121,8 +124,9 @@ public class PoolDrawerService {
 				case 22: drawViewMode22(poolPlayZoneMat, table); break;
 				case 32: drawViewModeRotation(poolPlayZoneMat, table); break;
 				case 33: drawViewModeZeroRotation(poolPlayZoneMat, table); break;
-				case 34: drawViewModeBestPocket(poolPlayZoneMat, table); break;
-				
+				case 34: drawViewModeBestPocket(poolPlayZoneMat, table); break;		// Nowy poprawiony z rysowaniem od razu po wyborze bili selected
+				case 35 :drawViewModeBothRotation(poolPlayZoneMat, table); break;	// Wspolne rysowanie rotacji postepowej i bez rotacji 
+				case 36 :drawViewModeProMode(poolPlayZoneMat, table); break;	// Tryb pro
 				//case 2: this.drawViewMode2(); break;
 			}
 		}
@@ -510,6 +514,66 @@ public class PoolDrawerService {
 			);	
 	}
 	
+	public void drawBothRotation(Mat mat, BilliardTable table, Point rotationZeroPoint, Point rotationFollowPoint, List<Point> hitPoints, Point targetPoint) {
+		
+		List<MatOfPoint> listOfPoints = new ArrayList();
+		List<MatOfPoint> listWithZeroRotation = new ArrayList();
+		List<MatOfPoint> listWithFollowRotation = new ArrayList();
+		
+		listOfPoints.add(
+			new MatOfPoint(
+				table.getWhiteBall().getPoint(),
+		        hitPoints.get(0),
+		        table.getSelectedPocket().getPoint()
+			)			
+		);
+		
+		// Rotacja zero
+		listWithZeroRotation.add(
+				new MatOfPoint(
+					targetPoint,
+					rotationZeroPoint
+				)							
+			);	
+		
+		// Z rotacja postepowa
+		listWithFollowRotation.add(
+				new MatOfPoint(
+					targetPoint,
+					rotationFollowPoint
+				)							
+			);	
+		
+		
+		// rysowanie trajektorii
+		Imgproc.polylines(
+			mat,
+			listOfPoints,
+			false, // is Closed
+			new Scalar(0, 255, 255),
+			trajectoryLineThickness
+		);		
+		
+		// Zero rotacja
+		Imgproc.polylines(
+				mat,
+				listWithZeroRotation,
+				false, // is Closed
+				new Scalar(255, 0, 0),
+				trajectoryLineThickness
+			);
+		
+		// Follow rotacja
+		Imgproc.polylines(
+				mat,
+				listWithFollowRotation,
+				false, // is Closed
+				new Scalar(147,20,255),
+				trajectoryLineThickness
+			);
+		
+	}
+	
 	public void drawViewModeRotation(Mat mat, BilliardTable table) {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
@@ -566,43 +630,159 @@ public class PoolDrawerService {
 		}
 	}
 	
-	public void drawBestPocket(Mat mat, BilliardTable table, List<Pocket> listOfPockets, int idPocket) {
+	
+	public void drawViewModeBothRotation(Mat mat, BilliardTable table) {
+		//System.out.println("elo");
+		drawWhiteBall(mat, table.getWhiteBall());
+		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
+		drawPockets(mat, table.getPockets());
+
+		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
+			Ball white = table.getWhiteBall();
+			Ball selected = table.getSelectedBall();
+			Pocket pocket = table.getSelectedPocket();
+			int idPocket = table.getSelectedPocket().getId();
+			if (white == null || selected == null || pocket == null) {
+				return ;
+			
+			}
+			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
+					table.getBalls(), idPocket);
+			
+			Point rotationZeroPoint = rotationService.whiteBallZeroRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
+			Point rotationPoint = rotationService.fixedFollowRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
+			
+			if (rotationZeroPoint != null && rotationPoint != null) {				
+				drawBothRotation(mat, table, rotationZeroPoint, rotationPoint, hitPoints, hitPoints.get(0));	
+			}
+			//System.out.println("hit points: " + hitPoints);	
+		} else {
+			
+		}
+	}
+	
+	public void drawBestPocket(Mat mat, BilliardTable table, List<Point> hitPoints) {
 				
-	    	Imgproc.circle (
-				mat,
-				listOfPockets.get(idPocket).getPoint(),
-				ballRadius * 4,
-				new Scalar(255, 0, 0),
-				selectedPocketLineThickness
-			);
+		// Nie trzeba rysowa� bo robiac seta sie rysuje
+//    	Imgproc.circle (
+//			mat,
+//			listOfPockets.get(idPocket).getPoint(),
+//			ballRadius * 4,
+//			new Scalar(255, 0, 0),
+//			selectedPocketLineThickness
+//		);
+		
+		if(hitPoints != null) {
+			if( hitPoints.size() == 1 ){
+			// jeden punkt oznacza, ze jest prosta droga do luzy
+				List<MatOfPoint> listOfPoints = new ArrayList();
+				
+				listOfPoints.add(
+					new MatOfPoint(
+						table.getWhiteBall().getPoint(),
+				        hitPoints.get(0),
+				        table.getSelectedPocket().getPoint()
+					)
+				);
+					
+		      // rysowanie trajektorii
+		      Imgproc.polylines(
+		         mat,
+		         listOfPoints,
+		         false, // is Closed
+		         new Scalar(0, 255, 255),
+		         trajectoryLineThickness
+		      );
+	    } else {
+	    	System.out.println("Znalazlo odbicie od bandy");
+	    }
+		
+		}
+		
+
 	}
 	
 	public void drawViewModeBestPocket(Mat mat, BilliardTable table) {
 		drawWhiteBall(mat, table.getWhiteBall());
-		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
+		
 		if((table.getSelectedBall() != null)){
+			
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();
 			List<Pocket> listOfPockets = table.getPockets();
 			List<Ball> listOfBallse = table.getBalls();
-			
+					
 			int idPocket = hitService.findBestPocket(white.getPoint(), selected.getPoint(), listOfPockets, listOfBallse);
+								
 			if (idPocket != -1) {
 				
 			if (white == null || selected == null) {
 				return ;
 			
 			}	
+			//System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
+			System.out.println("id pocket = " + idPocket);
+			tableService.selectPocket((long)idPocket);
 			
-			drawBestPocket(mat, table, listOfPockets, idPocket);
+			Pocket pocket = table.getSelectedPocket();
+			
+			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
+					table.getBalls(), idPocket);
+			
+			drawBestPocket(mat, table, hitPoints);
+			
+			
 			}
 		} else {
 			
 		}
+		
+		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
+
 	}
 
+	public void drawProMode(Mat mat, BilliardTable table, List<Point> hitPoints) {
 		
+	}
+	
+	public void drawViewModeProMode(Mat mat, BilliardTable table) {
+		//System.out.println("elo");
+		//drawWhiteBall(mat, table.getWhiteBall());
+		//drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
+		//drawPockets(mat, table.getPockets());
+		
+		//System.out.println("White ball pos: " + table.getWhiteBall().getPoint());
+		//System.out.println("Selected ball pos: " + table.getSelectedBall().getPoint());
+
+		
+		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
+			//drawTrajectory();
+			//System.out.println("elo");
+			Ball white = table.getWhiteBall();
+			Ball selected = table.getSelectedBall();
+			Pocket pocket = table.getSelectedPocket();
+			int idPocket = table.getSelectedPocket().getId();
+			if (white == null || selected == null || pocket == null) {
+				return ;
+			
+			}
+			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
+					table.getBalls(), idPocket);
+			
+			drawTarget(mat, hitPoints);
+			
+
+			
+			//System.out.println("hit points: " + hitPoints);
+			
+		//console.log(this.hittingPoint);
+		//this.drawTrajectory(this.hittingPoint);
+		} else {
+		  //this.drawBalls();
+		}
+
+	}
 		
 		
 	
@@ -781,5 +961,16 @@ public class PoolDrawerService {
 	
 	public void toggleHitInfo() {
 		displayShotInformations = ! displayShotInformations;
+	public void drawTarget(Mat mat, List<Point> hitList) {
+	    // rysowanie wybranej zaznaczonej bili
+		if ( hitList != null) {
+			Imgproc.circle (
+				mat,          //Matrix obj of the image
+				hitList.get(0),    //Center of the circle
+				ballRadius * 2,                    //Radius
+				new Scalar(255, 0, 0),  //Scalar object for color
+				ballLineThickness                      //Thickness of the circle
+			);
+		}
 	}
 }
