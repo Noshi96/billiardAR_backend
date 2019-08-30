@@ -28,6 +28,7 @@ public class CalibrationController {
 
 	@GetMapping
 	public CalibrationParams getCalibrationParams() {
+		
 		return this.calibrationService.getCalibrationParams();
 	}
 
