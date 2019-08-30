@@ -30,10 +30,7 @@ import pl.ncdc.billiard.models.CalibrationParams;
 /**
  * Receive frames from Kinect device and generate data for BilliardTableService
  * 
- * @see BilliardTableService
  * @see KinectService#send(byte[], int, int) KinectService.Send()
- * @see pl.ncdc.billiard.Kinect Kinect
- * @see Kinect Kinect simulator
  **/
 
 @Service
@@ -68,29 +65,9 @@ public class KinectService {
 		this.perspectiveTransform = new Mat();
 	}
 
-	// byte[] data;
-	// float[] xyz;
-
 	@PostConstruct
 	private void init() {
 		this.kinect.start(FLAG);
-		// SIMULATED KINECT
-		/*
-		 * try { ObjectInputStream inputStream = new ObjectInputStream(new
-		 * FileInputStream("data")); data = (byte[]) inputStream.readObject();
-		 * inputStream.close();
-		 * 
-		 * inputStream = new ObjectInputStream(new FileInputStream("xyz")); xyz =
-		 * (float[]) inputStream.readObject(); inputStream.close();
-		 * 
-		 * this.depthImageService.load(xyz, 512, 424);
-		 * 
-		 * Timer timer = new Timer(); timer.schedule(new TimerTask() {
-		 * 
-		 * @Override public void run() { send(data, 1080, 1920); } }, 5000, 1000); }
-		 * catch (Exception e) { e.printStackTrace(); }
-		 */
-		// END OF SIMULATED KINECT
 	}
 
 	/**
@@ -105,18 +82,18 @@ public class KinectService {
 		Mat frame = new Mat(height, width, CvType.CV_8UC4);
 		frame.put(0, 0, data);
 
-		this.actualFrame.release();
-		this.actualFrame = frame.clone();
+		actualFrame.release();
+		actualFrame = frame.clone();
 
 		List<Ball> newList = updateTable(frame);
 
-		this.historyService.updateHistory(newList, this.table.getWhiteBall(), this.maxBallRadius);
+		historyService.updateHistory(newList, table.getWhiteBall(), maxBallRadius);
 
-		this.table.setBalls(newList);
-		Ball selected = this.table.getSelectedBall();
+		table.setBalls(newList);
+		Ball selected = table.getSelectedBall();
 		if (selected != null && math.findBallByPoint(newList, selected.getPoint(), maxBallRadius) == null)
-			this.table.setSelectedBall(null);
-		this.simpMessagingTemplate.convertAndSend("/table/live", this.table);
+			table.setSelectedBall(null);
+		simpMessagingTemplate.convertAndSend("/table/live", table);
 
 		frame.release();
 	}
@@ -138,8 +115,8 @@ public class KinectService {
 		Mat Lab = new Mat();
 
 		// wrap image
-		Imgproc.warpPerspective(frame, frame, this.perspectiveTransform,
-				new Size(this.table.getWidth(), this.table.getHeight()), Imgproc.INTER_CUBIC);
+		Imgproc.warpPerspective(frame, frame, perspectiveTransform, new Size(table.getWidth(), table.getHeight()),
+				Imgproc.INTER_CUBIC);
 
 		Imgproc.cvtColor(frame, Lab, Imgproc.COLOR_BGR2Lab);
 
@@ -152,31 +129,28 @@ public class KinectService {
 		// apply blur
 		Imgproc.medianBlur(channelL, channelL, 5);
 		// show(mask);
-		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, this.minBallRadius * 2, 25.0, 10.0,
-				this.minBallRadius, this.maxBallRadius);
+		Imgproc.HoughCircles(channelL, circles, Imgproc.HOUGH_GRADIENT, 1.0, minBallRadius * 2, 25.0, 10.0,
+				minBallRadius, maxBallRadius);
 
 		// save detected balls to a list
-		List<Ball> list = depthImageService.validateCircles(circles, new Size(1168, 584), maxBallRadius);
-		// Detect white ball
-
-		if (list==null)
-			return null;
-		Ball whiteBall = whiteBallDetection(frame, list, this.maxBallRadius);
-
-		if (whiteBall != null)
-			whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
-
-		// revert X-axis
-		for (Ball ball : list)
-			ball.getPoint().x = this.table.getWidth() - ball.getPoint().x;
-		if (whiteBall!=null)
-		whiteBall.getPoint().x = this.table.getWidth() - whiteBall.getPoint().x;
-
-		this.table.setWhiteBall(whiteBall);
+		List<Ball> list = depthImageService.validateCircles(circles, new Size(table.getWidth(), table.getHeight()),
+				maxBallRadius);
 
 		circles.release();
 		Lab.release();
 		channelL.release();
+
+		if (list == null)
+			return null;
+		Ball whiteBall = whiteBallDetection(frame, list, maxBallRadius);
+
+		// revert X-axis
+		for (Ball ball : list)
+			ball.getPoint().x = table.getWidth() - ball.getPoint().x;
+		if (whiteBall != null)
+			whiteBall.getPoint().x = table.getWidth() - whiteBall.getPoint().x;
+
+		table.setWhiteBall(whiteBall);
 
 		return list;
 	}
