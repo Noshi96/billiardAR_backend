@@ -7,7 +7,7 @@ import pl.ncdc.billiard.models.IndividualTraining;
 
 import java.util.List;
 
-@Mapper(uses = {PointMapper.class, MultiPointMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = {PointMapper.class, MultiPointMapper.class, HitPointHintMapper.class, HitPowerHintMapper.class, TargetBallHitPointHintMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface IndividualTrainingMapper {
 
     IndividualTraining toModel(IndividualTrainingEntity individualTrainingEntity);
@@ -22,10 +22,4 @@ public interface IndividualTrainingMapper {
 
 
     IndividualTraining toInPixelModel(IndividualTraining individualTraining, @Context Point viewport);
-
-    default Point toPixel(Point point, @Context Point viewport) {
-        return new Point(point.x * viewport.x, point.y * viewport.y);
-    }
-
-    List<Point> toPixel(List<Point> points, @Context Point viewPoint);
 }

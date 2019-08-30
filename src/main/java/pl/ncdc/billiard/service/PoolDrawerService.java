@@ -30,7 +30,13 @@ import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.IndividualTraining;
 import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.models.Pocket;
+import pl.ncdc.billiard.models.trainingHints.HitPoint;
+import pl.ncdc.billiard.models.trainingHints.HitPointHint;
+import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
+import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
 import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
+
+import static org.opencv.core.Core.FILLED;
 
 @Service
 public class PoolDrawerService {
@@ -53,10 +59,10 @@ public class PoolDrawerService {
 	
 	@Autowired
 	InformationsService informationsService;
-	
+
 	@Autowired
 	BilliardTableService tableService;
-	
+
 	@Value("${kinectService.mask}")
 	private String filename;
 	
@@ -69,12 +75,12 @@ public class PoolDrawerService {
 	boolean displayBallId = false;
 	boolean displayPockets = false;
 	boolean displayShotInformations = true;
-	
+
 	int projectorMaxHeight = 1080-1;
 	int projectorMaxWidth = 1920;
 	
 	int textXD = 30;
-	
+
 	int ballRadius = 20;
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
@@ -101,9 +107,9 @@ public class PoolDrawerService {
 		kinectHeight = table.getHeight();
 		kinectWidth = table.getWidth();
 		informations = informationsService.getHitInformations();
-		
 
-		
+
+
 		//ballRadius = table.getBallRadius();	
 		//Mat poolTableArea = new Mat(projectorMaxHeight,projectorMaxWidth, CvType.CV_8UC3);
 		//Mat poolPlayZoneMat = new Mat(table.getHeight(),table.getWidth(), CvType.CV_8UC3);
@@ -125,7 +131,7 @@ public class PoolDrawerService {
 				case 32: drawViewModeRotation(poolPlayZoneMat, table); break;
 				case 33: drawViewModeZeroRotation(poolPlayZoneMat, table); break;
 				case 34: drawViewModeBestPocket(poolPlayZoneMat, table); break;		// Nowy poprawiony z rysowaniem od razu po wyborze bili selected
-				case 35 :drawViewModeBothRotation(poolPlayZoneMat, table); break;	// Wspolne rysowanie rotacji postepowej i bez rotacji 
+				case 35 :drawViewModeBothRotation(poolPlayZoneMat, table); break;	// Wspolne rysowanie rotacji postepowej i bez rotacji
 				case 36 :drawViewModeProMode(poolPlayZoneMat, table); break;	// Tryb pro
 				//case 2: this.drawViewMode2(); break;
 			}
@@ -214,7 +220,7 @@ public class PoolDrawerService {
 					table.getBalls(), idPocket);
 			
 			drawTrajectory(mat, table, hitPoints);
-			
+
 		} else {
 		  //this.drawBalls();
 		}
@@ -231,7 +237,7 @@ public class PoolDrawerService {
 		Point white = table.getWhiteBall().getPoint();
 		List<Ball> listBall = table.getBalls();
 		List<Point> hiddenPointsList =  hiddenPlacesService.showHiddenPlaces(white, listBall);
-				
+
 		drawHiddenPlaces(mat, table, hiddenPointsList);
 		drawBalls(mat, table.getBalls());
 		drawWhiteBall(mat, table.getWhiteBall());
@@ -297,19 +303,25 @@ public class PoolDrawerService {
 		    new Scalar(255, 255, 255),
 		    trainingRectangleThickness
 	    );
-	    
-	    if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Ready) {
-	    	Imgproc.putText(mat, "READY", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Fail) {
-	    	Imgproc.putText(mat, "FAILED", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().Success) {
-	    	Imgproc.putText(mat, "SUCCESS", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsPlacement) {
-	    	Imgproc.putText(mat, "WaitingForBallsPlacement", new Point(300, 300), 1, 2, new Scalar(255,255,255));
-	    } else if (individualTrainingGameModeService.getState() == individualTrainingGameModeService.getState().WaitingForBallsStop) {
-	    	Imgproc.putText(mat, "WaitingForBallsStop", new Point(300, 300), 1, 2, new Scalar(255,255,255));
+
+		String statusText = "";
+	    if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Ready) {
+	        statusText = "READY";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Fail) {
+            statusText = "FAILED";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Success) {
+            statusText = "SUCCESS";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsPlacement) {
+            statusText = "WaitingForBallsPlacement";
+	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsStop) {
+            statusText = "WaitingForBallsStop";
 	    }
-		
+	    Point statusPosition = individualTraining.getStatusPosition();
+	    if(statusPosition == null) {
+	        statusPosition = new Point(300, 300);
+        }
+        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255));
+
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
 	    if ( table.getPockets().get(individualTraining.getPocketId()) != null) {
@@ -323,7 +335,47 @@ public class PoolDrawerService {
 				pocketLineThickness
 			);	
 	    }
-	}
+
+	    // tymczasowe rysowanie podpowiedzi
+        TargetBallHitPointHint targetBallHitPointHint = individualTraining.getTargetBallHitPointHint();
+	    if(targetBallHitPointHint != null) {
+            Imgproc.circle(mat, targetBallHitPointHint.getWhiteBall(), ((int) targetBallHitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), FILLED);
+            Imgproc.circle(mat, targetBallHitPointHint.getTargetBall(), ((int) targetBallHitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), ballLineThickness);
+        }
+
+        HitPowerHint hitPowerHint = individualTraining.getHitPowerHint();
+	    if(hitPowerHint != null) {
+	        Point boundingBoxMax = new Point(hitPowerHint.getPosition().x + hitPowerHint.getSize().x, hitPowerHint.getPosition().y + hitPowerHint.getSize().y);
+            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255));
+
+            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255), ballLineThickness);
+            Point fillBoundingBoxMin = hitPowerHint.getPosition();
+            fillBoundingBoxMin.y += (1 - hitPowerHint.getHitPower() / 100) * hitPowerHint.getSize().y;
+            Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, new Scalar(255, 255, 255), FILLED);
+        }
+
+        HitPointHint hitPointHint = individualTraining.getHitPointHint();
+	    if(hitPointHint != null) {
+	        Imgproc.circle(mat, hitPointHint.getPosition(), ((int) hitPointHint.getRadius()),
+                    new Scalar(255, 255, 255), ballLineThickness);
+
+	        int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
+	        hitPointHint.recalculateInsideCirclesOffsets();
+
+            List<Point> insideCirclesOffsets = hitPointHint.getInsideCirclesOffsets();
+            for (int i = 0; i < insideCirclesOffsets.size(); i++) {
+                Point offset = insideCirclesOffsets.get(i);
+                Point insideCirclePosition = new Point(hitPointHint.getPosition().x + offset.x, hitPointHint.getPosition().y + offset.y);
+                if(hitPointHint.getHitPoint().ordinal() == i) {
+                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), FILLED);
+                } else {
+                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), ballLineThickness);
+                }
+            }
+        }
+    }
 	
 	
 	
@@ -513,38 +565,38 @@ public class PoolDrawerService {
 				trajectoryLineThickness
 			);	
 	}
-	
+
 	public void drawBothRotation(Mat mat, BilliardTable table, Point rotationZeroPoint, Point rotationFollowPoint, List<Point> hitPoints, Point targetPoint) {
-		
+
 		List<MatOfPoint> listOfPoints = new ArrayList();
 		List<MatOfPoint> listWithZeroRotation = new ArrayList();
 		List<MatOfPoint> listWithFollowRotation = new ArrayList();
-		
+
 		listOfPoints.add(
 			new MatOfPoint(
 				table.getWhiteBall().getPoint(),
 		        hitPoints.get(0),
 		        table.getSelectedPocket().getPoint()
-			)			
+			)
 		);
-		
+
 		// Rotacja zero
 		listWithZeroRotation.add(
 				new MatOfPoint(
 					targetPoint,
 					rotationZeroPoint
-				)							
-			);	
-		
+				)
+			);
+
 		// Z rotacja postepowa
 		listWithFollowRotation.add(
 				new MatOfPoint(
 					targetPoint,
 					rotationFollowPoint
-				)							
-			);	
-		
-		
+				)
+			);
+
+
 		// rysowanie trajektorii
 		Imgproc.polylines(
 			mat,
@@ -552,8 +604,8 @@ public class PoolDrawerService {
 			false, // is Closed
 			new Scalar(0, 255, 255),
 			trajectoryLineThickness
-		);		
-		
+		);
+
 		// Zero rotacja
 		Imgproc.polylines(
 				mat,
@@ -562,7 +614,7 @@ public class PoolDrawerService {
 				new Scalar(255, 0, 0),
 				trajectoryLineThickness
 			);
-		
+
 		// Follow rotacja
 		Imgproc.polylines(
 				mat,
@@ -571,9 +623,9 @@ public class PoolDrawerService {
 				new Scalar(147,20,255),
 				trajectoryLineThickness
 			);
-		
+
 	}
-	
+
 	public void drawViewModeRotation(Mat mat, BilliardTable table) {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
@@ -598,7 +650,7 @@ public class PoolDrawerService {
 				drawRotationFollow(mat, table,  rotationPoint, hitPoints, hitPoints.get(0));
 			}
 
-			
+
 		} else {
 		  //this.drawBalls();
 		}
@@ -630,7 +682,7 @@ public class PoolDrawerService {
 		}
 	}
 	
-	
+
 	public void drawViewModeBothRotation(Mat mat, BilliardTable table) {
 		//System.out.println("elo");
 		drawWhiteBall(mat, table.getWhiteBall());
@@ -644,25 +696,25 @@ public class PoolDrawerService {
 			int idPocket = table.getSelectedPocket().getId();
 			if (white == null || selected == null || pocket == null) {
 				return ;
-			
+
 			}
 			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
 					table.getBalls(), idPocket);
-			
+
 			Point rotationZeroPoint = rotationService.whiteBallZeroRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
 			Point rotationPoint = rotationService.fixedFollowRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
-			
-			if (rotationZeroPoint != null && rotationPoint != null) {				
-				drawBothRotation(mat, table, rotationZeroPoint, rotationPoint, hitPoints, hitPoints.get(0));	
+
+			if (rotationZeroPoint != null && rotationPoint != null) {
+				drawBothRotation(mat, table, rotationZeroPoint, rotationPoint, hitPoints, hitPoints.get(0));
 			}
-			//System.out.println("hit points: " + hitPoints);	
+			//System.out.println("hit points: " + hitPoints);
 		} else {
-			
+
 		}
 	}
-	
+
 	public void drawBestPocket(Mat mat, BilliardTable table, List<Point> hitPoints) {
-				
+
 		// Nie trzeba rysowa� bo robiac seta sie rysuje
 //    	Imgproc.circle (
 //			mat,
@@ -671,12 +723,12 @@ public class PoolDrawerService {
 //			new Scalar(255, 0, 0),
 //			selectedPocketLineThickness
 //		);
-		
+
 		if(hitPoints != null) {
 			if( hitPoints.size() == 1 ){
 			// jeden punkt oznacza, ze jest prosta droga do luzy
 				List<MatOfPoint> listOfPoints = new ArrayList();
-				
+
 				listOfPoints.add(
 					new MatOfPoint(
 						table.getWhiteBall().getPoint(),
@@ -684,7 +736,7 @@ public class PoolDrawerService {
 				        table.getSelectedPocket().getPoint()
 					)
 				);
-					
+
 		      // rysowanie trajektorii
 		      Imgproc.polylines(
 		         mat,
@@ -696,66 +748,64 @@ public class PoolDrawerService {
 	    } else {
 	    	//System.out.println("Znalazlo odbicie od bandy");
 	    }
-		
+
 		}
-		
+
 
 	}
 	
 	public void drawViewModeBestPocket(Mat mat, BilliardTable table) {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawPockets(mat, table.getPockets());
-		
+
 		if((table.getSelectedBall() != null)){
-			
+
 			Ball white = table.getWhiteBall();
 			Ball selected = table.getSelectedBall();
 			List<Pocket> listOfPockets = table.getPockets();
 			List<Ball> listOfBallse = table.getBalls();
-					
+
 			int idPocket = hitService.findBestPocket(white.getPoint(), selected.getPoint(), listOfPockets, listOfBallse);
-								
+
 			if (idPocket != -1) {
-				
+
 			if (white == null || selected == null) {
 				return ;
 			
-			}	
+			}
+			}
 			//System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH = " + idPocket);
 			//System.out.println("id pocket = " + idPocket);
 			tableService.selectPocket((long)idPocket);
-			
+
 			Pocket pocket = table.getSelectedPocket();
-			
+
 			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
 					table.getBalls(), idPocket);
-			
+
 			drawBestPocket(mat, table, hitPoints);
-			
-			
-			}
 		} else {
-			
+
 		}
-		
+
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 
 	}
 
 	public void drawProMode(Mat mat, BilliardTable table, List<Point> hitPoints) {
-		
+
 	}
-	
+
 	public void drawViewModeProMode(Mat mat, BilliardTable table) {
 		//System.out.println("elo");
 		//drawWhiteBall(mat, table.getWhiteBall());
 		//drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		//drawPockets(mat, table.getPockets());
-		
+
 		//System.out.println("White ball pos: " + table.getWhiteBall().getPoint());
 		//System.out.println("Selected ball pos: " + table.getSelectedBall().getPoint());
 
-		
+
 		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
 			//drawTrajectory();
 			//System.out.println("elo");
@@ -765,17 +815,17 @@ public class PoolDrawerService {
 			int idPocket = table.getSelectedPocket().getId();
 			if (white == null || selected == null || pocket == null) {
 				return ;
-			
+
 			}
 			hitPoints = hitService.findHittingPoint(white.getPoint(), selected.getPoint(), pocket.getPoint(),
 					table.getBalls(), idPocket);
-			
-			drawTarget(mat, hitPoints);
-			
 
-			
+			drawTarget(mat, hitPoints);
+
+
+
 			//System.out.println("hit points: " + hitPoints);
-			
+
 		//console.log(this.hittingPoint);
 		//this.drawTrajectory(this.hittingPoint);
 		} else {
@@ -785,16 +835,16 @@ public class PoolDrawerService {
 	}
 		
 		
+
+
+
 	
-	
-	
-	
-	
-	
+
+
 	
 	
 
-	
+
 	public void drawBalls(Mat mat, List<Ball> balls) {
 		if( balls == null ) {
 			return;
@@ -920,32 +970,32 @@ public class PoolDrawerService {
 	public void updateCalibration(CalibrationParams calibrationParams) {
 		this.calibrationParams = calibrationParams;
 	}
-	
+
 	public void drawShotInformation(Mat mat, Informations informations) {
-		
+
 		if ( informations == null) {
 			return;
 		}
-				
-		
+
+
 
 //     	"Dst White -> Ball   : " + (int)informations.getDistanceWhiteSelected() +
 //     	"\nDst White -> Pocket : " + (int)informations.getDistanceWhitePocket() +
 //     	"\nHit angle  : " + (int)informations.getHitAngle() +
 //     	"\nDifficulty : " + informations.getDifficultyLevel()
 //		 ),          // Text to be added
-		
+
 		//double tableIncm = CalibrationParams.getDefaultCalibrationParams().getTableSizeInCm().x / BilliardTab;
-		
+
 		drawText(mat, new Point(20, 40),          "Dst White to Ball    : " + (int)informations.getDistanceWhiteSelected());
 		drawText(mat, new Point(20, 40 + textXD), "Dst White to Pocket : " + (int)informations.getDistanceWhitePocket());
 		drawText(mat, new Point(20, 40 + textXD * 2), "Hit angle  : " + (int)informations.getHitAngle());
 		//drawText(mat, new Point(20, 40 + textXD * 3), "Difficulty  : " + informations.getDifficultyLevel());
-		
 
-	      
+
+
 	}
-	
+
 	public void drawText(Mat mat, Point point, String text) {
 	      Imgproc.putText (
 	 	         mat,
@@ -957,12 +1007,12 @@ public class PoolDrawerService {
 	 	         1
 	 	      );
 	}
-	
-	
+
+
 	public void toggleHitInfo() {
 		displayShotInformations = ! displayShotInformations;
 	}
-	
+
 	public void drawTarget(Mat mat, List<Point> hitList) {
 	    // rysowanie wybranej zaznaczonej bili
 		if ( hitList != null) {

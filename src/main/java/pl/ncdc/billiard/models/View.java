@@ -27,7 +27,7 @@ public class View {
 	
 	
 	public void setViewModeFeature(ViewModeFeature viewModeFeature){
-		var currentFeature = features.get(viewModeFeature);
+		boolean currentFeature = features.get(viewModeFeature);
 		currentFeature = !currentFeature;
 	}
 	
