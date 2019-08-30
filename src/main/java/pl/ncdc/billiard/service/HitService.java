@@ -112,7 +112,7 @@ public class HitService {
 			
 			if (findAngle(white, pointTarget, pocket) < rightAngle || isCollision(white, pointTarget, list, selected) || isCollision(pointTarget, pocket, list, selected)) {
 				
-				System.out.println("Collision lub kat" );
+				//System.out.println("Collision lub kat" );
 				
 				bandPoint = find(pointTarget, white, pocket, idPocket + 1);
 
@@ -135,7 +135,7 @@ public class HitService {
 				if (isCollision(white, bandPoint, list, selected) == false
 						&& isCollision(bandPoint, pointTarget, list, selected) == false
 						&& isCollision(pointTarget, pocket, list, selected) == false) {
-					System.out.println("Collision false" );
+					//System.out.println("Collision false" );
 					if (findAngle(pocket, pointTarget, bandPoint) * 57 < 92) {
 						System.out.println("Kat ostryyyyyy Collision false");
 						return null;
