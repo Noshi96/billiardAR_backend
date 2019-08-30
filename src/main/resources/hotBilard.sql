@@ -26,24 +26,16 @@ CREATE TABLE `calibration_params` (
   `id` bigint(20) NOT NULL,
   `ball_diameter` int(11) NOT NULL,
   `left_bottom_corner` geometry DEFAULT NULL,
+  `left_bottom_corner_projector` geometry DEFAULT NULL,
   `left_upper_corner` geometry DEFAULT NULL,
+  `left_upper_corner_projector` geometry DEFAULT NULL,
   `preset_name` varchar(255) DEFAULT NULL,
   `right_bottom_corner` geometry DEFAULT NULL,
+  `right_bottom_corner_projector` geometry DEFAULT NULL,
   `right_upper_corner` geometry DEFAULT NULL,
-  `left_bottom_cornerx` double NOT NULL,
-  `left_bottom_cornery` double NOT NULL,
-  `left_upper_cornerx` double NOT NULL,
-  `left_upper_cornery` double NOT NULL,
-  `right_bottom_cornerx` double NOT NULL,
-  `right_bottom_cornery` double NOT NULL,
-  `right_upper_cornerx` double NOT NULL,
-  `right_upper_cornery` double NOT NULL,
+  `right_upper_corner_projector` geometry DEFAULT NULL,
   `table_size_in_cm` geometry DEFAULT NULL,
   `white_ball_density` int(11) NOT NULL,
-  `left_bottom_corner_projector` geometry DEFAULT NULL,
-  `left_upper_corner_projector` geometry DEFAULT NULL,
-  `right_bottom_corner_projector` geometry DEFAULT NULL,
-  `right_upper_corner_projector` geometry DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -54,7 +46,7 @@ CREATE TABLE `calibration_params` (
 
 LOCK TABLES `calibration_params` WRITE;
 /*!40000 ALTER TABLE `calibration_params` DISABLE KEYS */;
-INSERT INTO `calibration_params` VALUES (1,20,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\‡ê@','Default',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\‡ê@',0,0,0,0,0,0,0,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿o@\0\0\0\0\0¿_@',375000,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\‡ê@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\0\0\0',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0û@\0\0\0\0\0\‡ê@');
+INSERT INTO `calibration_params` VALUES (1,26,_binary '\0\0\0\0\0\0\0\0\0\0\0\0@{@\0\0\0\0\0Äã@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@Z@\0\0\0\0\0Äç@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0†{@\0\0\0\0\0@r@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0ÄQ@\0\0\0\0\0\0G@','Default',_binary '\0\0\0\0\0\0\0\0\0\0\0\0ô@\0\0\0\0\0»ã@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Ñú@\0\0\0\0\0†ç@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0,ô@\0\0\0\0\0@s@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0ù@\0\0\0\0\0\0I@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿o@\0\0\0\0\0¿_@',320000);
 /*!40000 ALTER TABLE `calibration_params` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,6 +73,61 @@ INSERT INTO `hibernate_sequence` VALUES (2);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `hit_point_hint`
+--
+
+DROP TABLE IF EXISTS `hit_point_hint`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hit_point_hint` (
+  `hit_point` int(11) DEFAULT NULL,
+  `position` geometry DEFAULT NULL,
+  `radius` double NOT NULL,
+  `individual_training_id` bigint(20) NOT NULL,
+  `inside_circles_offsets` geometry DEFAULT NULL,
+  PRIMARY KEY (`individual_training_id`),
+  CONSTRAINT `FKh82075ihbv49jc6lq2g71iesh` FOREIGN KEY (`individual_training_id`) REFERENCES `individual_training` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hit_point_hint`
+--
+
+LOCK TABLES `hit_point_hint` WRITE;
+/*!40000 ALTER TABLE `hit_point_hint` DISABLE KEYS */;
+INSERT INTO `hit_point_hint` VALUES (5,_binary '\0\0\0\0\0\0\0Åpè\ÿ?:ùNßS¨\„?',0.07874015748031496,1,NULL),(0,_binary '\0\0\0\0\0\0\0´\’jµ:\≈\“?sπ\\.\◊(\Á?',0.07874015748031496,2,NULL);
+/*!40000 ALTER TABLE `hit_point_hint` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `hit_power_hint`
+--
+
+DROP TABLE IF EXISTS `hit_power_hint`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hit_power_hint` (
+  `hit_power` double NOT NULL,
+  `position` geometry DEFAULT NULL,
+  `size` geometry DEFAULT NULL,
+  `individual_training_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`individual_training_id`),
+  CONSTRAINT `FKpm1tfw62hh2lfpd2s9o59olyj` FOREIGN KEY (`individual_training_id`) REFERENCES `individual_training` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hit_power_hint`
+--
+
+LOCK TABLES `hit_power_hint` WRITE;
+/*!40000 ALTER TABLE `hit_power_hint` DISABLE KEYS */;
+INSERT INTO `hit_power_hint` VALUES (60,_binary '\0\0\0\0\0\0\0kµZ≠ñÖ\–?\ÿ\ÎızΩ\\\‡?',_binary '\0\0\0\0\0\0\0\nÖB°P(î?M&ì\…d2\Ÿ?',1);
+/*!40000 ALTER TABLE `hit_power_hint` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `individual_training`
 --
 
@@ -94,9 +141,10 @@ CREATE TABLE `individual_training` (
   `pocket_id` int(11) NOT NULL,
   `rectangle_position` geometry DEFAULT NULL,
   `selected_ball_position` geometry DEFAULT NULL,
+  `status_position` geometry DEFAULT NULL,
   `white_ball_position` geometry DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,8 +153,35 @@ CREATE TABLE `individual_training` (
 
 LOCK TABLES `individual_training` WRITE;
 /*!40000 ALTER TABLE `individual_training` DISABLE KEYS */;
-INSERT INTO `individual_training` VALUES (6,0,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0I@\0\0\0\0\0\‡u@\0\0\0\0\0\0\0\0\0i@\0\0\0\0\0@@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0Y@\0\0\0\0\0\‡u@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0i@\0\0\0\0\0\0i@'),(7,0,NULL,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0êä@\0\0\0\0\0\0y@\0\0\0\0\0\0\0\00ë@\0\0\0\0\00Å@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0 å@\0\0\0\0\0\0y@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0êä@\0\0\0\0\0¿b@'),(8,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0∞ç@\0\0\0\0\0@o@',2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0∞ç@\0\0\0\0\0¿b@\0\0\0\0\0\0\0\0òí@\0\0\0\0\0\0y@',_binary '\0\0\0\0\0\0\0\0\0\0\0\00ë@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0pá@\0\0\0\0\0¿b@'),(9,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0¿r@\0\0\0\0\0\‡u@',5,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0Y@\0\0\0\0\0\0i@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0\0y@'),(10,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0òÑ@\0\0\0\0\0\‡u@',5,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿r@\0\0\0\0\0\0i@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0hê@\0\0\0\0\0@@'),(11,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0?\0\0\0\0\0\0?\0\0\0\0\0\0\0\0@o@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@Z@\0\0\0\0\0@o@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@o@\0\0\0\0\0\‡z@'),(12,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0†~@\0\0\0\0\0\0t@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0Äl@\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä|@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äk@\0\0\0\0\0\0t@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0¿á@\0\0\0\0\0\0y@'),(13,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`u@\0\0\0\0\0\0y@',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0\0y@\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0¿Ç@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äk@\0\0\0\0\0hÄ@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Ä@\0\0\0\0\0Ä\\@'),(14,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`u@\0\0\0\0\0\–q@',4,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä\\@\0\0\0\0\0\0\0\0HÉ@\0\0\0\0\0\–q@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Ä@\0\0\0\0\0`e@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0`e@\0\0\0\0\0\0y@'),(15,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\‡u@\0\0\0\0\0Äq@',5,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0y@\0\0\0\0\0Ä\\@\0\0\0\0\0\0\0\0òÉ@\0\0\0\0\0\–q@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0@Ä@\0\0\0\0\0†d@',_binary '\0\0\0\0\0\0\0\0\0\0\0\0Äf@\0\0\0\0\0`x@');
+INSERT INTO `individual_training` VALUES (1,1,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0a0ˆ	∂?ø\ﬂ\Ô˜Ù\Î?',5,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0á√°lä?I$â4<\‹?\0\0\0{Ω^ØG∏\«?Ø\◊\Îı\nı\Í?',_binary '\0\0\0\0\0\0\0\"ëH$\“-¢?\∆b±X¨S\Ï?',_binary '\0\0\0\0\0\0\0wª\›n˜¡ö?\ZçF£±rø?',_binary '\0\0\0\0\0\0\0M&ì\…4À¥?i4\Zçfô\Ê?'),(2,0,NULL,4,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0±X,K\Ì\⁄?,ã\≈Ú}\⁄?\0\0\0&ì\…dbÅ\‚?´\’jµ\“Ù\Ó?',_binary '\0\0\0\0\0\0\0sπ\\.\«8\ﬂ?ôL&ìiñ\È?',_binary '\0\0\0\0\0\0\0\Êrπ\\\Ó ë?\“h4\Z-˜∫?',_binary '\0\0\0\0\0\0\0y<èwà\ﬂ?.ó\À\Â\"\›\‚?'),(3,0,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0ø\ﬂ\Ô˜€™ò?kµZ≠\∆q\‚?\0\0\0Y,ã˜\œ\”?ß\”\Èt*ù\Ó?',_binary '\0\0\0\0\0\0\0,ã\≈2Õ≤?çF£\—(\◊\Ë?',_binary '\0\0\0\0\0\0\0W´\’jı√ò?\Ít:ùÆuº?',_binary '\0\0\0\0\0\0\0i4\Zçfô\∆?É¡`0\ÿ\'\ÿ?'),(4,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\–\ÁÛ˘¸\È?\Ã\Ârπ<\√\‹?',2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0õ\Õf≥ëä\Î?(\nÖ‚§Æ?\0\0\0õ\Õf≥!\¬\Ô?}>ü\œCK\‹?',_binary '\0\0\0\0\0\0\0õ\Õf≥I∂\Ì?´\’jµZ•\ ?',_binary '\0\0\0\0\0\0\0M&ì\…X¶?\"ëH$2Úø?',_binary '\0\0\0\0\0\0\0ÉÅ~\Â?U*ïJ•Z\Â?'),(5,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0c±X,\∆9\∆?É¡0\œ\–?\0\0\0´\’jµJµ\ ?C°P(\‘+\‘?\0\0\0°P(\Í\ ?á\√\·pòg\»?\0\0\0á\√Aæ¡?ß\”\Ètöe\ ?\0\0\0.ó\À\Â\"\›\¬?M&ì\…4\À\‘?',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0ì\…d2ô\ÌÖ?¸˝~øünà?\0\0\0\ﬁn∑\€-aæ?ã\≈bµ\Ÿ\Õ?',_binary '\0\0\0\0\0\0\0\ZçF£QÆ°?_Ø\◊\Î\Íµ?',_binary '\0\0\0\0\0\0\0©T*ï˙\–\‹?\nÖB\·0\»?',_binary '\0\0\0\0\0\0\0\"ëH$\‚\⁄?.ó\À\Â\"\›\‚?'),(6,2,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0\‘\Èt:ΩB\’?\‹\Ìvª=\¬\›?\0\0\0\∆b±Xúc\‡?Ω^Ø\◊\‰\À?\0\0\0c±X,\÷)\‚?Å@¿?\‡?\0\0\0ˆzΩ^ØP\œ?á\√\·pòg\»?',0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0W´\’jU1í?sπ\\.W0£?\0\0\0A \»?m6õ\ÕN@\◊?',_binary '\0\0\0\0\0\0\0ì\…d2\…6\—?\"ëH$\“-\“?',_binary '\0\0\0\0\0\0\0á\√[£?\ÏızΩ\Œu\Ï?',_binary '\0\0\0\0\0\0\0\Êrπ\\ûa\Í?\⁄l6õ]¢\›?'),(7,1,NULL,5,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0y<è◊Øì?G£\—h \‰?\0\0\0_Ø\◊\Î§\"\—?˜˚˝ö,\Ô?',_binary '\0\0\0\0\0\0\0o∑\€\Ì˘\∆?á\√\·pòg\Ë?',_binary '\0\0\0\0\0\0\0á\√\·PF\≈?˙|>üØtΩ?',_binary '\0\0\0\0\0\0\0ß\”\Ètäu\Ê? Ú\r\“?'),(8,1,NULL,0,_binary '\0\0\0\0\0\0\0\0\0\0\0\0\0âD\"\Á?[≠V´U1¢?\0\0\0\¬`0¨7\Ó?ã\≈b±\›\Ÿ?',_binary '\0\0\0\0\0\0\0Úx<\ﬂ \Î?âD\"\—.¡?',_binary '\0\0\0\0\0\0\0\“h4\ZçœÆ?\‚p8.ˆª?',_binary '\0\0\0\0\0\0\0©T*ïzÖ∫?\‡\Ô˜˚˝\ﬁ?');
 /*!40000 ALTER TABLE `individual_training` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `target_ball_hit_point_hint`
+--
+
+DROP TABLE IF EXISTS `target_ball_hit_point_hint`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `target_ball_hit_point_hint` (
+  `radius` double NOT NULL,
+  `target_ball` geometry DEFAULT NULL,
+  `white_ball` geometry DEFAULT NULL,
+  `individual_training_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`individual_training_id`),
+  CONSTRAINT `FKsaoga0ddd36ialyknfsqll3hk` FOREIGN KEY (`individual_training_id`) REFERENCES `individual_training` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `target_ball_hit_point_hint`
+--
+
+LOCK TABLES `target_ball_hit_point_hint` WRITE;
+/*!40000 ALTER TABLE `target_ball_hit_point_hint` DISABLE KEYS */;
+INSERT INTO `target_ball_hit_point_hint` VALUES (0.03937007874015748,_binary '\0\0\0\0\0\0\0¸˝~øø~\ÿ?ø\ﬂ\Ô˜˚\Ï?',_binary '\0\0\0\0\0\0\0á\√¡ˇ\ÿ?ø\ﬂ\Ô˜˚\Ï?',1);
+/*!40000 ALTER TABLE `target_ball_hit_point_hint` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -118,4 +193,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-23 10:30:35
+-- Dump completed on 2019-08-30 12:46:35
