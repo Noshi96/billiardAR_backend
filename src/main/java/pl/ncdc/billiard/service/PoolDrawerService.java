@@ -72,7 +72,7 @@ public class PoolDrawerService {
 	
 	int textXD = 30;
 	
-	int ballRadius = 15;
+	int ballRadius = 20;
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
 	int trainingDotRadius = 3;
