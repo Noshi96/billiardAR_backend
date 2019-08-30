@@ -83,25 +83,6 @@ public class BilliardTable {
 //         //this.setSelectedPocket(this.pockets.get(5));
 //     }
 
-
-
-
-	public int getSelectedViewMode() {
-		return selectedViewMode;
-	}
-
-	public void setSelectedViewMode(int selectedViewMode) {
-		this.selectedViewMode = selectedViewMode;
-	}
-
-	public int getSelectedChallenge() {
-		return selectedChallenge;
-	}
-
-	public void setSelectedChallenge(int selectedChallenge) {
-		this.selectedChallenge = selectedChallenge;
-	}
-
 	/**
 	 * Search in Ball collection and try to find correct match
 	 * 
