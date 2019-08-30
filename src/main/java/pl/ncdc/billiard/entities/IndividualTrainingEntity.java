@@ -29,10 +29,10 @@ public class IndividualTrainingEntity {
     private MultiPoint rectanglePosition;
     private int pocketId;
     private Point statusPosition;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
     private HitPointHintEntity hitPointHint;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
     private HitPowerHintEntity hitPowerHint;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
     private TargetBallHitPointHintEntity targetBallHitPointHint;
 }
