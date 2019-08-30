@@ -183,7 +183,11 @@ public class PoolDrawerService {
 		drawWhiteBall(mat, table.getWhiteBall());
 		drawSelected(mat, table.getSelectedBall(), table.getSelectedPocket());
 		drawPockets(mat, table.getPockets());
+		
+		System.out.println("White ball pos: " + table.getWhiteBall().getPoint());
+		System.out.println("Selected ball pos: " + table.getSelectedBall().getPoint());
 
+		
 		if((table.getSelectedBall() != null) && (table.getSelectedPocket() != null)){
 			//drawTrajectory();
 			//System.out.println("elo");
@@ -358,7 +362,8 @@ public class PoolDrawerService {
 	
 	
 	public void drawTrajectory(Mat mat, BilliardTable table, List<Point> hitPoints){
-		if( hitPoints.size() == 1 && hitPoints != null){
+		if(hitPoints != null) {
+		if( hitPoints.size() == 1 ){
 			// jeden punkt oznacza, ze jest prosta droga do luzy
 			List<MatOfPoint> listOfPoints = new ArrayList();
 			
@@ -402,6 +407,7 @@ public class PoolDrawerService {
 				trajectoryLineThickness
 			);
 	    }
+		}
 	}
 	
 	public void drawHiddenPlaces(Mat mat, BilliardTable table, List<Point> hiddenPointsList){
@@ -529,8 +535,9 @@ public class PoolDrawerService {
 			
 			//Point rotationPoint = rotationService.newPointForFollowRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
 			Point rotationPoint = rotationService.fixedFollowRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
-			drawRotationFollow(mat, table,  rotationPoint, hitPoints, hitPoints.get(0));
-			
+			if (rotationPoint != null) {
+				drawRotationFollow(mat, table,  rotationPoint, hitPoints, hitPoints.get(0));
+			}
 
 			
 			//System.out.println("hit points: " + hitPoints);
@@ -561,8 +568,9 @@ public class PoolDrawerService {
 					table.getBalls(), idPocket);
 			
 			Point rotationZeroPoint = rotationService.whiteBallZeroRotation(white.getPoint(), selected.getPoint(), pocket.getPoint(), table.getBalls(), idPocket);
+			if (rotationZeroPoint != null) {
 			drawRotationZero(mat, table,  rotationZeroPoint, hitPoints, hitPoints.get(0));
-						
+			}
 			//System.out.println("hit points: " + hitPoints);	
 		} else {
 			

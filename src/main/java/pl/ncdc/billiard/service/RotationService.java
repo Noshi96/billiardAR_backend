@@ -80,6 +80,7 @@ public class RotationService {
 
 	public Point whiteBallZeroRotation(Point white, Point selected, Point pocket, List<Ball> listBall, int idPocket) {
 		List<Point> listPoint = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket);
+		if (listPoint != null) {
 		Point targetPoint = listPoint.get(0);
 
 		if(listPoint.size() == 1) {
@@ -121,6 +122,7 @@ public class RotationService {
 
 				return secondOption;
 			}
+		}
 		}
 		}
 
@@ -290,6 +292,8 @@ public class RotationService {
     	
     	List<Point> listOfHittingPoints = hitService.findHittingPoint(white, selected, pocket, listBall, idPocket);
     	
+    	if(listOfHittingPoints != null) {
+    	
     	if (listOfHittingPoints.size() == 2 || listOfHittingPoints.size() == 0 ) {
     		return null;
     	}
@@ -428,7 +432,8 @@ public class RotationService {
 
 		        return null;
 
-		}
+			}
+    	}
 		return null;
     }
 

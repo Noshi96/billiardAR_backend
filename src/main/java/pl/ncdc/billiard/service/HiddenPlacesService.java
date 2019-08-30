@@ -3,22 +3,26 @@ package pl.ncdc.billiard.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
 
 @Service
 public class HiddenPlacesService {
-	public double diameter = 20; // do zmiany
 	
+	@Autowired
+	private BilliardTable table;
+
 	@Autowired
 	MathService mathService;
 	
 	public List<Point> showHiddenPlaces(Point white, List<Ball> listBall) {
 		List<Point> hiddenPointsList = new ArrayList<Point>();
-		double radius = 18;
 
 		// petla
 		for (int i = 0; i < listBall.size(); i++) {
@@ -41,19 +45,19 @@ public class HiddenPlacesService {
 			Point ballPosShift = new Point();
 			Point ballNegShift = new Point();
 
-			double whitePosShiftVar = white.x + radius * Math.sqrt((1 / (1 +  Math.pow(aWhite,2))));
+			double whitePosShiftVar = white.x + table.getBallRadius() * Math.sqrt((1 / (1 +  Math.pow(aWhite,2))));
 			whitePosShift.x = whitePosShiftVar;
 			whitePosShift.y = aWhite * whitePosShiftVar + bWhite;
 
-			double whiteNegShiftVar = white.x - radius * Math.sqrt((1 / (1 + Math.pow(aWhite,2))));
+			double whiteNegShiftVar = white.x - table.getBallRadius() * Math.sqrt((1 / (1 + Math.pow(aWhite,2))));
 			whiteNegShift.x = whiteNegShiftVar;
 			whiteNegShift.y = aWhite * whiteNegShiftVar + bWhite;
 
-			double ballPosShiftVar = ballPoint.x + radius * Math.sqrt((1 / (1 + Math.pow(aBall,2))));
+			double ballPosShiftVar = ballPoint.x + table.getBallRadius() * Math.sqrt((1 / (1 + Math.pow(aBall,2))));
 			ballPosShift.x = ballPosShiftVar;
 			ballPosShift.y = aBall * ballPosShiftVar + bBall;
 
-			double ballNegShiftVar = ballPoint.x - radius * Math.sqrt((1 / (1 +  Math.pow(aBall,2))));
+			double ballNegShiftVar = ballPoint.x - table.getBallRadius() * Math.sqrt((1 / (1 +  Math.pow(aBall,2))));
 			ballNegShift.x = ballNegShiftVar;
 			ballNegShift.y = aBall * ballNegShiftVar + bBall;
 
@@ -63,8 +67,8 @@ public class HiddenPlacesService {
 			double dx = (ballNegShift.x - whitePosShift.x) / lengthFirst;
 			double dy = (ballNegShift.y - whitePosShift.y) / lengthFirst;
 
-			double x = whitePosShift.x + ((diameter * 100 + lengthFirst) * dx);
-			double y = whitePosShift.y + ((diameter * 100 + lengthFirst) * dy);
+			double x = whitePosShift.x + ((table.getBallRadius() * 2 * 100 + lengthFirst) * dx);
+			double y = whitePosShift.y + ((table.getBallRadius() * 2 * 100 + lengthFirst) * dy);
 
 			Point pointTargetFirst = new Point();
 			pointTargetFirst.x = x;
@@ -76,8 +80,8 @@ public class HiddenPlacesService {
 			double dxSec = (ballPosShift.x - whiteNegShift.x) / lengthSecond;
 			double dySec = (ballPosShift.y - whiteNegShift.y) / lengthSecond;
 
-			double xSec = whiteNegShift.x + ((diameter * 100 + lengthSecond) * dxSec);
-			double ySec = whiteNegShift.y + ((diameter * 100 + lengthSecond) * dySec);
+			double xSec = whiteNegShift.x + ((table.getBallRadius() * 2 * 100 + lengthSecond) * dxSec);
+			double ySec = whiteNegShift.y + ((table.getBallRadius() * 2 * 100 + lengthSecond) * dySec);
 
 			Point pointTargetSecond = new Point();
 			pointTargetSecond.x = xSec;
