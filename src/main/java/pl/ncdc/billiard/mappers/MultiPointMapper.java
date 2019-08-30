@@ -3,6 +3,7 @@ package pl.ncdc.billiard.mappers;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
+import org.mapstruct.Context;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.opencv.core.Point;
@@ -39,4 +40,6 @@ public abstract class MultiPointMapper {
         }
         return geometryFactory.createMultiPoint(coordinates);
     }
+
+    public abstract List<Point> toPixel(List<Point> points, @Context Point viewport);
 }

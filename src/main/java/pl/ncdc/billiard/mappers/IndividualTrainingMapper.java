@@ -22,10 +22,4 @@ public interface IndividualTrainingMapper {
 
 
     IndividualTraining toInPixelModel(IndividualTraining individualTraining, @Context Point viewport);
-
-    default Point toPixel(Point point, @Context Point viewport) {
-        return new Point(point.x * viewport.x, point.y * viewport.y);
-    }
-
-    List<Point> toPixel(List<Point> points, @Context Point viewPoint);
 }

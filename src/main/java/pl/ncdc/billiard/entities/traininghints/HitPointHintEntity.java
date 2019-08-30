@@ -1,5 +1,6 @@
 package pl.ncdc.billiard.entities.traininghints;
 
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +26,5 @@ public class HitPointHintEntity {
     private Point position;
     private double radius;
     private HitPoint hitPoint;
-
+    private MultiPoint insideCirclesOffsets;
 }

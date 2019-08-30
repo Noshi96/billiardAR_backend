@@ -1,9 +1,7 @@
 package pl.ncdc.billiard.mappers;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
+import org.opencv.core.Point;
 import pl.ncdc.billiard.entities.traininghints.HitPowerHintEntity;
 import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
 
@@ -19,4 +17,6 @@ public interface HitPowerHintMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "individualTraining", ignore = true)
     HitPowerHintEntity updateEntity(HitPowerHint hitPowerHint, @MappingTarget HitPowerHintEntity entity);
+
+    HitPowerHint toInPixelModel(HitPowerHint hitPowerHint, @Context Point viewport);
 }

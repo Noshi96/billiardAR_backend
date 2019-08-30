@@ -1,5 +1,6 @@
 package pl.ncdc.billiard.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class IndividualTrainingService {
 
 
@@ -67,6 +69,10 @@ public class IndividualTrainingService {
 			individualTrainingEntity.setId(null);
 		} else {
 			individualTrainingMapper.updateEntityFromModel(individualTraining, individualTrainingEntity);
+		}
+
+		if(individualTraining.getHitPointHint() != null) {
+			individualTraining.getHitPointHint().recalculateInsideCirclesOffsets();
 		}
 
 		HitPointHintEntity hitPointHintEntity = individualTrainingEntity.getHitPointHint();
