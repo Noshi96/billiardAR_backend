@@ -1,7 +1,7 @@
 package pl.ncdc.billiard.service;
 
 import lombok.Getter;
-import lombok.Setter;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class IndividualTrainingGameModeService {
     private StopWatch stopWatch = new StopWatch();
 
     private double waitingForBallsPlacementDelay = 2.0;
-    private double ballsStopMovingDelay = 5.0;
+    private double ballsStopMovingDelay = 2.0;
     private double afterEndDelay = 5.0;
 
     @Autowired
@@ -63,21 +63,23 @@ public class IndividualTrainingGameModeService {
                 state = State.WaitingForBallsStop;
             }
         } else if(state == State.WaitingForBallsStop) {
-            if(doesBallsStopMoving() && stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
-                if(isAllWinningConditionMeet()) {
-                    state = State.Success;
-                } else {
-                    state = State.Fail;
-                }
-                stopWatch.reset();
-                stopWatch.start();
+            if(doesBallsStopMoving()) {
+            	if(stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
+	                if(isAllWinningConditionMeet()) {
+	                    state = State.Success;
+	                } else {
+	                    state = State.Fail;
+	                }
+	                stopWatch.reset();
+	                stopWatch.start();
+            	}
             } else {
                 stopWatch.reset();
                 stopWatch.start();
             }
         } else if(state == State.Success || state == State.Fail) {
             if(stopWatch.getTime(TimeUnit.SECONDS) > afterEndDelay) {
-                setIndividualTraining(null);
+            	state = State.WaitingForBallsPlacement;
             }
         }
 
@@ -85,6 +87,9 @@ public class IndividualTrainingGameModeService {
             lastFrameBallsPositions = new ArrayList<>();
         } else {
             lastFrameBallsPositions = billiardTable.getBalls().stream().map(ball -> new Point(ball.getPoint().x, ball.getPoint().y)).collect(Collectors.toList());
+            if(billiardTable.getWhiteBall() != null) {
+            	lastFrameBallsPositions.add(billiardTable.getWhiteBall().getPoint());
+            }
         }
 
         simpMessagingTemplate.convertAndSend("/individualTraining/state", state);
@@ -96,14 +101,14 @@ public class IndividualTrainingGameModeService {
     }
 
     private boolean isAllBallsPlacedCorrectly() {
-        int whiteAndTargetBallCount = 2;
+        int targetBallCount = 1;
         int ballsCount = 0;
 
         if(billiardTable.getBalls() != null) {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() + whiteAndTargetBallCount != ballsCount) {
+        if(individualTraining.getDisturbBallsPositions().size() + targetBallCount != ballsCount) {
             return false;
         }
 
@@ -123,18 +128,20 @@ public class IndividualTrainingGameModeService {
     }
 
     private boolean doesBallsStopMoving() {
-        return lastFrameBallsPositions.stream().allMatch(this::isSomethingOnPoint);
+        if(lastFrameBallsPositions.stream().allMatch(this::isSomethingOnPoint)) {
+        	return true;
+        }
+        return false;
     }
 
     private boolean isAllWinningConditionMeet() {
-        int whiteBallCount = 1;
         int ballsCount = 0;
 
         if(billiardTable.getBalls() != null) {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() + whiteBallCount != ballsCount) {
+        if(individualTraining.getDisturbBallsPositions().size() != ballsCount) {
            return false;
         }
 
@@ -170,6 +177,12 @@ public class IndividualTrainingGameModeService {
     private boolean isSomethingOnPoint(Point point) {
         if(billiardTable.getBalls() == null) {
             return false;
+        }
+        
+        if(billiardTable.getWhiteBall() != null) {
+        	if(distance(point, billiardTable.getWhiteBall().getPoint()) < getBallPositionTolerance()) {
+        		return true;
+        	}
         }
 
         return billiardTable.getBalls()
