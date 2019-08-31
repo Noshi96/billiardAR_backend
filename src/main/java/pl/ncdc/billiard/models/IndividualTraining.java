@@ -14,6 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IndividualTraining {
+    public static int PREVIEW_WIDTH = 1168; // taken from calibration
+    public static int PREVIEW_HEIGHT = 584;
+
     private Long id;
     private DifficultyLevel difficultyLevel;
     private Point whiteBallPosition;
@@ -25,4 +28,5 @@ public class IndividualTraining {
     private HitPointHint hitPointHint;
     private HitPowerHint hitPowerHint;
     private TargetBallHitPointHint targetBallHitPointHint;
+    private byte[] imagePreview;
 }

@@ -35,4 +35,6 @@ public class IndividualTrainingEntity {
     private HitPowerHintEntity hitPowerHint;
     @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
     private TargetBallHitPointHintEntity targetBallHitPointHint;
+    @Lob
+    private byte[] imagePreview;
 }
