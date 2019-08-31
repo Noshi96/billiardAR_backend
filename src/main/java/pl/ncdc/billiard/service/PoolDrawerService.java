@@ -362,7 +362,6 @@ public class PoolDrawerService {
                     new Scalar(255, 255, 255), ballLineThickness);
 
 	        int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
-	        hitPointHint.recalculateInsideCirclesOffsets();
 
             List<Point> insideCirclesOffsets = hitPointHint.getInsideCirclesOffsets();
             for (int i = 0; i < insideCirclesOffsets.size(); i++) {

@@ -64,6 +64,10 @@ public class IndividualTrainingService {
 	public IndividualTraining saveIndividualTraining(IndividualTraining individualTraining) {
 		IndividualTrainingEntity individualTrainingEntity = getEntityById(individualTraining.getId());
 
+		if(individualTraining.getHitPointHint() != null) {
+			individualTraining.getHitPointHint().recalculateInsideCirclesOffsets();
+		}
+
 		if(individualTrainingEntity == null) {
 			individualTrainingEntity = individualTrainingMapper.toEntity(individualTraining);
 			individualTrainingEntity.setId(null);
@@ -71,9 +75,6 @@ public class IndividualTrainingService {
 			individualTrainingMapper.updateEntityFromModel(individualTraining, individualTrainingEntity);
 		}
 
-		if(individualTraining.getHitPointHint() != null) {
-			individualTraining.getHitPointHint().recalculateInsideCirclesOffsets();
-		}
 
 		HitPointHintEntity hitPointHintEntity = individualTrainingEntity.getHitPointHint();
 		HitPowerHintEntity hitPowerHintEntity = individualTrainingEntity.getHitPowerHint();
