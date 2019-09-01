@@ -2,8 +2,8 @@ package pl.ncdc.billiard.mappers;
 
 import org.mapstruct.*;
 import org.opencv.core.Point;
-import pl.ncdc.billiard.entities.traininghints.HitPointHintEntity;
-import pl.ncdc.billiard.models.trainingHints.HitPointHint;
+import pl.ncdc.billiard.entities.training.HitPointHintEntity;
+import pl.ncdc.billiard.models.training.HitPointHint;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ public interface HitPointHintMapper {
     HitPointHint toModel(HitPointHintEntity hitPointHintEntity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "individualTraining", ignore = true)
+    @Mapping(target = "trainingEntity", ignore = true)
     HitPointHintEntity toEntity(HitPointHint hitPointHint);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "individualTraining", ignore = true)
+    @Mapping(target = "trainingEntity", ignore = true)
     HitPointHintEntity updateEntity(HitPointHint hitPointHint, @MappingTarget HitPointHintEntity entity);
 
     @Mapping(target = "radius", qualifiedByName = "doubleToPixel")

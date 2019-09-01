@@ -1,11 +1,10 @@
-package pl.ncdc.billiard.entities.traininghints;
+package pl.ncdc.billiard.entities.training;
 
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 
 import javax.persistence.*;
 
@@ -21,7 +20,7 @@ public class HitPowerHintEntity {
     @OneToOne
     @MapsId
     @ToString.Exclude
-    private IndividualTrainingEntity individualTraining;
+    private TrainingEntity trainingEntity;
 
     private Point position;
     private Point size;

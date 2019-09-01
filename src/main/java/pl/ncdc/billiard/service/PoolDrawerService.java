@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.models.*;
-import pl.ncdc.billiard.models.trainingHints.HitPointHint;
-import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
-import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
+import pl.ncdc.billiard.models.training.HitPointHint;
+import pl.ncdc.billiard.models.training.HitPowerHint;
+import pl.ncdc.billiard.models.training.Training;
+import pl.ncdc.billiard.models.training.TargetBallHitPointHint;
+import pl.ncdc.billiard.service.training.TrainingModeService;
+import pl.ncdc.billiard.service.training.TrainingService;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -28,10 +31,10 @@ public class PoolDrawerService {
 	HiddenPlacesService hiddenPlacesService;
 	
 	@Autowired
-	IndividualTrainingService individualTrainingService;
+	TrainingService trainingService;
 	
 	@Autowired
-	IndividualTrainingGameModeService individualTrainingGameModeService;
+	TrainingModeService trainingModeService;
 	
 	@Autowired
 	RotationService rotationService;
@@ -115,7 +118,7 @@ public class PoolDrawerService {
 			}
 		}
 		else{
-			drawTraining(poolPlayZoneMat, individualTrainingService.getInPixelById(((long) table.getSelectedChallenge())), table.getPockets());
+			drawTraining(poolPlayZoneMat, trainingService.getInPixelById(((long) table.getSelectedChallenge())), table.getPockets());
 			// tryb challenge'u zostal wybrany.
 			// this.fetchTrainingById(table.selectedChallenge);
 		}
@@ -225,8 +228,8 @@ public class PoolDrawerService {
 	}
 	
 	
-	public void drawTraining(Mat mat, IndividualTraining individualTraining, List<Pocket> pockets){
-		if (individualTraining == null) {
+	public void drawTraining(Mat mat, Training training, List<Pocket> pockets){
+		if (training == null) {
 			return;
 		}
 
@@ -234,7 +237,7 @@ public class PoolDrawerService {
 		// nieco wiekszy, bialy okrag wokol bialej bili
 		Imgproc.circle (
 			mat,
-			individualTraining.getWhiteBallPosition(),
+			training.getWhiteBallPosition(),
 			trainingBallRadius + 3,
 			new Scalar(255, 255, 255),
 			ballLineThickness
@@ -243,10 +246,10 @@ public class PoolDrawerService {
 		
 	    // rysowanie punktu ustawienia bili do wbicia
 		// pomaranczowy okrag wokol bili do wbicia
-		drawTrainingBall(mat, individualTraining.getSelectedBallPosition(), new Scalar(100, 200, 255));
+		drawTrainingBall(mat, training.getSelectedBallPosition(), new Scalar(100, 200, 255));
 		
 		// rysowanie przeszkadzajek
-		for ( Point disturbBallPosition: individualTraining.getDisturbBallsPositions() ) {
+		for ( Point disturbBallPosition: training.getDisturbBallsPositions() ) {
 			// czerwony okrag wokol przeszkadzajki
 			drawTrainingBall(mat, disturbBallPosition, new Scalar(230, 180, 130));
 			
@@ -256,25 +259,25 @@ public class PoolDrawerService {
 		// obramowanie obszaru rysowania
 	    Imgproc.rectangle (
 			mat,
-			individualTraining.getRectanglePosition().get(0),
-			individualTraining.getRectanglePosition().get(1),
+			training.getRectanglePosition().get(0),
+			training.getRectanglePosition().get(1),
 		    new Scalar(255, 255, 255),
 		    trainingRectangleThickness
 	    );
 
 		String statusText = "";
-	    if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Ready) {
+	    if (trainingModeService.getState() == TrainingModeService.State.Ready) {
 	        statusText = "READY";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Fail) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.Fail) {
             statusText = "FAILED";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Success) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.Success) {
             statusText = "SUCCESS";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsPlacement) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.WaitingForBallsPlacement) {
             statusText = "WaitingForBallsPlacement";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsStop) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.WaitingForBallsStop) {
             statusText = "WaitingForBallsStop";
 	    }
-	    Point statusPosition = individualTraining.getStatusPosition();
+	    Point statusPosition = training.getStatusPosition();
 	    if(statusPosition == null) {
 	        statusPosition = new Point(300, 300);
         }
@@ -282,7 +285,7 @@ public class PoolDrawerService {
 
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
-		Pocket pocket = pockets.get(individualTraining.getPocketId());
+		Pocket pocket = pockets.get(training.getPocketId());
 		if ( pocket != null) {
 	    	// jakis pocket zostal wyrbany
 			Imgproc.circle (
@@ -295,9 +298,9 @@ public class PoolDrawerService {
 	    }
 
 	    // tymczasowe rysowanie podpowiedzi
-		drawHitPointHint(mat, individualTraining.getHitPointHint());
-		drawHitPowerHint(mat, individualTraining.getHitPowerHint());
-		drawTargetBallHitPointHint(mat, individualTraining.getTargetBallHitPointHint());
+		drawHitPointHint(mat, training.getHitPointHint());
+		drawHitPowerHint(mat, training.getHitPowerHint());
+		drawTargetBallHitPointHint(mat, training.getTargetBallHitPointHint());
 	}
 
 	private void drawHitPointHint(Mat mat, HitPointHint hitPointHint) {

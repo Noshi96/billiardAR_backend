@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.service;
+package pl.ncdc.billiard.service.training;
 
 import lombok.Getter;
 
@@ -9,7 +9,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.models.BilliardTable;
-import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.models.training.Training;
+import pl.ncdc.billiard.service.CalibrationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class IndividualTrainingGameModeService {
+public class TrainingModeService {
 
     private final CalibrationService calibrationService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Getter
-    private IndividualTraining individualTraining;
+    private Training training;
     private final BilliardTable billiardTable;
     private List<Point> lastFrameBallsPositions;
     @Getter
@@ -36,7 +37,7 @@ public class IndividualTrainingGameModeService {
     private double afterEndDelay = 5.0;
 
     @Autowired
-    public IndividualTrainingGameModeService(CalibrationService calibrationService, SimpMessagingTemplate simpMessagingTemplate, BilliardTable billiardTable) {
+    public TrainingModeService(CalibrationService calibrationService, SimpMessagingTemplate simpMessagingTemplate, BilliardTable billiardTable) {
         this.calibrationService = calibrationService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.billiardTable = billiardTable;
@@ -44,7 +45,7 @@ public class IndividualTrainingGameModeService {
 
     @Scheduled(fixedRate = 400)
     public void update() {
-        if(individualTraining == null){
+        if(training == null){
             return;
         }
 
@@ -92,11 +93,11 @@ public class IndividualTrainingGameModeService {
             }
         }
 
-        simpMessagingTemplate.convertAndSend("/individualTraining/state", state);
+        simpMessagingTemplate.convertAndSend("/training/state", state);
     }
 
-    public void setIndividualTraining(IndividualTraining individualTraining) {
-        this.individualTraining = individualTraining;
+    public void setTraining(Training training) {
+        this.training = training;
         state = State.WaitingForBallsPlacement;
     }
 
@@ -108,19 +109,19 @@ public class IndividualTrainingGameModeService {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() + targetBallCount != ballsCount) {
+        if(training.getDisturbBallsPositions().size() + targetBallCount != ballsCount) {
             return false;
         }
 
-        if(billiardTable.getWhiteBall() == null || individualTraining.getWhiteBallPosition() == null) {
+        if(billiardTable.getWhiteBall() == null || training.getWhiteBallPosition() == null) {
             return false;
         }
 
-        if(distance(billiardTable.getWhiteBall().getPoint(), individualTraining.getWhiteBallPosition()) > getBallPositionTolerance()) {
+        if(distance(billiardTable.getWhiteBall().getPoint(), training.getWhiteBallPosition()) > getBallPositionTolerance()) {
             return false;
         }
 
-        if(!individualTraining.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
+        if(!training.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
             return false;
         }
 
@@ -141,11 +142,11 @@ public class IndividualTrainingGameModeService {
             ballsCount = billiardTable.getBalls().size();
         }
 
-        if(individualTraining.getDisturbBallsPositions().size() != ballsCount) {
+        if(training.getDisturbBallsPositions().size() != ballsCount) {
            return false;
         }
 
-        if(!individualTraining.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
+        if(!training.getDisturbBallsPositions().stream().allMatch(this::isSomethingOnPoint)) {
             return false;
         }
 
@@ -161,7 +162,7 @@ public class IndividualTrainingGameModeService {
             return false;
         }
 
-        List<Point> rectanglePosition = individualTraining.getRectanglePosition();
+        List<Point> rectanglePosition = training.getRectanglePosition();
         Point min = rectanglePosition.get(0);
         Point max = rectanglePosition.get(1);
         Point whiteBall = billiardTable.getWhiteBall().getPoint();

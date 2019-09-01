@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.models;
+package pl.ncdc.billiard.models.training;
 
 public enum DifficultyLevel {
     Easy,
