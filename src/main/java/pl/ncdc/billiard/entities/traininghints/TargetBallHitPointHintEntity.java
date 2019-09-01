@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class TargetBallHitPointHintEntity {
 
     @OneToOne
     @MapsId
+    @ToString.Exclude
     private IndividualTrainingEntity individualTraining;
 
     private Point whiteBall;

@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 import pl.ncdc.billiard.models.trainingHints.HitPoint;
 
@@ -21,6 +22,7 @@ public class HitPointHintEntity {
 
     @OneToOne
     @MapsId
+    @ToString.Exclude
     private IndividualTrainingEntity individualTraining;
 
     private Point position;
