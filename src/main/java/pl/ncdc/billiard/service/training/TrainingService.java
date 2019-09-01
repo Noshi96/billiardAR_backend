@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import pl.ncdc.billiard.entities.training.TrainingEntity;
 import pl.ncdc.billiard.entities.training.HitPointHintEntity;
 import pl.ncdc.billiard.entities.training.HitPowerHintEntity;
 import pl.ncdc.billiard.entities.training.TargetBallHitPointHintEntity;
+import pl.ncdc.billiard.entities.training.TrainingEntity;
 import pl.ncdc.billiard.mappers.TrainingMapper;
 import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.models.training.DifficultyLevel;
 import pl.ncdc.billiard.models.training.Training;
-import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.repository.TrainingRepository;
 import pl.ncdc.billiard.service.PoolDrawerService;
 
@@ -27,7 +27,6 @@ import java.util.Optional;
 
 @Service
 public class TrainingService {
-
 
     private final TrainingRepository trainingRepository;
 	private final TrainingMapper trainingMapper;
@@ -54,6 +53,43 @@ public class TrainingService {
 		}
 
 		return trainingMapper.toModel(trainingEntity);
+	}
+
+	public Training getNextById(Long id) {
+		Training training = getById(id);
+		Optional<TrainingEntity> optionalTrainingEntity = trainingRepository.findFirstByDifficultyLevelAndIdAfter(training.getDifficultyLevel(), id);
+		if(optionalTrainingEntity.isPresent()) {
+			return trainingMapper.toModel(optionalTrainingEntity.get());
+		}
+
+		optionalTrainingEntity = trainingRepository.findFirstByDifficultyLevel(training.getDifficultyLevel());
+		if(optionalTrainingEntity.isPresent()) {
+			return trainingMapper.toModel(optionalTrainingEntity.get());
+		}
+
+		return null;
+	}
+
+	public Training getRandom() {
+		long count = trainingRepository.count();
+		int randomIndex = (int) (Math.random() * count);
+		Page<TrainingEntity> trainingEntityPage = trainingRepository.findAll(PageRequest.of(randomIndex, 1));
+		if(trainingEntityPage.hasContent()) {
+			return trainingMapper.toModel(trainingEntityPage.getContent().get(0));
+		}
+
+		return null;
+	}
+
+	public Training getRandomByDifficultyLevel(DifficultyLevel difficultyLevel) {
+		long count = trainingRepository.countAllByDifficultyLevel(difficultyLevel);
+		int randomIndex = (int) (Math.random() * count);
+		Page<TrainingEntity> trainingEntityPage = trainingRepository.findByDifficultyLevel(difficultyLevel, PageRequest.of(randomIndex, 1));
+		if(trainingEntityPage.hasContent()) {
+			return trainingMapper.toModel(trainingEntityPage.getContent().get(0));
+		}
+
+		return null;
 	}
 
 	public Training getInPixelById(Long id) {

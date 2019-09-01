@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 
+import pl.ncdc.billiard.entities.training.TrainingModeParams;
 import pl.ncdc.billiard.models.training.DifficultyLevel;
 import pl.ncdc.billiard.models.training.Training;
 import pl.ncdc.billiard.service.BilliardTableService;
+import pl.ncdc.billiard.service.training.TrainingModeParamsService;
 import pl.ncdc.billiard.service.training.TrainingModeService;
 import pl.ncdc.billiard.service.training.TrainingService;
 
@@ -25,11 +27,13 @@ public class TrainingController {
     private final BilliardTableService tableService;
     private final TrainingService trainingService;
 	private final TrainingModeService trainingModeService;
+	private final TrainingModeParamsService trainingModeParamsService;
 
-    public TrainingController(BilliardTableService tableService, TrainingService trainingService, TrainingModeService trainingModeService) {
+    public TrainingController(BilliardTableService tableService, TrainingService trainingService, TrainingModeService trainingModeService, TrainingModeParamsService trainingModeParamsService) {
         this.tableService = tableService;
         this.trainingService = trainingService;
 		this.trainingModeService = trainingModeService;
+		this.trainingModeParamsService = trainingModeParamsService;
 	}
 
 	@GetMapping("/getById/{id}")
@@ -82,5 +86,15 @@ public class TrainingController {
 	@DeleteMapping("/delete/{id}")
 	public Training delete(@PathVariable Long id) {
 		return trainingService.deleteById(id);
+	}
+
+	@GetMapping("/params/get")
+	public TrainingModeParams getTrainingModeParams() {
+    	return trainingModeParamsService.getTrainingModeParams();
+	}
+
+	@PutMapping("/params/update")
+	public TrainingModeParams updateTrainingModeParams(@RequestBody TrainingModeParams trainingModeParams) {
+    	return trainingModeParamsService.save(trainingModeParams);
 	}
 }

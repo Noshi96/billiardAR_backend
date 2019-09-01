@@ -2,12 +2,15 @@ package pl.ncdc.billiard.service.training;
 
 import lombok.Getter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import pl.ncdc.billiard.entities.training.TrainingModeParams;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.training.Training;
 import pl.ncdc.billiard.service.CalibrationService;
@@ -18,34 +21,33 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class TrainingModeService {
+public class TrainingModeService implements ApplicationListener<TrainingModeParamsService.TrainingModeParamsUpdatedEvent> {
 
     private final CalibrationService calibrationService;
+    private final TrainingService trainingService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final BilliardTable billiardTable;
 
     @Getter
     private Training training;
-    private final BilliardTable billiardTable;
-    private List<Point> lastFrameBallsPositions;
     @Getter
     private State state;
+    private TrainingModeParams trainingModeParams;
 
+    private List<Point> lastFrameBallsPositions;
     private StopWatch stopWatch = new StopWatch();
 
-    private double waitingForBallsPlacementDelay = 2.0;
-    private double ballsStopMovingDelay = 2.0;
-    private double afterEndDelay = 5.0;
-
     @Autowired
-    public TrainingModeService(CalibrationService calibrationService, SimpMessagingTemplate simpMessagingTemplate, BilliardTable billiardTable) {
+    public TrainingModeService(CalibrationService calibrationService, TrainingService trainingService, SimpMessagingTemplate simpMessagingTemplate, BilliardTable billiardTable) {
         this.calibrationService = calibrationService;
+        this.trainingService = trainingService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.billiardTable = billiardTable;
     }
 
     @Scheduled(fixedRate = 400)
     public void update() {
-        if(training == null){
+        if(training == null || trainingModeParams == null){
             return;
         }
 
@@ -55,7 +57,7 @@ public class TrainingModeService {
                 stopWatch.start();
             }
 
-            if(stopWatch.getTime(TimeUnit.SECONDS) > waitingForBallsPlacementDelay) {
+            if(stopWatch.getTime(TimeUnit.SECONDS) > trainingModeParams.getWaitingForBallsPlacementDelay()) {
                 stopWatch.reset();
                 state = State.Ready;
             }
@@ -65,7 +67,7 @@ public class TrainingModeService {
             }
         } else if(state == State.WaitingForBallsStop) {
             if(doesBallsStopMoving()) {
-            	if(stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
+            	if(stopWatch.getTime(TimeUnit.SECONDS) > trainingModeParams.getBallsStopMovingDelay()) {
 	                if(isAllWinningConditionMeet()) {
 	                    state = State.Success;
 	                } else {
@@ -79,8 +81,12 @@ public class TrainingModeService {
                 stopWatch.start();
             }
         } else if(state == State.Success || state == State.Fail) {
-            if(stopWatch.getTime(TimeUnit.SECONDS) > afterEndDelay) {
-            	state = State.WaitingForBallsPlacement;
+            if(stopWatch.getTime(TimeUnit.SECONDS) > trainingModeParams.getAfterEndDelay()) {
+                if(state == State.Success) {
+                    executeAfterEndAction(trainingModeParams.getAfterSuccessAction());
+                } else if(state == State.Fail) {
+                    executeAfterEndAction(trainingModeParams.getAfterFailAction());
+                }
             }
         }
 
@@ -99,6 +105,10 @@ public class TrainingModeService {
     public void setTraining(Training training) {
         this.training = training;
         state = State.WaitingForBallsPlacement;
+        if(stopWatch.isStarted()) {
+            stopWatch.reset();
+        }
+        stopWatch.start();
     }
 
     private boolean isAllBallsPlacedCorrectly() {
@@ -194,9 +204,26 @@ public class TrainingModeService {
     private double distance(Point point, Point point2) {
         return Math.sqrt(Math.pow(point.x - point2.x, 2) + Math.pow(point.y - point2.y, 2));
     }
-    // Move to calibrationParams
+
     private double getBallPositionTolerance() {
-        return calibrationService.getCalibrationParams().getBallDiameter() / 4.0;
+        return calibrationService.getCalibrationParams().getBallDiameter() * trainingModeParams.getBallPositionTolerance();
+    }
+
+    private void executeAfterEndAction(TrainingModeParams.AfterEndAction afterEndAction) {
+        if(afterEndAction == TrainingModeParams.AfterEndAction.SameLevel) {
+            setTraining(training);
+        } else if(afterEndAction == TrainingModeParams.AfterEndAction.NextLevel) {
+            setTraining(trainingService.getNextById(training.getId()));
+        } else if(afterEndAction == TrainingModeParams.AfterEndAction.RandomLevelOfSameDifficulty) {
+            setTraining(trainingService.getRandomByDifficultyLevel(training.getDifficultyLevel()));
+        } else if(afterEndAction == TrainingModeParams.AfterEndAction.RandomLevelOfAnyDifficulty) {
+            setTraining(trainingService.getRandom());
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(TrainingModeParamsService.TrainingModeParamsUpdatedEvent event) {
+        trainingModeParams = event.getTrainingModeParams();
     }
 
     public enum State {
