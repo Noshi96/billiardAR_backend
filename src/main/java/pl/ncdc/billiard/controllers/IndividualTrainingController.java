@@ -3,6 +3,7 @@ package pl.ncdc.billiard.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -31,11 +32,6 @@ public class IndividualTrainingController {
 		this.individualTrainingGameModeService = individualTrainingGameModeService;
 	}
 
-	@GetMapping("/getAll")
-	public List<IndividualTraining> getAll() {
-		return individualTrainingService.getAll();
-	}
-
 	@GetMapping("/getById/{id}")
 	public ResponseEntity<IndividualTraining> getById(@PathVariable Long id) {
 		IndividualTraining individualTraining = individualTrainingService.getById(id);
@@ -54,10 +50,9 @@ public class IndividualTrainingController {
 		return new ResponseEntity<IndividualTraining>(individualTraining, HttpStatus.OK);
 	}
 
-
-	@GetMapping("/getByDifficultyLevel/{difficultyLevel}")
-	public List<IndividualTraining> getByDifficultyLevel(@PathVariable DifficultyLevel difficultyLevel) {
-		return individualTrainingService.getAllByDifficultyLevel(difficultyLevel);
+	@GetMapping(value = "/getByDifficultyLevel/{difficultyLevel}", params = {"page", "size"})
+	public Page<IndividualTraining> getAllByDifficultyLevel(@PathVariable DifficultyLevel difficultyLevel, @RequestParam int page, @RequestParam int size) {
+		return individualTrainingService.getByDifficultyLevel(difficultyLevel, page, size);
 	}
 
 	@GetMapping("/getIdsByDifficultyLevel/{difficultyLevel}")

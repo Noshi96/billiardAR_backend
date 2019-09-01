@@ -7,6 +7,8 @@ import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.entities.IndividualTrainingEntity;
 import pl.ncdc.billiard.entities.traininghints.HitPointHintEntity;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class IndividualTrainingService {
 
 
@@ -67,6 +68,10 @@ public class IndividualTrainingService {
 
 	public List<IndividualTraining> getAllByDifficultyLevel(DifficultyLevel difficultyLevel) {
     	return individualTrainingMapper.toModels(individualTrainingRepository.findAllByDifficultyLevel(difficultyLevel));
+	}
+
+	public Page<IndividualTraining> getByDifficultyLevel(DifficultyLevel difficultyLevel, int page, int size) {
+		return getEntitiesByDifficultyLevel(difficultyLevel, page, size).map(individualTrainingMapper::toModel);
 	}
 
 	public IndividualTraining saveIndividualTraining(IndividualTraining individualTraining) {
@@ -120,6 +125,10 @@ public class IndividualTrainingService {
 
 	private List<IndividualTrainingEntity> getAllEntities() {
 		return individualTrainingRepository.findAll();
+	}
+
+	private Page<IndividualTrainingEntity> getEntitiesByDifficultyLevel(DifficultyLevel difficultyLevel, int page, int size) {
+		return individualTrainingRepository.findByDifficultyLevel(difficultyLevel, PageRequest.of(page, size));
 	}
 
 	private IndividualTrainingEntity getEntityById(Long id) {
