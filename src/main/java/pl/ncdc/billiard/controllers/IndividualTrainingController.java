@@ -78,4 +78,9 @@ public class IndividualTrainingController {
 		tableService.setSelectedChallenge(selectedChallenge);
 		individualTrainingGameModeService.setIndividualTraining(individualTrainingService.getInPixelById((long) selectedChallenge));
 	}
+
+	@DeleteMapping("/delete/{id}")
+	public IndividualTraining delete(@PathVariable Long id) {
+		return individualTrainingService.deleteById(id);
+	}
 }

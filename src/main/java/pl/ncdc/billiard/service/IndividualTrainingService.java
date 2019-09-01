@@ -123,6 +123,17 @@ public class IndividualTrainingService {
 		return individualTrainingMapper.toModel(individualTrainingRepository.save(individualTrainingEntity));
 	}
 
+	public IndividualTraining deleteById(Long id) {
+		IndividualTrainingEntity individualTrainingEntity = getEntityById(id);
+		if(individualTrainingEntity == null) {
+			return null;
+		}
+		IndividualTraining individualTraining = individualTrainingMapper.toModel(individualTrainingEntity);
+		individualTrainingRepository.delete(individualTrainingEntity);
+
+		return individualTraining;
+	}
+
 	private List<IndividualTrainingEntity> getAllEntities() {
 		return individualTrainingRepository.findAll();
 	}
