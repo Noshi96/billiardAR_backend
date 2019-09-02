@@ -136,18 +136,21 @@ DROP TABLE IF EXISTS `pool_drawer_params`;
 CREATE TABLE `pool_drawer_params` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `ball_color` varchar(255) DEFAULT NULL,
-  `ball_line_thickness` int(11) NOT NULL,
   `ball_radius` int(11) NOT NULL,
-  `play_zone_border_thickness` int(11) NOT NULL,
-  `pocket_line_thickness` int(11) NOT NULL,
-  `pocket_radius` int(11) NOT NULL,
-  `selected_pocket_line_thickness` int(11) NOT NULL,
-  `textxd` int(11) NOT NULL,
-  `training_ball_radius` int(11) NOT NULL,
-  `training_rectangle_thickness` int(11) NOT NULL,
+  `disturb_ball_color` varchar(255) DEFAULT NULL,
+  `follow_rotation_line_color` varchar(255) DEFAULT NULL,
+  `hidden_places_color` varchar(255) DEFAULT NULL,
+  `line_thickness` int(11) NOT NULL,
+  `pocket_color` varchar(255) DEFAULT NULL,
+  `selected_ball_color` varchar(255) DEFAULT NULL,
+  `selected_ball_radius` int(11) NOT NULL,
+  `selected_pocket_color` varchar(255) DEFAULT NULL,
+  `training_selected_ball_color` varchar(255) DEFAULT NULL,
+  `trajectory_line_color` varchar(255) DEFAULT NULL,
   `trajectory_line_thickness` int(11) NOT NULL,
   `white_ball_color` varchar(255) DEFAULT NULL,
   `white_ball_radius` int(11) NOT NULL,
+  `zero_rotation_line_color` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -158,7 +161,7 @@ CREATE TABLE `pool_drawer_params` (
 
 LOCK TABLES `pool_drawer_params` WRITE;
 /*!40000 ALTER TABLE `pool_drawer_params` DISABLE KEYS */;
-INSERT INTO `pool_drawer_params` VALUES (1,'#139363',2,20,1,5,50,4,30,25,3,2,'#ffffff',20);
+INSERT INTO `pool_drawer_params` VALUES (1,'#00FFFF',20,'#82B4EF','#FF1493','#0000FF',2,'#00FFFF','#0000FF',20,'#0000FF','#FFC864','#FFFF00',2,'#FFFFFF',23,'#0000FF');
 /*!40000 ALTER TABLE `pool_drawer_params` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -257,4 +260,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-02  9:06:22
+-- Dump completed on 2019-09-02 15:56:11
