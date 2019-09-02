@@ -12,7 +12,7 @@ public class PoolDrawerParams {
     private int lineThickness = 2;
     private int ballRadius = 20;
     private Scalar ballColor = new Scalar(255, 255, 0);
-    private int whiteBallRadius = 20;
+    private int whiteBallRadius = 23;
     private Scalar whiteBallColor = new Scalar(255, 255, 255);
     private Scalar pocketColor = new Scalar(255, 255, 0);
 

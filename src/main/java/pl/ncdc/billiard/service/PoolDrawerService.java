@@ -64,17 +64,11 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	
 	int textXD = 30;
 
-	int ballRadius = 20;
-	int whiteBallRadius = 20;
 	int pocketRadius = 50;
-	int trainingBallRadius = 25;
-	
-	int ballLineThickness = 2;
+
 	int pocketLineThickness = 5;
-	int trajectoryLineThickness = 2;
 	int playZoneBorderThickness = 1;
 	int selectedPocketLineThickness = 4;
-	int trainingRectangleThickness = 3;
 	// koniec zmiennych do pliku
 	
 	List<Point> hitPoints;
@@ -82,7 +76,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 	Informations informations;
 
-	private PoolDrawerParams poolDrawerParams;
+	private PoolDrawerParams poolDrawerParams = new PoolDrawerParams();
+	private Scalar whiteColor = new Scalar(255, 255, 255);
 
 	@Override
 	public void onApplicationEvent(PoolDrawerParamsService.PoolDrawerParamsUpdatedEvent event) {
@@ -244,20 +239,20 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 		Imgproc.circle (
 			mat,
 			training.getWhiteBallPosition(),
-			trainingBallRadius + 3,
-			new Scalar(255, 255, 255),
-			ballLineThickness
+			poolDrawerParams.getWhiteBallRadius(),
+			poolDrawerParams.getWhiteBallColor(),
+			poolDrawerParams.getLineThickness()
 		);
 		
 		
 	    // rysowanie punktu ustawienia bili do wbicia
 		// pomaranczowy okrag wokol bili do wbicia
-		drawTrainingBall(mat, training.getSelectedBallPosition(), new Scalar(100, 200, 255));
+		drawTrainingBall(mat, training.getSelectedBallPosition(), poolDrawerParams.getTrainingSelectedBallColor());
 		
 		// rysowanie przeszkadzajek
 		for ( Point disturbBallPosition: training.getDisturbBallsPositions() ) {
 			// czerwony okrag wokol przeszkadzajki
-			drawTrainingBall(mat, disturbBallPosition, new Scalar(230, 180, 130));
+			drawTrainingBall(mat, disturbBallPosition, poolDrawerParams.getDisturbBallColor());
 			
 		}
 		
@@ -267,8 +262,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			mat,
 			training.getRectanglePosition().get(0),
 			training.getRectanglePosition().get(1),
-		    new Scalar(255, 255, 255),
-		    trainingRectangleThickness
+		    whiteColor,
+		    poolDrawerParams.getLineThickness()
 	    );
 
 		String statusText = "";
@@ -287,7 +282,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	    if(statusPosition == null) {
 	        statusPosition = new Point(300, 300);
         }
-        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255));
+        Imgproc.putText(mat, statusText, statusPosition, 1, 2, whiteColor);
 
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
@@ -298,7 +293,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				mat,
 				pocket.getPoint(),
 				pocketRadius,
-				new Scalar(0, 0, 255),
+				poolDrawerParams.getSelectedPocketColor(),
 				pocketLineThickness
 			);	
 	    }
@@ -312,7 +307,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	private void drawHitPointHint(Mat mat, HitPointHint hitPointHint) {
 		if(hitPointHint != null) {
 			Imgproc.circle(mat, hitPointHint.getPosition(), ((int) hitPointHint.getRadius()),
-					new Scalar(255, 255, 255), ballLineThickness);
+					whiteColor, poolDrawerParams.getLineThickness());
 
 			int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
 
@@ -321,9 +316,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				Point offset = insideCirclesOffsets.get(i);
 				Point insideCirclePosition = new Point(hitPointHint.getPosition().x + offset.x, hitPointHint.getPosition().y + offset.y);
 				if(hitPointHint.getHitPoint().ordinal() == i) {
-					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), FILLED);
+					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, whiteColor, FILLED);
 				} else {
-					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), ballLineThickness);
+					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, whiteColor, poolDrawerParams.getLineThickness());
 				}
 			}
 		}
@@ -332,21 +327,21 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	private void drawHitPowerHint(Mat mat, HitPowerHint hitPowerHint) {
 		if(hitPowerHint != null) {
 			Point boundingBoxMax = new Point(hitPowerHint.getPosition().x + hitPowerHint.getSize().x, hitPowerHint.getPosition().y + hitPowerHint.getSize().y);
-			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255));
+			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, whiteColor);
 
-			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255), ballLineThickness);
+			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, whiteColor, poolDrawerParams.getLineThickness());
 			Point fillBoundingBoxMin = hitPowerHint.getPosition();
 			fillBoundingBoxMin.y += (1 - hitPowerHint.getHitPower() / 100) * hitPowerHint.getSize().y;
-			Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, new Scalar(255, 255, 255), FILLED);
+			Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, whiteColor, FILLED);
 		}
 	}
 
 	private void drawTargetBallHitPointHint(Mat mat, TargetBallHitPointHint targetBallHitPointHint) {
 		if(targetBallHitPointHint != null) {
             Imgproc.circle(mat, targetBallHitPointHint.getWhiteBall(), ((int) targetBallHitPointHint.getRadius()),
-                    new Scalar(255, 255, 255), FILLED);
+                    whiteColor, FILLED);
             Imgproc.circle(mat, targetBallHitPointHint.getTargetBall(), ((int) targetBallHitPointHint.getRadius()),
-                    new Scalar(255, 255, 255), ballLineThickness);
+                    whiteColor, poolDrawerParams.getLineThickness());
         }
 	}
 
@@ -360,9 +355,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 		Imgproc.circle (
 			mat,
 			ballPosition,
-			trainingBallRadius,
+			poolDrawerParams.getBallRadius(),
 			color,
-			ballLineThickness
+			poolDrawerParams.getLineThickness()
 		);	
 	}
 	
@@ -387,8 +382,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	         mat,
 	         listOfPoints,
 	         false, // is Closed
-	         new Scalar(0, 255, 255),
-	         trajectoryLineThickness
+	         poolDrawerParams.getTrajectoryLineColor(),
+	         poolDrawerParams.getTrajectoryLineThickness()
 	      );
 	    } 
 	    else if ( hitPoints.size() == 2){
@@ -409,8 +404,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				mat,
 				listOfPoints,
 				false, // is Closed
-				new Scalar(0, 255, 255),
-				trajectoryLineThickness
+				poolDrawerParams.getTrajectoryLineColor(),
+				poolDrawerParams.getTrajectoryLineThickness()
 			);
 	    }
 		}
@@ -434,7 +429,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	        
 	      Imgproc.fillPoly(mat,
 	          points,
-	          new Scalar( 255, 0, 0 )
+	          poolDrawerParams.getHiddenPlacesColor()
           );
 			
 		}
@@ -470,8 +465,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			mat,
 			listOfPoints,
 			false, // is Closed
-			new Scalar(0, 255, 255),
-			trajectoryLineThickness
+			poolDrawerParams.getFollowRotationLineColor(),
+			poolDrawerParams.getTrajectoryLineThickness()
 		);		
 	}
 	
@@ -506,16 +501,16 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			mat,
 			listOfPoints,
 			false, // is Closed
-			new Scalar(0, 255, 255),
-			trajectoryLineThickness
+			poolDrawerParams.getTrajectoryLineColor(),
+			poolDrawerParams.getTrajectoryLineThickness()
 		);		
 		
 		Imgproc.polylines(
 				mat,
 				listOfOtherPoints,
 				false, // is Closed
-				new Scalar(255, 0, 0),
-				trajectoryLineThickness
+				poolDrawerParams.getZeroRotationLineColor(),
+				poolDrawerParams.getTrajectoryLineThickness()
 			);	
 	}
 
@@ -555,8 +550,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			mat,
 			listOfPoints,
 			false, // is Closed
-			new Scalar(0, 255, 255),
-			trajectoryLineThickness
+			poolDrawerParams.getTrajectoryLineColor(),
+			poolDrawerParams.getTrajectoryLineThickness()
 		);
 
 		// Zero rotacja
@@ -564,8 +559,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				mat,
 				listWithZeroRotation,
 				false, // is Closed
-				new Scalar(255, 0, 0),
-				trajectoryLineThickness
+				poolDrawerParams.getZeroRotationLineColor(),
+				poolDrawerParams.getTrajectoryLineThickness()
 			);
 
 		// Follow rotacja
@@ -573,8 +568,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				mat,
 				listWithFollowRotation,
 				false, // is Closed
-				new Scalar(147,20,255),
-				trajectoryLineThickness
+				poolDrawerParams.getFollowRotationLineColor(),
+				poolDrawerParams.getTrajectoryLineThickness()
 			);
 
 	}
@@ -695,8 +690,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 		         mat,
 		         listOfPoints,
 		         false, // is Closed
-		         new Scalar(0, 255, 255),
-		         trajectoryLineThickness
+		         poolDrawerParams.getTrajectoryLineColor(),
+		         poolDrawerParams.getTrajectoryLineThickness()
 		      );
 	    } else {
 	    	//System.out.println("Znalazlo odbicie od bandy");
@@ -809,17 +804,17 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			Imgproc.circle (
 				mat,
 				ball.getPoint(),
-				ballRadius,
-				new Scalar(255, 255, 0),
-				ballLineThickness
+				poolDrawerParams.getBallRadius(),
+				poolDrawerParams.getBallColor(),
+				poolDrawerParams.getLineThickness()
 			);
 			
 			Imgproc.circle (
 				mat,
 				ball.getPoint(),
-				ballRadius + 4,
-				new Scalar(255, 255, 0),
-				ballLineThickness
+				poolDrawerParams.getBallRadius() + 4,
+				poolDrawerParams.getBallColor(),
+				poolDrawerParams.getLineThickness()
 			);
 
 			// rysowanie napisu id
@@ -830,7 +825,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 					ball.getPoint(),
 					Core.FONT_HERSHEY_SIMPLEX,	// front face
 					0.3,						// front scale
-					new Scalar(255, 255, 255),	// Scalar object for color
+					whiteColor,	// Scalar object for color
 					2							// Thickness
 			    );
 			}
@@ -846,25 +841,25 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 		Imgproc.circle (
 			mat,
 			whiteBall.getPoint(),
-			whiteBallRadius,
-			new Scalar(255, 255, 255),
-			ballLineThickness
+			poolDrawerParams.getWhiteBallRadius(),
+			poolDrawerParams.getWhiteBallColor(),
+			poolDrawerParams.getLineThickness()
 		);
 		
 		Imgproc.circle (
 			mat,
 			whiteBall.getPoint(),
-			whiteBallRadius + ballLineThickness,
+			poolDrawerParams.getWhiteBallRadius() + poolDrawerParams.getLineThickness(),
 			new Scalar(0, 255, 255),
-			ballLineThickness
+			poolDrawerParams.getLineThickness()
 		);
 		
 		Imgproc.circle (
 			mat,
 			whiteBall.getPoint(),
-			whiteBallRadius + ballLineThickness * 2,
-			new Scalar(255, 255, 255),
-			ballLineThickness
+			poolDrawerParams.getWhiteBallRadius() + poolDrawerParams.getLineThickness() * 2,
+			poolDrawerParams.getWhiteBallColor(),
+			poolDrawerParams.getLineThickness()
 		);
 
 	} // end of drawBalls(args);
@@ -878,7 +873,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				mat,
 				pocket.getPoint(),
 				pocketRadius,
-				new Scalar(255, 255, 0),
+				poolDrawerParams.getPocketColor(),
 				pocketLineThickness
 			);
 		}
@@ -891,9 +886,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			Imgproc.circle (
 				mat,          //Matrix obj of the image
 				selectedBall.getPoint(),    //Center of the circle
-				ballRadius * 2,                    //Radius
-				new Scalar(255, 0, 0),  //Scalar object for color
-				ballLineThickness                      //Thickness of the circle
+				poolDrawerParams.getBallRadius() * 2,                    //Radius
+				poolDrawerParams.getSelectedBallColor(),  //Scalar object for color
+				poolDrawerParams.getLineThickness()                      //Thickness of the circle
 			);
 		}
 		
@@ -902,8 +897,8 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	    	Imgproc.circle (
 				mat,
 				selectedPocket.getPoint(),
-				ballRadius * 4,
-				new Scalar(255, 0, 0),
+				poolDrawerParams.getBallRadius() * 4,
+				poolDrawerParams.getSelectedPocketColor(),
 				selectedPocketLineThickness
 			);
 	    }
@@ -956,7 +951,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	 	         point,
 	 	         Core.FONT_HERSHEY_TRIPLEX ,
 	 	         1,
-	 	         new Scalar(255, 255, 255),
+	 	         whiteColor,
 	 	         1
 	 	      );
 	}
@@ -972,9 +967,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			Imgproc.circle (
 				mat,          //Matrix obj of the image
 				hitList.get(0),    //Center of the circle
-				ballRadius * 2,                    //Radius
+				poolDrawerParams.getBallRadius() * 2,                    //Radius
 				new Scalar(255, 0, 0),  //Scalar object for color
-				ballLineThickness                      //Thickness of the circle
+				poolDrawerParams.getLineThickness()                      //Thickness of the circle
 			);
 		}
 	}

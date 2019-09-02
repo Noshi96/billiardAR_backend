@@ -19,22 +19,22 @@ public class PoolDrawerParamsEntity {
 
     private int lineThickness = 2;
     private int ballRadius = 20;
-    private String ballColor = "#FFFF00";
-    private int whiteBallRadius = 20;
+    private String ballColor = "#00FFFF";
+    private int whiteBallRadius = 23;
     private String whiteBallColor = "#FFFFFF";
-    private String pocketColor = "#FFFF00";
+    private String pocketColor = "#00FFFF";
 
     private int selectedBallRadius = 20;
-    private String selectedBallColor = "#FF0000";
-    private String selectedPocketColor = "#FF0000";
+    private String selectedBallColor = "#0000FF";
+    private String selectedPocketColor = "#0000FF";
 
-    private String trainingSelectedBallColor = "#64C8FF";
-    private String disturbBallColor = "#EFB482";
+    private String trainingSelectedBallColor = "#FFC864";
+    private String disturbBallColor = "#82B4EF";
 
     private int trajectoryLineThickness = 2;
-    private String trajectoryLineColor = "#00FFFF";
-    private String followRotationLineColor = "#9314FF";
-    private String zeroRotationLineColor = "#FF0000";
+    private String trajectoryLineColor = "#FFFF00";
+    private String followRotationLineColor = "#FF1493";
+    private String zeroRotationLineColor = "#0000FF";
 
-    private String hiddenPlacesColor = "#FF0000";
+    private String hiddenPlacesColor = "#0000FF";
 }
