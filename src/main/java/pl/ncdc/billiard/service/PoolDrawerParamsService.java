@@ -43,6 +43,7 @@ public class PoolDrawerParamsService implements InitializingBean {
         poolDrawerParamsRepository.save(entity);
 
         poolDrawerParamsMapper.updateModelFromEntity(entity, poolDrawerParams);
+        applicationEventPublisher.publishEvent(new PoolDrawerParamsUpdatedEvent(this, poolDrawerParams));
         return poolDrawerParams;
     }
 
