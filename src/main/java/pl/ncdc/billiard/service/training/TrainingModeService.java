@@ -45,6 +45,11 @@ public class TrainingModeService implements ApplicationListener<TrainingModePara
         this.billiardTable = billiardTable;
     }
 
+    @Override
+    public void onApplicationEvent(TrainingModeParamsService.TrainingModeParamsUpdatedEvent event) {
+        trainingModeParams = event.getTrainingModeParams();
+    }
+
     @Scheduled(fixedRate = 400)
     public void update() {
         if(training == null || trainingModeParams == null){
@@ -219,11 +224,6 @@ public class TrainingModeService implements ApplicationListener<TrainingModePara
         } else if(afterEndAction == TrainingModeParams.AfterEndAction.RandomLevelOfAnyDifficulty) {
             setTraining(trainingService.getRandom());
         }
-    }
-
-    @Override
-    public void onApplicationEvent(TrainingModeParamsService.TrainingModeParamsUpdatedEvent event) {
-        trainingModeParams = event.getTrainingModeParams();
     }
 
     public enum State {

@@ -5,6 +5,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import pl.ncdc.billiard.models.*;
 import pl.ncdc.billiard.models.training.HitPointHint;
@@ -21,7 +22,7 @@ import java.util.List;
 import static org.opencv.core.Core.FILLED;
 
 @Service
-public class PoolDrawerService {
+public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsService.PoolDrawerParamsUpdatedEvent> {
 
 	
 	@Autowired
@@ -80,11 +81,16 @@ public class PoolDrawerService {
 
 	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 	Informations informations;
-	
-	
+
+	private PoolDrawerParams poolDrawerParams;
+
+	@Override
+	public void onApplicationEvent(PoolDrawerParamsService.PoolDrawerParamsUpdatedEvent event) {
+		poolDrawerParams = event.getPoolDrawerParams();
+	}
+
 	public byte[] drawImage(BilliardTable table)
 	{
-		
 		kinectHeight = table.getHeight();
 		kinectWidth = table.getWidth();
 		informations = informationsService.getHitInformations();

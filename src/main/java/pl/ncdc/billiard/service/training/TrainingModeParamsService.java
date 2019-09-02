@@ -21,6 +21,12 @@ public class TrainingModeParamsService implements InitializingBean {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        TrainingModeParams trainingModeParams = getTrainingModeParams();
+        applicationEventPublisher.publishEvent(new TrainingModeParamsUpdatedEvent(this, trainingModeParams));
+    }
+
     public TrainingModeParams getTrainingModeParams() {
         Optional<TrainingModeParams> optionalTrainingModeParams = trainingModeParamsRepository.findFirstByOrderByIdAsc();
         if(optionalTrainingModeParams.isPresent()) {
@@ -40,12 +46,6 @@ public class TrainingModeParamsService implements InitializingBean {
 
         applicationEventPublisher.publishEvent(new TrainingModeParamsUpdatedEvent(this, trainingModeParams));
         return trainingModeParams;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        TrainingModeParams trainingModeParams = getTrainingModeParams();
-        applicationEventPublisher.publishEvent(new TrainingModeParamsUpdatedEvent(this, trainingModeParams));
     }
 
     public class TrainingModeParamsUpdatedEvent extends ApplicationEvent {
