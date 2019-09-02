@@ -1,45 +1,28 @@
 package pl.ncdc.billiard.service;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
+import pl.ncdc.billiard.models.*;
+import pl.ncdc.billiard.models.training.HitPointHint;
+import pl.ncdc.billiard.models.training.HitPowerHint;
+import pl.ncdc.billiard.models.training.Training;
+import pl.ncdc.billiard.models.training.TargetBallHitPointHint;
+import pl.ncdc.billiard.service.training.TrainingModeService;
+import pl.ncdc.billiard.service.training.TrainingService;
 
-import pl.ncdc.billiard.controllers.BilliardTableController;
-import pl.ncdc.billiard.models.Ball;
-import pl.ncdc.billiard.models.BilliardTable;
-import pl.ncdc.billiard.models.CalibrationParams;
-import pl.ncdc.billiard.models.IndividualTraining;
-import pl.ncdc.billiard.models.Informations;
-import pl.ncdc.billiard.models.Pocket;
-import pl.ncdc.billiard.models.trainingHints.HitPoint;
-import pl.ncdc.billiard.models.trainingHints.HitPointHint;
-import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
-import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
-import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 import static org.opencv.core.Core.FILLED;
 
 @Service
-public class PoolDrawerService {
+public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsService.PoolDrawerParamsUpdatedEvent> {
 
 	
 	@Autowired
@@ -49,10 +32,10 @@ public class PoolDrawerService {
 	HiddenPlacesService hiddenPlacesService;
 	
 	@Autowired
-	IndividualTrainingService individualTrainingService;
+	TrainingService trainingService;
 	
 	@Autowired
-	IndividualTrainingGameModeService individualTrainingGameModeService;
+	TrainingModeService trainingModeService;
 	
 	@Autowired
 	RotationService rotationService;
@@ -84,7 +67,6 @@ public class PoolDrawerService {
 	int ballRadius = 20;
 	int whiteBallRadius = 20;
 	int pocketRadius = 50;
-	int trainingDotRadius = 3;
 	int trainingBallRadius = 25;
 	
 	int ballLineThickness = 2;
@@ -99,11 +81,16 @@ public class PoolDrawerService {
 
 	CalibrationParams calibrationParams = CalibrationParams.getDefaultCalibrationParams();
 	Informations informations;
-	
-	
+
+	private PoolDrawerParams poolDrawerParams;
+
+	@Override
+	public void onApplicationEvent(PoolDrawerParamsService.PoolDrawerParamsUpdatedEvent event) {
+		poolDrawerParams = event.getPoolDrawerParams();
+	}
+
 	public byte[] drawImage(BilliardTable table)
 	{
-		
 		kinectHeight = table.getHeight();
 		kinectWidth = table.getWidth();
 		informations = informationsService.getHitInformations();
@@ -137,7 +124,7 @@ public class PoolDrawerService {
 			}
 		}
 		else{
-			drawTraining(poolPlayZoneMat, table);
+			drawTraining(poolPlayZoneMat, trainingService.getInPixelById(((long) table.getSelectedChallenge())), table.getPockets());
 			// tryb challenge'u zostal wybrany.
 			// this.fetchTrainingById(table.selectedChallenge);
 		}
@@ -247,27 +234,16 @@ public class PoolDrawerService {
 	}
 	
 	
-	public void drawTraining(Mat mat,  BilliardTable table){
-		IndividualTraining individualTraining = individualTrainingService.getInPixelById( (long)table.getSelectedChallenge());
-		if (individualTraining == null) {
-			// komunikat o niepoprawnie wybranym challenge'u
+	public void drawTraining(Mat mat, Training training, List<Pocket> pockets){
+		if (training == null) {
 			return;
 		}
-		
-		
 
 		// rysowanie bialej bili
-		
-		// mala kropka na srodku pozycji bialej bili
-		//drawTrainingDot(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(255, 255, 255));
-		
-		// okrag wokol bialej bili
-		//drawTrainingBall(mat, table, individualTraining.getWhiteBallPosition(), new Scalar(0, 255, 255));
-		
 		// nieco wiekszy, bialy okrag wokol bialej bili
 		Imgproc.circle (
 			mat,
-			individualTraining.getWhiteBallPosition(),
+			training.getWhiteBallPosition(),
 			trainingBallRadius + 3,
 			new Scalar(255, 255, 255),
 			ballLineThickness
@@ -275,20 +251,13 @@ public class PoolDrawerService {
 		
 		
 	    // rysowanie punktu ustawienia bili do wbicia
-		// mala kropka na srodku pozycji bili do wbicia
-		//drawTrainingDot(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(0, 159, 255));	
-		
 		// pomaranczowy okrag wokol bili do wbicia
-		drawTrainingBall(mat, table, individualTraining.getSelectedBallPosition(), new Scalar(100, 200, 255));
-		
+		drawTrainingBall(mat, training.getSelectedBallPosition(), new Scalar(100, 200, 255));
 		
 		// rysowanie przeszkadzajek
-		for ( Point disturbBallPosition: individualTraining.getDisturbBallsPositions() ) {
-			// mala kropka na srodku pozycji przeszkadzajki
-			//drawTrainingDot(mat, table, disturbBallPosition, new Scalar(0, 0, 255));	
-			
+		for ( Point disturbBallPosition: training.getDisturbBallsPositions() ) {
 			// czerwony okrag wokol przeszkadzajki
-			drawTrainingBall(mat, table, disturbBallPosition, new Scalar(230, 180, 130));
+			drawTrainingBall(mat, disturbBallPosition, new Scalar(230, 180, 130));
 			
 		}
 		
@@ -296,27 +265,25 @@ public class PoolDrawerService {
 		// obramowanie obszaru rysowania
 	    Imgproc.rectangle (
 			mat,
-			new Point(	individualTraining.getRectanglePosition().get(0).x,
-						individualTraining.getRectanglePosition().get(0).y),
-			new Point(	individualTraining.getRectanglePosition().get(1).x,
-						individualTraining.getRectanglePosition().get(1).y),
+			training.getRectanglePosition().get(0),
+			training.getRectanglePosition().get(1),
 		    new Scalar(255, 255, 255),
 		    trainingRectangleThickness
 	    );
 
 		String statusText = "";
-	    if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Ready) {
+	    if (trainingModeService.getState() == TrainingModeService.State.Ready) {
 	        statusText = "READY";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Fail) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.Fail) {
             statusText = "FAILED";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.Success) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.Success) {
             statusText = "SUCCESS";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsPlacement) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.WaitingForBallsPlacement) {
             statusText = "WaitingForBallsPlacement";
-	    } else if (individualTrainingGameModeService.getState() == IndividualTrainingGameModeService.State.WaitingForBallsStop) {
+	    } else if (trainingModeService.getState() == TrainingModeService.State.WaitingForBallsStop) {
             statusText = "WaitingForBallsStop";
 	    }
-	    Point statusPosition = individualTraining.getStatusPosition();
+	    Point statusPosition = training.getStatusPosition();
 	    if(statusPosition == null) {
 	        statusPosition = new Point(300, 300);
         }
@@ -324,12 +291,12 @@ public class PoolDrawerService {
 
 	    // rysowanie zaznaczenia luzy do ktorej ma wpasc bila
 		// okrag wokol wybranego pocketu
-	    if ( table.getPockets().get(individualTraining.getPocketId()) != null) {
+		Pocket pocket = pockets.get(training.getPocketId());
+		if ( pocket != null) {
 	    	// jakis pocket zostal wyrbany
 			Imgproc.circle (
 				mat,
-				new Point(	table.getPockets().get(individualTraining.getPocketId()).getPoint().x,
-						table.getPockets().get(individualTraining.getPocketId()).getPoint().y),
+				pocket.getPoint(),
 				pocketRadius,
 				new Scalar(0, 0, 255),
 				pocketLineThickness
@@ -337,66 +304,53 @@ public class PoolDrawerService {
 	    }
 
 	    // tymczasowe rysowanie podpowiedzi
-        TargetBallHitPointHint targetBallHitPointHint = individualTraining.getTargetBallHitPointHint();
-	    if(targetBallHitPointHint != null) {
+		drawHitPointHint(mat, training.getHitPointHint());
+		drawHitPowerHint(mat, training.getHitPowerHint());
+		drawTargetBallHitPointHint(mat, training.getTargetBallHitPointHint());
+	}
+
+	private void drawHitPointHint(Mat mat, HitPointHint hitPointHint) {
+		if(hitPointHint != null) {
+			Imgproc.circle(mat, hitPointHint.getPosition(), ((int) hitPointHint.getRadius()),
+					new Scalar(255, 255, 255), ballLineThickness);
+
+			int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
+
+			List<Point> insideCirclesOffsets = hitPointHint.getInsideCirclesOffsets();
+			for (int i = 0; i < insideCirclesOffsets.size(); i++) {
+				Point offset = insideCirclesOffsets.get(i);
+				Point insideCirclePosition = new Point(hitPointHint.getPosition().x + offset.x, hitPointHint.getPosition().y + offset.y);
+				if(hitPointHint.getHitPoint().ordinal() == i) {
+					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), FILLED);
+				} else {
+					Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), ballLineThickness);
+				}
+			}
+		}
+	}
+
+	private void drawHitPowerHint(Mat mat, HitPowerHint hitPowerHint) {
+		if(hitPowerHint != null) {
+			Point boundingBoxMax = new Point(hitPowerHint.getPosition().x + hitPowerHint.getSize().x, hitPowerHint.getPosition().y + hitPowerHint.getSize().y);
+			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255));
+
+			Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255), ballLineThickness);
+			Point fillBoundingBoxMin = hitPowerHint.getPosition();
+			fillBoundingBoxMin.y += (1 - hitPowerHint.getHitPower() / 100) * hitPowerHint.getSize().y;
+			Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, new Scalar(255, 255, 255), FILLED);
+		}
+	}
+
+	private void drawTargetBallHitPointHint(Mat mat, TargetBallHitPointHint targetBallHitPointHint) {
+		if(targetBallHitPointHint != null) {
             Imgproc.circle(mat, targetBallHitPointHint.getWhiteBall(), ((int) targetBallHitPointHint.getRadius()),
                     new Scalar(255, 255, 255), FILLED);
             Imgproc.circle(mat, targetBallHitPointHint.getTargetBall(), ((int) targetBallHitPointHint.getRadius()),
                     new Scalar(255, 255, 255), ballLineThickness);
         }
-
-        HitPowerHint hitPowerHint = individualTraining.getHitPowerHint();
-	    if(hitPowerHint != null) {
-	        Point boundingBoxMax = new Point(hitPowerHint.getPosition().x + hitPowerHint.getSize().x, hitPowerHint.getPosition().y + hitPowerHint.getSize().y);
-            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255));
-
-            Imgproc.rectangle(mat, hitPowerHint.getPosition(), boundingBoxMax, new Scalar(255, 255, 255), ballLineThickness);
-            Point fillBoundingBoxMin = hitPowerHint.getPosition();
-            fillBoundingBoxMin.y += (1 - hitPowerHint.getHitPower() / 100) * hitPowerHint.getSize().y;
-            Imgproc.rectangle(mat, fillBoundingBoxMin, boundingBoxMax, new Scalar(255, 255, 255), FILLED);
-        }
-
-        HitPointHint hitPointHint = individualTraining.getHitPointHint();
-	    if(hitPointHint != null) {
-	        Imgproc.circle(mat, hitPointHint.getPosition(), ((int) hitPointHint.getRadius()),
-                    new Scalar(255, 255, 255), ballLineThickness);
-
-	        int insideCircleRadius = (int) (hitPointHint.getRadius() * 0.23);
-	        hitPointHint.recalculateInsideCirclesOffsets();
-
-            List<Point> insideCirclesOffsets = hitPointHint.getInsideCirclesOffsets();
-            for (int i = 0; i < insideCirclesOffsets.size(); i++) {
-                Point offset = insideCirclesOffsets.get(i);
-                Point insideCirclePosition = new Point(hitPointHint.getPosition().x + offset.x, hitPointHint.getPosition().y + offset.y);
-                if(hitPointHint.getHitPoint().ordinal() == i) {
-                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), FILLED);
-                } else {
-                    Imgproc.circle(mat, insideCirclePosition, insideCircleRadius, new Scalar(255, 255, 255), ballLineThickness);
-                }
-            }
-        }
-    }
-	
-	
-	
-	public void drawTrainingDot(Mat mat, BilliardTable table, Point ballPosition, Scalar color) {
-		if( ballPosition == null ) {
-			// error, bila nie istnieje
-			return;
-		}
-		
-		// mala kropki na srodku pozycji bili 
-		Imgproc.circle (
-			mat,
-			new Point(	ballPosition.x,
-						ballPosition.y),
-			trainingDotRadius,
-			color,
-			ballLineThickness
-		);	
 	}
-	
-	public void drawTrainingBall(Mat mat, BilliardTable table, Point ballPosition, Scalar color) {
+
+	public void drawTrainingBall(Mat mat, Point ballPosition, Scalar color) {
 		if( ballPosition == null ) {
 			// error, bila nie istnieje
 			return;
@@ -405,8 +359,7 @@ public class PoolDrawerService {
 		// okrag wokol pozycji bili 
 		Imgproc.circle (
 			mat,
-			new Point(	ballPosition.x,
-						ballPosition.y),
+			ballPosition,
 			trainingBallRadius,
 			color,
 			ballLineThickness

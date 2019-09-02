@@ -1,14 +1,11 @@
-package pl.ncdc.billiard.entities;
+package pl.ncdc.billiard.entities.training;
 
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.ncdc.billiard.entities.traininghints.HitPointHintEntity;
-import pl.ncdc.billiard.entities.traininghints.HitPowerHintEntity;
-import pl.ncdc.billiard.entities.traininghints.TargetBallHitPointHintEntity;
-import pl.ncdc.billiard.models.DifficultyLevel;
+import pl.ncdc.billiard.models.training.DifficultyLevel;
 
 import javax.persistence.*;
 
@@ -16,8 +13,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "individual_training")
-public class IndividualTrainingEntity {
+@Table(name = "training")
+public class TrainingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +26,12 @@ public class IndividualTrainingEntity {
     private MultiPoint rectanglePosition;
     private int pocketId;
     private Point statusPosition;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "trainingEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private HitPointHintEntity hitPointHint;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "trainingEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private HitPowerHintEntity hitPowerHint;
-    @OneToOne(mappedBy = "individualTraining", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "trainingEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private TargetBallHitPointHintEntity targetBallHitPointHint;
+    @Lob
+    private byte[] imagePreview;
 }

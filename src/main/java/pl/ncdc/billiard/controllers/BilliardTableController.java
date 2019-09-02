@@ -24,7 +24,7 @@ import pl.ncdc.billiard.models.Pocket;
 import pl.ncdc.billiard.service.BilliardTableService;
 import pl.ncdc.billiard.service.HiddenPlacesService;
 import pl.ncdc.billiard.service.HitService;
-import pl.ncdc.billiard.service.IndividualTrainingService;
+import pl.ncdc.billiard.service.training.TrainingService;
 import pl.ncdc.billiard.service.KinectService;
 import pl.ncdc.billiard.service.PoolDrawerService;
 
@@ -37,7 +37,7 @@ public class BilliardTableController {
 	private final BilliardTableService tableService;
 	private final HitService hitService;
 	private final KinectService kinectService;
-	private final IndividualTrainingService individualTrainingService;
+	private final TrainingService trainingService;
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final HiddenPlacesService hiddenPlacesService;
 	private final PoolDrawerService poolDrawerService;
@@ -45,13 +45,13 @@ public class BilliardTableController {
 	Mat frame;
 
 	public BilliardTableController(BilliardTableService tableService, HitService hitService,
-			KinectService kinectService, IndividualTrainingService individualTrainingService,
-			SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService,
-			PoolDrawerService poolDrawerService) {
+								   KinectService kinectService, TrainingService trainingService,
+								   SimpMessagingTemplate simpMessagingTemplate, HiddenPlacesService hiddenPlacesService,
+								   PoolDrawerService poolDrawerService) {
 		this.tableService = tableService;
 		this.hitService = hitService;
 		this.kinectService = kinectService;
-		this.individualTrainingService = individualTrainingService;
+		this.trainingService = trainingService;
 		this.simpMessagingTemplate = simpMessagingTemplate;
 		this.hiddenPlacesService = hiddenPlacesService;
 		this.poolDrawerService = poolDrawerService;

@@ -90,19 +90,19 @@ public class BilliardTable {
 //          //balls.add(new Ball(3, new Point(600,500) ));
 //          balls.add(new Ball(3, new Point(417,629) ));
 //          balls.add(new Ball(4, new Point(600,401)));
-//          balls.add(new Ball(5, new Point(1,600))); 
+//          balls.add(new Ball(5, new Point(1,600)));
 //          balls.add(new Ball(6, new Point(810,250)));
 //          balls.add(new Ball(7, new Point(476, 186)));
 //          balls.add(new Ball(8, new Point(600, 300)));
 //          this.setWhiteBall(new Ball(3, new Point(600,500)));
-//          //this.setWhiteBall( new Ball( 0,  new Point(750,450)));      
+//          //this.setWhiteBall( new Ball( 0,  new Point(750,450)));
 //          //this.setSelectedBall(this.balls.get(7));
 //          //this.setSelectedPocket(this.pockets.get(5));
 //      }
 
 	/**
 	 * Search in Ball collection and try to find correct match
-	 * 
+	 *
 	 * @param point
 	 * @return {@code Point} position of ball.</br>
 	 *         Null if not found
