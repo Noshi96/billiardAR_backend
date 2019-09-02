@@ -17,20 +17,24 @@ public class PoolDrawerParamsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int textXD = 30;
-
+    private int lineThickness = 2;
     private int ballRadius = 20;
+    private String ballColor = "#FFFF00";
     private int whiteBallRadius = 20;
-    private int pocketRadius = 50;
-    private int trainingBallRadius = 25;
-
-    private int ballLineThickness = 2;
-    private int pocketLineThickness = 5;
-    private int trajectoryLineThickness = 2;
-    private int playZoneBorderThickness = 1;
-    private int selectedPocketLineThickness = 4;
-    private int trainingRectangleThickness = 3;
-
     private String whiteBallColor = "#FFFFFF";
-    private String ballColor = "#EEEEEE";
+    private String pocketColor = "#FFFF00";
+
+    private int selectedBallRadius = 20;
+    private String selectedBallColor = "#FF0000";
+    private String selectedPocketColor = "#FF0000";
+
+    private String trainingSelectedBallColor = "#64C8FF";
+    private String disturbBallColor = "#EFB482";
+
+    private int trajectoryLineThickness = 2;
+    private String trajectoryLineColor = "#00FFFF";
+    private String followRotationLineColor = "#9314FF";
+    private String zeroRotationLineColor = "#FF0000";
+
+    private String hiddenPlacesColor = "#FF0000";
 }
