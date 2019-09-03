@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Gamer;
@@ -24,6 +25,7 @@ import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
 
 
 @Service
+@Slf4j
 public class GameService {
 
 	@Autowired
@@ -38,7 +40,7 @@ public class GameService {
     @Getter
     private GameState state;
 	
-    private double waitingForBallsPlacementDelay = 2.0;
+    private double waitingForBallsPlacementDelay = 1.0;
     private double ballsStopMovingDelay = 2.0;
     private double afterEndDelay = 2.0;
     private double waitingForAllBallsOnRightSide = 5.0;
@@ -57,7 +59,7 @@ public class GameService {
 	
 	@Getter
 	@Setter
-	private int playerCount = 3;
+	private int playerCount = 2;
 	
 	public void start(int playerCount) {
 		
@@ -76,7 +78,8 @@ public class GameService {
 	@Scheduled(fixedRate = 400)
 	public void update() {
 		// set startwatch
-				
+				log.info("get time=" + Long.toString(stopWatch.getTime(TimeUnit.SECONDS)));
+				log.info("isStarted " + stopWatch.isStarted());
 		if (startGame) {
 			start(playerCount);
 			startGame = false;
@@ -98,8 +101,9 @@ public class GameService {
         	currentFrameBallsPositions.add(table.getWhiteBall().getPoint());
         	listWithGameBalls.add(table.getWhiteBall());
         	System.out.println("3");
-        	//System.out.println("listWithGameBalls = " + listWithGameBalls);
-        	//System.out.println("listWithGameBallsFromTable = " + table.getBalls());
+        	System.out.println("listWithGameBalls = " + listWithGameBalls);
+        	System.out.println("listWithGameBallsFromTable = " + table.getBalls());
+        	
         }
 		
 		
@@ -109,7 +113,8 @@ public class GameService {
 				stopWatch.reset();
 				stopWatch.start();
 				System.out.println("5");
-				System.out.println(listWithGameBalls);
+				log.info(listWithGameBalls.toString());
+				log.info(listOfAllGamersFromService.toString());
 			}
 			
 			if (stopWatch.getTime(TimeUnit.SECONDS) > waitingForBallsPlacementDelay) {
@@ -148,9 +153,10 @@ public class GameService {
 						System.out.println("13");
 						state = GameState.WaitingForAllBallsOnRightSide;
 					}
+					state = GameState.WaitingForSetScoreAndGenerateNewLvl;
 					System.out.println("14");
-					//stopWatch.reset();
-					//stopWatch.start();
+					stopWatch.reset();
+					stopWatch.start();
 				}
 				
 				if (state == GameState.WaitingForSetScoreAndGenerateNewLvl) {
@@ -183,11 +189,16 @@ public class GameService {
 			if (stopWatch.getTime(TimeUnit.SECONDS) > afterEndDelay) {
 				System.out.println("19");
 				state = GameState.WaitingForCheckingBallsPlacement;
+				
+				
 			}
 		}
 		
 
+
         lastFrameBallsPositions = currentFrameBallsPositions;
+		log.info("Last frame = " + lastFrameBallsPositions.toString());
+		log.info("Current frame = " + currentFrameBallsPositions.toString());
         
         //simpMessagingTemplate.convertAndSend("/game/state", state);
 	}
@@ -500,7 +511,7 @@ public class GameService {
 		return null;
 	}
 	
-	// Wyznacza gracza ktory dostanie punkt bo d³ugoœæ jego bili do punktu jest najmniejsza
+	// Wyznacza gracza ktory dostanie punkt bo dï¿½ugoï¿½ï¿½ jego bili do punktu jest najmniejsza
 	public Gamer bestGamerInOneRound(List<Gamer> listOfGamers, List<Ball> listOfBalls) {
 		
 		double length = 0;
@@ -585,7 +596,7 @@ public class GameService {
 	}
 	
 	
-	// Wywo³uje sie na poczatku kazdej rundy
+	// Wywoï¿½uje sie na poczatku kazdej rundy
 	public void lvlGenerator(List<Gamer> listOfGamers) {
 		
 		boolean sameLvlForAll = true;

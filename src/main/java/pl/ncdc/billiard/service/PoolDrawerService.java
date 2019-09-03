@@ -1047,7 +1047,7 @@ public class PoolDrawerService {
 				Imgproc.circle (
 						mat,          //Matrix obj of the image
 						point,    //Center of the circle
-						ballRadius * 2,                    //Radius
+						ballRadius,                    //Radius
 						new Scalar(255, 0, 0),  //Scalar object for color
 						ballLineThickness                      //Thickness of the circle
 					);
