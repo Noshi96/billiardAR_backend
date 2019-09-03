@@ -1,4 +1,4 @@
-package pl.ncdc.billiard.models.trainingHints;
+package pl.ncdc.billiard.models.training;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

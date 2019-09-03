@@ -1,12 +1,12 @@
-package pl.ncdc.billiard.entities.traininghints;
+package pl.ncdc.billiard.entities.training;
 
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.ncdc.billiard.entities.IndividualTrainingEntity;
-import pl.ncdc.billiard.models.trainingHints.HitPoint;
+import lombok.ToString;
+import pl.ncdc.billiard.models.training.HitPoint;
 
 import javax.persistence.*;
 
@@ -21,7 +21,8 @@ public class HitPointHintEntity {
 
     @OneToOne
     @MapsId
-    private IndividualTrainingEntity individualTraining;
+    @ToString.Exclude
+    private TrainingEntity trainingEntity;
 
     private Point position;
     private double radius;
