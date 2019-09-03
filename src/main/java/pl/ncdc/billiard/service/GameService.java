@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.Gamer;
-import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
 
 
 @Service
