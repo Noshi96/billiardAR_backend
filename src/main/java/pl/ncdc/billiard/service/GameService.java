@@ -109,6 +109,7 @@ public class GameService {
 				stopWatch.reset();
 				stopWatch.start();
 				System.out.println("5");
+				System.out.println(listWithGameBalls);
 			}
 			
 			if (stopWatch.getTime(TimeUnit.SECONDS) > waitingForBallsPlacementDelay) {
