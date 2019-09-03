@@ -684,6 +684,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 		drawLvl(mat, gameService, table);
 		drawScoreForAllPlayers(mat, gameService);
 		drawGameStatus(mat, gameService);
+		drawHalfLine(mat, table);
 	}
 
 	public void drawBestPocket(Mat mat, BilliardTable table, List<Point> hitPoints) {
@@ -1007,9 +1008,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				Imgproc.circle (
 						mat,          //Matrix obj of the image
 						point,    //Center of the circle
-						ballRadius,                    //Radius
+						poolDrawerParams.getBallRadius(),                    //Radius
 						new Scalar(255, 0, 0),  //Scalar object for color
-						ballLineThickness                      //Thickness of the circle
+						poolDrawerParams.getLineThickness()                       //Thickness of the circle
 					);
 			}
 		}
@@ -1041,7 +1042,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 					listOfPoints,
 					false, // is Closed
 					new Scalar(0, 255, 255),
-					trajectoryLineThickness
+					poolDrawerParams.getLineThickness() 
 				);	
 			}
 				
@@ -1055,7 +1056,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			
 			for (Gamer gamer : gameService.getListOfAllGamersFromService()) {
 
-				if (gamer.getCurrentScore() < 5) {
+				if (gamer.getCurrentScore() < 2) {
 
 					List<MatOfPoint> listOfPoints = new ArrayList();
 					
@@ -1071,24 +1072,24 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 							listOfPoints,
 							false, // is Closed
 							new Scalar(0, 255, 255),
-							trajectoryLineThickness
+							poolDrawerParams.getTrajectoryLineThickness()
 						);	
 					
-				} else if (gamer.getCurrentScore() >= 5 && gamer.getCurrentScore() < 10) {
+				} else if (gamer.getCurrentScore() >= 2 && gamer.getCurrentScore() < 4) {
 					Imgproc.circle (
 							mat,          //Matrix obj of the image
 							gamer.getMediumLvlPoint(),    //Center of the circle
-							ballRadius * 2,                    //Radius
+							poolDrawerParams.getBallRadius() * 2,                    //Radius
 							new Scalar(255, 0, 0),  //Scalar object for color
-							ballLineThickness                      //Thickness of the circle
+							poolDrawerParams.getLineThickness()                      //Thickness of the circle
 						);
-				} else if (gamer.getCurrentScore() >= 10) {
+				} else if (gamer.getCurrentScore() >= 4) {
 					Imgproc.circle (
 							mat,          //Matrix obj of the image
 							gamer.getHardLvlPoint(),    //Center of the circle
-							ballRadius * 2,                    //Radius
+							poolDrawerParams.getBallRadius()  * 2,                    //Radius
 							new Scalar(255, 0, 0),  //Scalar object for color
-							ballLineThickness                      //Thickness of the circle
+							poolDrawerParams.getLineThickness()                     //Thickness of the circle
 						);
 				}
 				//System.out.println("gamer.getStartCheckingPoint() = "+ gamer.getStartCheckingPoint());	
@@ -1128,6 +1129,24 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
         }
 	    
         Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255), 2);
+	}
+	
+	public void drawHalfLine(Mat mat, BilliardTable table) {
+		List<MatOfPoint>  listOfPoints = new ArrayList();
+		listOfPoints.add(
+				new MatOfPoint(
+						new Point(table.getWidth()/2, 0),
+						new Point(table.getWidth()/2, table.getHeight())
+				)							
+			);			
+		
+		Imgproc.polylines(
+				mat,
+				listOfPoints,
+				false, // is Closed
+				new Scalar(100, 1, 255),
+				poolDrawerParams.getTrajectoryLineThickness()
+			);	
 	}
 	
 	

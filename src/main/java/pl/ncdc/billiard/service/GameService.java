@@ -142,16 +142,16 @@ public class GameService {
 				if (stopWatch.getTime(TimeUnit.SECONDS) > ballsStopMovingDelay) {
 					System.out.println("11");
 					// Juz sie zatrzymaly po rzucie
-					if (!areThereAnyBallsInTheStartingAreae(listWithGameBalls)) {
-						System.out.println("12");
-						state = GameState.WaitingForSetScoreAndGenerateNewLvl;
-
-						//setScoreAfterRound(listOfAllGamersFromService, table.getBalls()); // czy to tu? 
-						
-					} else {
-						System.out.println("13");
-						state = GameState.WaitingForAllBallsOnRightSide;
-					}
+//					if (!areThereAnyBallsInTheStartingAreae(listWithGameBalls)) {
+//						System.out.println("12");
+//						state = GameState.WaitingForSetScoreAndGenerateNewLvl;
+//
+//						//setScoreAfterRound(listOfAllGamersFromService, table.getBalls()); // czy to tu? 
+//						
+//					} else {
+//						System.out.println("13");
+//						state = GameState.WaitingForAllBallsOnRightSide;
+//					}
 					state = GameState.WaitingForSetScoreAndGenerateNewLvl;
 					System.out.println("14");
 					stopWatch.reset();
@@ -290,6 +290,10 @@ public class GameService {
 				// Dla ostatniej iteracji ustawia dodatkowo ostania prawa bande czyli w sumie table.height prawa bande
 
 				gamersList.add(gamer);
+			}
+			
+			for (Gamer gamer : gamersList) {
+				gamer.setCurrentScore(6);
 			}
 		}
 		return gamersList;
@@ -535,7 +539,7 @@ public class GameService {
 					}	
 				} 
 				
-				else if (gamer.getCurrentScore() < 5) {				
+				else if (gamer.getCurrentScore() < 2) {				
 					for (Ball ball : ballsOnTheRightTrackList) {
 						// Znajduje najmniejsza odleglosc jesli na torze sa np dwie bile tak zeby zawsze szukalo z najkrotsza
 						if (length > lengthBallToLine(gamer.getLineX(), ball.getPoint()) || length == 0){
@@ -544,7 +548,8 @@ public class GameService {
 					}															
 				}
 				
-				else if (gamer.getCurrentScore() >= 5 && gamer.getCurrentScore() < 10) {					
+				else if (gamer.getCurrentScore() >= 2 && gamer.getCurrentScore() < 4) {
+					System.out.println("ERRRRRRRRRRRRRRRR5555555555555555555555555555555555555555555555");
 					for (Ball ball : ballsOnTheRightTrackList) {
 						// Znajduje najmniejsza odleglosc jesli na torze sa np dwie bile tak zeby zawsze szukalo z najkrotsza
 						if (length > lengthBetweenPoints(gamer.getMediumLvlPoint(), ball.getPoint()) || length == 0){
@@ -553,7 +558,7 @@ public class GameService {
 					}					
 				}
 				
-				else if (gamer.getCurrentScore() >= 10) {					
+				else if (gamer.getCurrentScore() >= 4) {					
 					for (Ball ball : ballsOnTheRightTrackList) {
 						// Znajduje najmniejsza odleglosc jesli na torze sa np dwie bile tak zeby zawsze szukalo z najkrotsza
 						if (length > lengthBetweenPoints(gamer.getHardLvlPoint(), ball.getPoint()) || length == 0){
@@ -621,17 +626,18 @@ public class GameService {
 		}
 		
 		for (Gamer gamer : listOfGamers) {
-			if (gamer.isBetterThenOthers() || gamer.getCurrentScore() > 9) {
+			if (gamer.isBetterThenOthers() || gamer.getCurrentScore() >= 4) {
 				gamer.setHardLvlPoint(pointLvlHardRandom(gamer));
 				
-			} else if (gamer.getCurrentScore() >= 5 && gamer.getCurrentScore() <= 9) {
+			} else if (gamer.getCurrentScore() >= 2 && gamer.getCurrentScore() < 4) {
+				System.out.println("EEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRr65656565656565656");
 				gamer.setMediumLvlPoint(pointLvlMediumRandom(gamer));
 				sameLvlForAll = false;
 			}			
 			
 			if (sameLvlForAll) {
 				gamer.setLineX(easyLvlForAll);
-			} else if (gamer.getCurrentScore() < 5) {
+			} else if (gamer.getCurrentScore() < 2) {
 				gamer.setLineX(lineLvlEasyRandomX());
 			}
 		}
@@ -650,7 +656,7 @@ public class GameService {
 		
 		for (Gamer gamer : loseGamersList) {
 			takeLosePoint(gamer);
-			System.out.println("Jemu powinno odjac punkt ale moze ma 0 i nie idejmuje od zera =" + gamer );
+			System.out.println("Jemu powinno odjac punkt =" + gamer );
 		}
 		
 	}
@@ -664,15 +670,8 @@ public class GameService {
     private boolean isSomethingOnPoint(Point point) {
         if(listWithGameBalls == null) {
             return false;
-        }
-        
-        if(table.getWhiteBall() != null) {
-        	if(distance(point, table.getWhiteBall().getPoint()) < getBallPositionTolerance()) {
-        		return true;
-        	}
-        }
-        
-        return table.getBalls()
+        }       
+        return listWithGameBalls
                 .stream()
                 .anyMatch(ball -> distance(point, ball.getPoint()) < getBallPositionTolerance());
     }
