@@ -292,9 +292,9 @@ public class GameService {
 				gamersList.add(gamer);
 			}
 			
-			for (Gamer gamer : gamersList) {
-				gamer.setCurrentScore(6);
-			}
+//			for (Gamer gamer : gamersList) {
+//				gamer.setCurrentScore(6);
+//			}
 		}
 		return gamersList;
 	}
