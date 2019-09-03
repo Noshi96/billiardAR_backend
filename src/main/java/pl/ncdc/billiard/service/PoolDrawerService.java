@@ -23,14 +23,14 @@ import pl.ncdc.billiard.models.Ball;
 import pl.ncdc.billiard.models.BilliardTable;
 import pl.ncdc.billiard.models.CalibrationParams;
 import pl.ncdc.billiard.models.Gamer;
-import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.models.training.Training;
 import pl.ncdc.billiard.models.Informations;
 import pl.ncdc.billiard.models.Pocket;
-import pl.ncdc.billiard.models.trainingHints.HitPoint;
-import pl.ncdc.billiard.models.trainingHints.HitPointHint;
-import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
-import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
-import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
+import pl.ncdc.billiard.models.training.HitPoint;
+import pl.ncdc.billiard.models.training.HitPointHint;
+import pl.ncdc.billiard.models.training.HitPowerHint;
+import pl.ncdc.billiard.models.training.TargetBallHitPointHint;
+import pl.ncdc.billiard.service.training.TrainingModeService.State;
 
 import static org.opencv.core.Core.FILLED;
 
