@@ -18,6 +18,19 @@ import pl.ncdc.billiard.service.training.TrainingService;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import pl.ncdc.billiard.controllers.BilliardTableController;
+import pl.ncdc.billiard.models.Ball;
+import pl.ncdc.billiard.models.BilliardTable;
+import pl.ncdc.billiard.models.CalibrationParams;
+import pl.ncdc.billiard.models.Gamer;
+import pl.ncdc.billiard.models.IndividualTraining;
+import pl.ncdc.billiard.models.Informations;
+import pl.ncdc.billiard.models.Pocket;
+import pl.ncdc.billiard.models.trainingHints.HitPoint;
+import pl.ncdc.billiard.models.trainingHints.HitPointHint;
+import pl.ncdc.billiard.models.trainingHints.HitPowerHint;
+import pl.ncdc.billiard.models.trainingHints.TargetBallHitPointHint;
+import pl.ncdc.billiard.service.IndividualTrainingGameModeService.State;
 
 import static org.opencv.core.Core.FILLED;
 
@@ -42,6 +55,9 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 	
 	@Autowired
 	InformationsService informationsService;
+	
+	@Autowired
+	GameService gameService;
 
 	@Autowired
 	BilliardTableService tableService;
@@ -115,6 +131,7 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 				case 34: drawViewModeBestPocket(poolPlayZoneMat, table); break;		// Nowy poprawiony z rysowaniem od razu po wyborze bili selected
 				case 35 :drawViewModeBothRotation(poolPlayZoneMat, table); break;	// Wspolne rysowanie rotacji postepowej i bez rotacji
 				case 36 :drawViewModeProMode(poolPlayZoneMat, table); break;	// Tryb pro
+				case 37 :drawViewModeGameBoard(poolPlayZoneMat, gameService, table);
 				//case 2: this.drawViewMode2(); break;
 			}
 		}
@@ -660,6 +677,14 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 
 		}
 	}
+	
+	public void drawViewModeGameBoard(Mat mat, GameService gameService, BilliardTable table) {
+		drawCheckingPointsGame(mat, gameService.positionsForCheckingCircles());
+		drawLinesGamers(mat, gameService.positionsForTracks(), table);
+		drawLvl(mat, gameService, table);
+		drawScoreForAllPlayers(mat, gameService);
+		drawGameStatus(mat, gameService);
+	}
 
 	public void drawBestPocket(Mat mat, BilliardTable table, List<Point> hitPoints) {
 
@@ -973,4 +998,137 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 			);
 		}
 	}
+	
+	public void drawCheckingPointsGame(Mat mat, List<Point> positionsForCheckingCircles) {
+
+		if ( positionsForCheckingCircles != null) {
+			
+			for (Point point : positionsForCheckingCircles) {
+				Imgproc.circle (
+						mat,          //Matrix obj of the image
+						point,    //Center of the circle
+						ballRadius,                    //Radius
+						new Scalar(255, 0, 0),  //Scalar object for color
+						ballLineThickness                      //Thickness of the circle
+					);
+			}
+		}
+	}
+	
+	public void drawLinesGamers(Mat mat, List<Double> listWithYForLines, BilliardTable table) {
+		
+		List<Point> listWithPoints = new ArrayList<>();
+		
+		for (Double yPos : listWithYForLines) {
+			listWithPoints.add(new Point(0, yPos));
+			listWithPoints.add(new Point(table.getWidth(), yPos));
+		}
+		
+		if (listWithYForLines != null) {
+			
+			List<MatOfPoint> listOfPoints = new ArrayList();
+			
+			for (int i = 0; i < listWithPoints.size(); i=i+2) {
+				listOfPoints.add(
+						new MatOfPoint(
+								listWithPoints.get(i),
+								listWithPoints.get(i+1)
+						)							
+					);					
+				// rysowanie trajektorii
+				Imgproc.polylines(
+					mat,
+					listOfPoints,
+					false, // is Closed
+					new Scalar(0, 255, 255),
+					trajectoryLineThickness
+				);	
+			}
+				
+		}
+		
+	}
+	
+	public void drawLvl(Mat mat, GameService gameService, BilliardTable table) {
+
+		if (gameService.getListOfAllGamersFromService() != null) {
+			
+			for (Gamer gamer : gameService.getListOfAllGamersFromService()) {
+
+				if (gamer.getCurrentScore() < 5) {
+
+					List<MatOfPoint> listOfPoints = new ArrayList();
+					
+					listOfPoints.add(
+							new MatOfPoint(
+									new Point(gamer.getLineX(), gamer.getLeftOwnBand()),
+									new Point(gamer.getLineX(), gamer.getRightOwnBand())
+							)							
+						);			
+					
+					Imgproc.polylines(
+							mat,
+							listOfPoints,
+							false, // is Closed
+							new Scalar(0, 255, 255),
+							trajectoryLineThickness
+						);	
+					
+				} else if (gamer.getCurrentScore() >= 5 && gamer.getCurrentScore() < 10) {
+					Imgproc.circle (
+							mat,          //Matrix obj of the image
+							gamer.getMediumLvlPoint(),    //Center of the circle
+							ballRadius * 2,                    //Radius
+							new Scalar(255, 0, 0),  //Scalar object for color
+							ballLineThickness                      //Thickness of the circle
+						);
+				} else if (gamer.getCurrentScore() >= 10) {
+					Imgproc.circle (
+							mat,          //Matrix obj of the image
+							gamer.getHardLvlPoint(),    //Center of the circle
+							ballRadius * 2,                    //Radius
+							new Scalar(255, 0, 0),  //Scalar object for color
+							ballLineThickness                      //Thickness of the circle
+						);
+				}
+				//System.out.println("gamer.getStartCheckingPoint() = "+ gamer.getStartCheckingPoint());	
+			}
+		}
+	}
+	
+	public void drawScoreForAllPlayers(Mat mat, GameService gameService) {
+		
+		if (gameService.getListOfAllGamersFromService() != null) {		
+			for (Gamer gamer : gameService.getListOfAllGamersFromService()) {
+				String score = new String(Integer.toString(gamer.getCurrentScore()));
+				
+		        Imgproc.putText(mat, score, gamer.getPosShowScore(), 6, 2.2, new Scalar(255,255,255), 3);
+		        
+			}
+		}
+	}
+	
+	public void drawGameStatus(Mat mat, GameService gameService) {
+		String statusText = "";
+		if (gameService.getState() == GameService.GameState.ReadyToPlay) {
+			statusText = "ReadyToPlay";
+		} else if (gameService.getState() == GameService.GameState.WaitingForAllBallsOnRightSide) {
+			statusText = "WaitingForAllBallsOnRightSide";
+		} else if (gameService.getState() == GameService.GameState.WaitingForCheckingBallsPlacement) {
+			statusText = "WaitingForCheckingBallsPlacement";
+		} else if (gameService.getState() == GameService.GameState.WaitingForSetScoreAndGenerateNewLvl) {
+			statusText = "WaitingForSetScoreAndGenerateNewLvl";
+		} else if (gameService.getState() == GameService.GameState.WaitingForStopBalls) {
+			statusText = "WaitingForStopBalls";
+		}
+		
+	    Point statusPosition = gameService.positionToShowMessages();
+	    if(statusPosition == null) {
+	        statusPosition = gameService.positionToShowMessages();
+        }
+	    
+        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255), 2);
+	}
+	
+	
 }

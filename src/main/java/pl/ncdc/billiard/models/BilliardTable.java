@@ -84,18 +84,19 @@ public class BilliardTable {
 //     }
 //      public BilliardTable() {
 //          balls = new ArrayList<>();
-//          balls.add(new Ball(0, new Point(1000,800)));
-//          balls.add(new Ball(1, new Point(250,600)));
-//          balls.add(new Ball(2, new Point(360,29) ));
+//          balls.add(new Ball(0, new Point(147,98)));
+//          balls.add(new Ball(1, new Point(146,291)));
+//          balls.add(new Ball(3, new Point(146,484)));
+//          //balls.add(new Ball(2, new Point(400,29) ));
 //          //balls.add(new Ball(3, new Point(600,500) ));
-//          balls.add(new Ball(3, new Point(380,629) ));
-//          balls.add(new Ball(4, new Point(400,401)));
-//          balls.add(new Ball(5, new Point(1,600))); 
-//          balls.add(new Ball(6, new Point(810,250)));
-//          balls.add(new Ball(7, new Point(476, 186)));
-//          balls.add(new Ball(8, new Point(400, 300)));
-//          this.setWhiteBall(new Ball(3, new Point(600,500)));
-//          //this.setWhiteBall( new Ball( 0,  new Point(750,450)));
+//          //balls.add(new Ball(3, new Point(417,629) ));
+//          //balls.add(new Ball(4, new Point(600,401)));
+//          //balls.add(new Ball(5, new Point(1,600))); 
+//          //balls.add(new Ball(6, new Point(810,250)));
+//          //balls.add(new Ball(7, new Point(476, 186)));
+//          //balls.add(new Ball(8, new Point(600, 300)));
+//          //this.setWhiteBall(new Ball(3, new Point(146,484)));
+//          //this.setWhiteBall( new Ball( 0,  new Point(750,450)));      
 //          //this.setSelectedBall(this.balls.get(7));
 //          //this.setSelectedPocket(this.pockets.get(5));
 //      }

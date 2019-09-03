@@ -319,35 +319,35 @@ public class HitService {
 			// zalezy
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 1);
 				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 			}
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 1);
 				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 			}
 		} else if (idPocket == 3) {
 			// lewa, dol
 			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, lowerBand, 3);
+			secondPoint = bandHitingPoint(white, target, lowerBand, 1);
 
 		} else if (idPocket == 4) {
 			// lewa, gora
 			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, upperBand, 1);
+			secondPoint = bandHitingPoint(white, target, upperBand, 3);
 
 		} else if (idPocket == 5) {
 			// zalezy
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
+				firstPoint = bandHitingPoint(white, target, upperBand, 3);
 				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
+				firstPoint = bandHitingPoint(white, target, upperBand, 3);
 				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 			}
 
