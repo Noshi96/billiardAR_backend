@@ -1131,7 +1131,7 @@ public class PoolDrawerService {
 							ballLineThickness                      //Thickness of the circle
 						);
 				}
-				System.out.println("gamer.getStartCheckingPoint() = "+ gamer.getStartCheckingPoint());	
+				//System.out.println("gamer.getStartCheckingPoint() = "+ gamer.getStartCheckingPoint());	
 			}
 		}
 	}
@@ -1142,7 +1142,7 @@ public class PoolDrawerService {
 			for (Gamer gamer : gameService.getListOfAllGamersFromService()) {
 				String score = new String(Integer.toString(gamer.getCurrentScore()));
 				
-		        Imgproc.putText(mat, score, gamer.getPosShowScore(), 1, 2, new Scalar(255,255,255));
+		        Imgproc.putText(mat, score, gamer.getPosShowScore(), 6, 2.2, new Scalar(255,255,255), 3);
 		        
 			}
 		}
@@ -1166,9 +1166,8 @@ public class PoolDrawerService {
 	    if(statusPosition == null) {
 	        statusPosition = gameService.positionToShowMessages();
         }
-        mat = Imgproc.getRotationMatrix2D(statusPosition, 90, 1.0);
-        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255));
-        System.out.println(statusText);
+	    
+        Imgproc.putText(mat, statusText, statusPosition, 1, 2, new Scalar(255,255,255), 2);
 	}
 	
 	

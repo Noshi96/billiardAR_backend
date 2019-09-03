@@ -124,7 +124,7 @@ public class GameService {
 //			listWithGameBalls.add(new Ball(0, new Point(800,200)));
 //			listWithGameBalls.add(new Ball(1, new Point(789,300)));
 //			listWithGameBalls.add(new Ball(2, new Point(779,450)));
-			//table.setBalls(listWithGameBalls);
+//			table.setBalls(listWithGameBalls);
 			
 			if (!isAllBallsPlacedCorrectly(playerCount)) { // Zwraca true
 				state = GameState.WaitingForStopBalls;
@@ -296,11 +296,11 @@ public class GameService {
 		}
 			
 		if (playerCount == 1) { // id = 3?
-			temp = table.getHeight() / ((3 * 2));
+			temp = table.getHeight() / 2;
 			
-			for (int i = 0; i < 6; i=i+2) {		
-				circlesPositions.add(new Point(table.getWidth() / 8, (temp * (i + 1))));			
-			}
+
+			circlesPositions.add(new Point(table.getWidth() / 8, temp));	
+			
 		} else {
 			temp = table.getHeight() / ((playerCount * 2));
 			
@@ -313,6 +313,7 @@ public class GameService {
 	
 	public void setPositionsForCheckingCirclesGamer(List<Point> positionsChechkingCircles, List<Gamer> gamersList) {
 		
+		System.out.println();
 		for ( int i = 0; i < positionsChechkingCircles.size(); i++ ) {
 			gamersList.get(i).setStartCheckingPoint(positionsChechkingCircles.get(i));
 		}
@@ -355,7 +356,7 @@ public class GameService {
 	public Point positionToShowMessages() {
 		double x = 0, y = 0;
 		
-		x = table.getWidth() / 4;
+		x = table.getWidth() / 2;
 		y = table.getHeight() / 2;
 		
 		return new Point(x,y);
