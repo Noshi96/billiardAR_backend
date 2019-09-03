@@ -40,8 +40,8 @@ public class GameService {
     private GameState state;
 	
     private double waitingForBallsPlacementDelay = 1.0;
-    private double ballsStopMovingDelay = 2.0;
-    private double afterEndDelay = 2.0;
+    private double ballsStopMovingDelay = 1.0;
+    private double afterEndDelay = 1.0;
     private double waitingForAllBallsOnRightSide = 5.0;
     private boolean startGame = true;
     
@@ -90,11 +90,11 @@ public class GameService {
             listWithGameBalls = new ArrayList<>();
             System.out.println("1");
         } else {
+        	System.out.println("2");
         	currentFrameBallsPositions = table.getBalls().stream().map(ball -> new Point(ball.getPoint().x, ball.getPoint().y)).collect(Collectors.toList());
             
         	listWithGameBalls = new ArrayList<>(table.getBalls());
         	
-            System.out.println("2");
         }
         if(table.getWhiteBall() != null) {
         	currentFrameBallsPositions.add(table.getWhiteBall().getPoint());
@@ -289,6 +289,7 @@ public class GameService {
 //				}
 				// Dla ostatniej iteracji ustawia dodatkowo ostania prawa bande czyli w sumie table.height prawa bande
 
+				
 				gamersList.add(gamer);
 			}
 			
@@ -662,7 +663,7 @@ public class GameService {
 	}
 	
     private double getBallPositionTolerance() {
-        return calibrationService.getCalibrationParams().getBallDiameter() / 4.0;
+        return calibrationService.getCalibrationParams().getBallDiameter() / 2;
     }
     
     
@@ -670,8 +671,16 @@ public class GameService {
     private boolean isSomethingOnPoint(Point point) {
         if(listWithGameBalls == null) {
             return false;
-        }       
-        return listWithGameBalls
+        }
+        
+//        if(table.getWhiteBall() != null) {
+//        	if(distance(point, table.getWhiteBall().getPoint()) < getBallPositionTolerance()) {
+//        		return true;
+//        	}
+//        }
+        
+//        return table.getBalls()
+        		return listWithGameBalls
                 .stream()
                 .anyMatch(ball -> distance(point, ball.getPoint()) < getBallPositionTolerance());
     }

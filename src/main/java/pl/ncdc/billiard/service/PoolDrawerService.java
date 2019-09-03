@@ -1076,21 +1076,30 @@ public class PoolDrawerService implements ApplicationListener<PoolDrawerParamsSe
 						);	
 					
 				} else if (gamer.getCurrentScore() >= 2 && gamer.getCurrentScore() < 4) {
-					Imgproc.circle (
-							mat,          //Matrix obj of the image
-							gamer.getMediumLvlPoint(),    //Center of the circle
-							poolDrawerParams.getBallRadius() * 2,                    //Radius
-							new Scalar(255, 0, 0),  //Scalar object for color
-							poolDrawerParams.getLineThickness()                      //Thickness of the circle
-						);
+					System.out.println("Mat: " + mat);
+					System.out.println("gamer: " + gamer.getMediumLvlPoint());
+					System.out.println("par1: " + poolDrawerParams.getBallRadius() * 2);
+					System.out.println("par2: " + poolDrawerParams.getLineThickness());
+					
+					if (gamer.getMediumLvlPoint() != null) {
+						Imgproc.circle (
+								mat,          //Matrix obj of the image
+								gamer.getMediumLvlPoint(),    //Center of the circle
+								poolDrawerParams.getBallRadius() * 2,                    //Radius
+								new Scalar(255, 0, 0),  //Scalar object for color
+								poolDrawerParams.getLineThickness()                      //Thickness of the circle
+								);
+					}
 				} else if (gamer.getCurrentScore() >= 4) {
-					Imgproc.circle (
-							mat,          //Matrix obj of the image
-							gamer.getHardLvlPoint(),    //Center of the circle
-							poolDrawerParams.getBallRadius()  * 2,                    //Radius
-							new Scalar(255, 0, 0),  //Scalar object for color
-							poolDrawerParams.getLineThickness()                     //Thickness of the circle
-						);
+					if (gamer.getHardLvlPoint() != null) {
+						Imgproc.circle (
+								mat,          //Matrix obj of the image
+								gamer.getHardLvlPoint(),    //Center of the circle
+								poolDrawerParams.getBallRadius()  * 2,                    //Radius
+								new Scalar(255, 0, 0),  //Scalar object for color
+								poolDrawerParams.getLineThickness()                     //Thickness of the circle
+								);
+					}
 				}
 				//System.out.println("gamer.getStartCheckingPoint() = "+ gamer.getStartCheckingPoint());	
 			}
