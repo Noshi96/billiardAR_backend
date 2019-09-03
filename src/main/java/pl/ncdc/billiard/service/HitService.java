@@ -454,8 +454,8 @@ public class HitService {
 
 		int leftBand = 0;
 		int rightBand = this.table.getWidth();
-		int upperBand = this.table.getHeight();
-		int lowerBand = 0;
+		int upperBand = 0;
+		int lowerBand = this.table.getHeight();
 
 		// 1-gora, 2-prawa, 3-dol, 4-lewy
 
@@ -465,20 +465,20 @@ public class HitService {
 		if (idPocket == 1) {
 			// prawa dol
 
-			firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+			firstPoint = bandHitingPoint(white, target, lowerBand, 1);
 			secondPoint = bandHitingPoint(white, target, rightBand, 2);
 		} else if (idPocket == 2) {
 			// zalezy
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 1);
 				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, lowerBand, 3);
+				firstPoint = bandHitingPoint(white, target, lowerBand, 1);
 				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 
 			}
@@ -486,26 +486,26 @@ public class HitService {
 		} else if (idPocket == 3) {
 			// lewa, dol
 			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, lowerBand, 3);
+			secondPoint = bandHitingPoint(white, target, lowerBand, 1);
 
 		} else if (idPocket == 4) {
 			// lewa, gora
 			firstPoint = bandHitingPoint(white, target, leftBand, 4);
-			secondPoint = bandHitingPoint(white, target, upperBand, 1);
+			secondPoint = bandHitingPoint(white, target, upperBand, 3);
 
 		} else if (idPocket == 5) {
 			// zalezy
 
 			// prawa str
 			if (target.x > pocket.x) {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
+				firstPoint = bandHitingPoint(white, target, upperBand, 3);
 				secondPoint = bandHitingPoint(white, target, rightBand, 2);
 
 			}
 
 			// lewa str
 			else {
-				firstPoint = bandHitingPoint(white, target, upperBand, 1);
+				firstPoint = bandHitingPoint(white, target, upperBand, 3);
 				secondPoint = bandHitingPoint(white, target, leftBand, 4);
 
 			}
@@ -513,7 +513,7 @@ public class HitService {
 		} else if (idPocket == 6) {
 			// prawa, gora
 			firstPoint = bandHitingPoint(white, target, rightBand, 2);
-			secondPoint = bandHitingPoint(white, target, upperBand, 1);
+			secondPoint = bandHitingPoint(white, target, upperBand, 3);
 
 		}
 
