@@ -22,5 +22,6 @@ public class Gamer {
 	private Point hardLvlPoint;
 	private boolean betterThenOthers;
 	private Point posShowScore;
+	private boolean oppositeTrack; 
 	
 }

@@ -53,6 +53,8 @@ public class GameService {
     
     @Getter
 	private List<Gamer> listOfAllGamersFromService;
+    
+    private boolean oppositeTracks = false;
 	
 	private List<Ball> listWithGameBalls;
 	
@@ -268,6 +270,12 @@ public class GameService {
 				gamer.setLeftOwnBand((temp * (i)));
 				gamer.setRightOwnBand((temp * (i+1)));
 				
+				if (gamer.getId() % 2 == 1) {
+					gamer.setOppositeTrack(false);
+				} else if (gamer.getId() % 2 == 0) {
+					gamer.setOppositeTrack(true);
+				}
+				
 //				if (i % 2 == 0) {
 //					if (i == 0) {
 //						gamer.setLeftOwnBand(0);
@@ -305,6 +313,7 @@ public class GameService {
 	public List<Point> positionsForCheckingCircles(){
 		
 		double temp = 0;
+		int checkIsOppositeFalse = 1;
 		List<Point> circlesPositions = new ArrayList<>();
 		
 		if (playerCount == 0 || playerCount < 0) {
@@ -320,13 +329,23 @@ public class GameService {
 		} else {
 			temp = table.getHeight() / ((playerCount * 2));
 			
-			for (int i = 0; i < playerCount * 2; i=i+2) {		
-				circlesPositions.add(new Point(table.getWidth() / 8, (temp * (i + 1))));			
+			for (int i = 0; i < playerCount * 2; i=i+2) {
+				if (oppositeTracks) {
+					if (checkIsOppositeFalse % 2 == 1) {
+						circlesPositions.add(new Point(table.getWidth() / 8, (temp * (i + 1)))); // Orginalne pierwotne
+					} else if (checkIsOppositeFalse % 2 == 0) {
+						circlesPositions.add(new Point(table.getWidth()*7 / 8, (temp * (i + 1))));
+					}
+					checkIsOppositeFalse++;	
+				} else {
+					circlesPositions.add(new Point(table.getWidth() / 8, (temp * (i + 1)))); // Orginalne pierwotne
+				}
 			}
 		}
 		return circlesPositions;
 	}
 	
+	// Tu dla opposite wyglada ze dziala okej
 	public void setPositionsForCheckingCirclesGamer(List<Point> positionsChechkingCircles, List<Gamer> gamersList) {
 		
 		System.out.println();
@@ -337,6 +356,7 @@ public class GameService {
 	
 	public List<Point> positionToShowScore(int playerCount){
 		
+		int checkIsOppositeFalse = 1;
 		double temp = 0;
 		List<Point> circlesPositions = new ArrayList<>();
 		
@@ -353,8 +373,17 @@ public class GameService {
 		} else {
 			temp = table.getHeight() / ((playerCount * 2));
 			
-			for (int i = 0; i < playerCount * 2; i=i+2) {		
-				circlesPositions.add(new Point(table.getWidth()*3 / 8, (temp * (i + 1)) ));			
+			for (int i = 0; i < playerCount * 2; i=i+2) {
+				if (oppositeTracks) {
+					if (checkIsOppositeFalse % 2 == 1) {
+						circlesPositions.add(new Point(table.getWidth()*3 / 8, (temp * (i + 1)) )); // Orginal
+					} else if (checkIsOppositeFalse % 2 == 0) {
+						circlesPositions.add(new Point(table.getWidth()*5 / 8, (temp * (i + 1)) ));
+					}
+					checkIsOppositeFalse++;
+				} else {
+					circlesPositions.add(new Point(table.getWidth()*3 / 8, (temp * (i + 1)) )); // Orginal
+				}
 			}
 		}
 		return circlesPositions;
