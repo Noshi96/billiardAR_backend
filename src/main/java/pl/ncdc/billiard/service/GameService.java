@@ -60,7 +60,7 @@ public class GameService {
 	
 	@Getter
 	@Setter
-	private int playerCount = 2;
+	private int playerCount = 3;
 	
 	public void start(int playerCount) {
 		
