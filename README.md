@@ -1,4 +1,4 @@
-# billiard_AR
+# Billiard_AR
 Support system for Billiard game using Kinect camera and projector.
 
 https://www.youtube.com/watch?v=UpnSLUtoKeY&ab_channel=HouseofTalentsbyNCDC
